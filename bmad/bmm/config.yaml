@@ -12,7 +12,7 @@ install_user_docs: true
 tea_use_mcp_enhancements: true
 
 # Core Configuration Values
-user_name: ' BIP'
+user_name: 'KG'
 communication_language: English
 document_output_language: English
 output_folder: '{project-root}/docs'
