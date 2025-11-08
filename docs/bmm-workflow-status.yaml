@@ -1,13 +1,13 @@
 # Workflow Status Template
-# This tracks progress through BMM methodology phases
-# Phase 3/4 (Implementation) is tracked separately in sprint-status.yaml
+# This tracks progress through phases 1-3 of the BMM methodology
+# Phase 4 (Implementation) is tracked separately in sprint-status.yaml
 
 # generated: Saturday, November 8, 2025
 # project: ibe160
 # project_type: software
-# selected_track: method
+# project_level: 3
 # field_type: greenfield
-# workflow_path: enterprise-greenfield.yaml
+# workflow_path: greenfield-level-3.yaml
 
 # STATUS DEFINITIONS:
 # ==================
@@ -24,31 +24,28 @@
 generated: "Saturday, November 8, 2025"
 project: "ibe160"
 project_type: "software"
-selected_track: "method"
+project_level: 3
 field_type: "greenfield"
-workflow_path: "enterprise-greenfield.yaml"
+workflow_path: "greenfield-level-3.yaml"
 
-workflow_status: "
-# Phase 0: Discovery (Required)
-brainstorm-project:
-  - docs/brainstorming-session 1-results-Saturday, November 8, 2025.md
-  - docs/brainstorming-session 2-results-Saturday, November 8, 2025.md
-research: required
-product-brief: required
+workflow_status:
+  # Phase 1: Analysis
+  brainstorm-project:
+    - "docs/brainstorming-session 1-results-Saturday, November 8, 2025.md"
+    - "docs/brainstorming-session 2-results-Saturday, November 8, 2025.md"
+  research: required
+  product-brief: required
 
-# Phase 1: Planning
-prd: required
-validate-prd: recommended
-create-design: recommended
+  # Phase 2: Planning
+  prd: required
+  validate-prd: recommended
+  create-design: recommended
 
-# Phase 2: Solutioning
-create-architecture: required
-create-security-architecture: required
-create-devops-strategy: required
-create-test-strategy: required
-validate-architecture: optional
-solutioning-gate-check: required
+  # Phase 3: Solutioning
+  create-architecture: required
+  validate-architecture: optional
+  solutioning-gate-check: recommended
 
-# Phase 3: Implementation
-sprint-planning: required
-"
+  # Phase 4: Implementation
+  sprint-planning: required
+  # Note: Subsequent implementation workflows tracked in sprint-status.yaml
