@@ -181,7 +181,7 @@ This section outlines the strategies for training users and encouraging adoption
 *   **Clear Communication of Benefits:** Tailor communication to each user role, highlighting the "what's in it for me" aspect and how the platform simplifies their work.
 *   **Phased Rollout:** Begin with a pilot group of enthusiastic users to gather feedback and build success stories before a wider internal launch.
 *   **Visible Leadership Buy-in:** Secure active endorsement and usage of the platform by senior leadership to demonstrate its importance.
-*   **In-App Feedback Channel:** Provide an easy-to-use mechanism within the application for users to submit feedback, report issues, and suggest improvements.
+*   **In-App Feedback Channel (later, NOT initial launch):** Provide an easy-to-use mechanism within the application for users to submit feedback, report issues, and suggest improvements. 
 *   **No Gamification (for now):** Gamification elements will not be pursued at this stage.
 
 ### Next Steps for this Discussion:
@@ -191,4 +191,4 @@ This section outlines the strategies for training users and encouraging adoption
 
 ### Decision:
 *   **Training Users:** Focus on **Short Video Tutorials** and a **"Train the Trainer" Program**.
-*   **Encouraging Adoption:** Implement **Clear Communication of Benefits**, a **Phased Rollout**, ensure **Visible Leadership Buy-in**, and provide an **In-App Feedback Channel**. **Gamification** will not be pursued at this stage.
+*   **Encouraging Adoption:** Implement **Clear Communication of Benefits**, a **Phased Rollout**, ensure **Visible Leadership Buy-in**.  **In-App Feedback Channel**, and **Gamification** will not be pursued at this stage.
