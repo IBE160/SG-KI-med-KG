@@ -191,4 +191,43 @@ This section outlines the strategies for training users and encouraging adoption
 
 ### Decision:
 *   **Training Users:** Focus on **Short Video Tutorials** and a **"Train the Trainer" Program**.
-*   **Encouraging Adoption:** Implement **Clear Communication of Benefits**, a **Phased Rollout**, ensure **Visible Leadership Buy-in**.  **In-App Feedback Channel**, and **Gamification** will not be pursued at this stage.
+*   **Encouraging Adoption:** Implement **Clear Communication of Benefits**, a **Phased Rollout**, ensure **Visible Leadership Buy-in**, and provide an **In-App Feedback Channel**. **Gamification** will not be pursued at this stage.
+
+---
+
+## 8. Discussion: Long-Term Maintenance and Support Model
+
+This section outlines strategies for the ongoing maintenance and user support of the Risk Control Matrix platform, both for the internal phase and the future commercial product.
+
+### Key Considerations & Suggestions:
+
+#### 1. Maintenance:
+*   **Dedicated Team/Owner:** Clearly define who is responsible for ongoing code maintenance, infrastructure management, and dependency updates. For the internal phase, this might be the initial development team. For commercialization, a dedicated product/engineering team will be required.
+*   **Release Cadence:** Establish a regular schedule for releasing updates, including bug fixes, security patches, and minor feature enhancements (e.g., monthly, quarterly).
+*   **Technology Monitoring:** Implement processes and tools for continuous monitoring of the technology stack for updates, security vulnerabilities, and deprecations to ensure the platform remains secure and performant.
+*   **Cost Planning:** Budget for ongoing operational costs, including hosting, third-party services (e.g., AI API, Supabase), and the personnel required for maintenance and development.
+
+#### 2. Support:
+*   **Internal Support Model (Initial Phase):** Leverage the "Train the Trainer" champions as the first line of support for their respective teams. Establish clear escalation paths to the development team for unresolved issues.
+*   **Tiered Support Model (Commercial Phase):** Develop a tiered support structure to cater to different customer segments:
+    *   **Tier 1 (Basic):** Self-service options (knowledge base, community forums) and email/chat support with standard response times.
+    *   **Tier 2 (Premium):** For higher-tier customers, offering faster response times, potentially phone support, and more direct access to technical experts.
+    *   **Tier 3 (Enterprise/Dedicated):** For large enterprise clients, providing a dedicated account manager, proactive monitoring, and priority access to engineering resources.
+*   **Comprehensive Knowledge Base/Documentation:** Create and continuously update a searchable knowledge base, including FAQs, user guides, troubleshooting articles, and best practices. This is crucial for self-service support.
+*   **Feedback Loop to Development:** Establish a robust process for the support team to log, categorize, and escalate bugs, feature requests, and user feedback directly to the product and development teams. This ensures that user needs and issues directly inform the product roadmap.
+
+### Next Steps for this Discussion:
+
+*   Define the specific team or individuals responsible for maintenance during the internal phase.
+
+*   Outline the initial support process for internal users.
+
+*   Begin planning for the commercial support model, aligning with the tiered pricing strategy.
+
+*   Start outlining the structure and content for a knowledge base.
+
+
+
+### Decision:
+
+*   The "Next Steps for this Discussion" regarding the Long-Term Maintenance and Support Model will be saved and revisited later, as these will be more applicable when commercializing the product.
