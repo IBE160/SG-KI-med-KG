@@ -30,7 +30,7 @@ workflow_path: "enterprise-greenfield.yaml"
 
 workflow_status: "
 # Phase 0: Discovery (Required)
-brainstorm-project: required
+brainstorm-project: docs/brainstorm-project.md
 research: required
 product-brief: required
 
