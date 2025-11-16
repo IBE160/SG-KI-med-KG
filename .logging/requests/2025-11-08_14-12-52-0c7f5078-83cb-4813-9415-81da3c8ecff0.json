@@ -1,0 +1,250 @@
+[
+  {
+    "request": {
+      "session.id": "0c7f5078-83cb-4813-9415-81da3c8ecff0",
+      "installation.id": "00b2157a-94d7-45f9-b3ca-16d15dbb65bd",
+      "user.email": "kjamtli@hotmail.com",
+      "event.name": "gemini_cli.api_request",
+      "event.timestamp": "2025-11-08T14:14:16.927Z",
+      "model": "gemini-2.5-flash",
+      "prompt_id": "0c7f5078-83cb-4813-9415-81da3c8ecff0########0",
+      "request_text": [
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "This is the Gemini CLI. We are setting up the context for our chat.\nToday's date is Saturday, November 8, 2025 (formatted according to the user's locale).\nMy operating system is: win32\nI'm currently working in the directory: C:\\Users\\kjamt\\Documents\\Skole\\IBE 160 - Programmering med KI\\Risk Control Matrix\\SG-KI-med-KG\nHere is the folder structure of the current working directories:\n\nShowing up to 200 items (files + folders). Folders or files indicated with ... contain more items not shown, were ignored, or the display limit (200 items) was reached.\n\nC:\\Users\\kjamt\\Documents\\Skole\\IBE 160 - Programmering med KI\\Risk Control Matrix\\SG-KI-med-KG\\\n├───.gitignore\n├───proposal.md\n├───README.md\n├───.claude\\\n│   └───commands\\\n│       └───bmad\\\n│           ├───bmm\\\n│           │   ├───agents\\\n│           │   └───workflows\\\n│           ├───cis\\\n│           │   ├───agents\\\n│           │   └───workflows\\\n│           └───core\\\n│               ├───agents\\\n│               ├───tasks\\\n│               ├───tools\\\n│               └───workflows\\\n├───.gemini\\\n│   ├───settings.json\n│   └───commands\\\n│       ├───bmad-agent-bmm-analyst.toml\n│       ├───bmad-agent-bmm-architect.toml\n│       ├───bmad-agent-bmm-dev.toml\n│       ├───bmad-agent-bmm-game-architect.toml\n│       ├───bmad-agent-bmm-game-designer.toml\n│       ├───bmad-agent-bmm-game-dev.toml\n│       ├───bmad-agent-bmm-pm.toml\n│       ├───bmad-agent-bmm-sm.toml\n│       ├───bmad-agent-bmm-tea.toml\n│       ├───bmad-agent-bmm-tech-writer.toml\n│       ├───bmad-agent-bmm-ux-designer.toml\n│       ├───bmad-agent-cis-brainstorming-coach.toml\n│       ├───bmad-agent-cis-creative-problem-solver.toml\n│       ├───bmad-agent-cis-design-thinking-coach.toml\n│       ├───bmad-agent-cis-innovation-strategist.toml\n│       ├───bmad-agent-cis-README.toml\n│       ├───bmad-agent-cis-storyteller.toml\n│       ├───bmad-agent-core-bmad-master.toml\n│       ├───bmad-task-bmm-daily-standup.toml\n│       ├───bmad-task-core-adv-elicit.toml\n│       ├───bmad-task-core-index-docs.toml\n│       ├───bmad-task-core-validate-workflow.toml\n│       └───bmad-task-core-workflow.toml\n├───.git\\...\n├───.logging\\\n│   ├───.gitignore\n│   ├───api-viewer.html\n│   ├───api-viewer.html.bak\n│   ├───process-api-requests.py\n│   ├───README.md\n│   ├───requirements.txt\n│   ├───server.py\n│   ├───server.py.backup\n│   ├───telemetry.md\n│   ├───truncate.py\n│   └───watcher.py\n├───.vscode\\\n│   ├───launch.json\n│   ├───settings.json\n│   └───tasks.json\n├───bmad\\\n│   ├───_cfg\\\n│   │   ├───agent-manifest.csv\n│   │   ├───files-manifest.csv\n│   │   ├───manifest.yaml\n│   │   ├───task-manifest.csv\n│   │   ├───tool-manifest.csv\n│   │   ├───workflow-manifest.csv\n│   │   ├───agents\\\n│   │   │   ├───bmm-analyst.customize.yaml\n│   │   │   ├───bmm-architect.customize.yaml\n│   │   │   ├───bmm-dev.customize.yaml\n│   │   │   ├───bmm-game-architect.customize.yaml\n│   │   │   ├───bmm-game-designer.customize.yaml\n│   │   │   ├───bmm-game-dev.customize.yaml\n│   │   │   ├───bmm-pm.customize.yaml\n│   │   │   ├───bmm-sm.customize.yaml\n│   │   │   ├───bmm-tea.customize.yaml\n│   │   │   ├───bmm-tech-writer.customize.yaml\n│   │   │   ├───bmm-ux-designer.customize.yaml\n│   │   │   ├───cis-brainstorming-coach.customize.yaml\n│   │   │   ├───cis-creative-problem-solver.customize.yaml\n│   │   │   ├───cis-design-thinking-coach.customize.yaml\n│   │   │   ├───cis-innovation-strategist.customize.yaml\n│   │   │   ├───cis-storyteller.customize.yaml\n│   │   │   └───core-bmad-master.customize.yaml\n│   │   └───ides\\\n│   │       └───claude-code.yaml\n│   ├───bmm\\\n│   │   ├───config.yaml\n│   │   ├───README.md\n│   │   ├───agents\\\n│   │   │   ├───analyst.md\n│   │   │   ├───architect.md\n│   │   │   ├───dev.md\n│   │   │   ├───game-architect.md\n│   │   │   ├───game-designer.md\n│   │   │   ├───game-dev.md\n│   │   │   ├───pm.md\n│   │   │   ├───sm.md\n│   │   │   ├───tea.md\n│   │   │   ├───tech-writer.md\n│   │   │   └───ux-designer.md\n│   │   ├───docs\\\n│   │   │   ├───agents-guide.md\n│   │   │   ├───brownfield-guide.md\n│   │   │   ├───enterprise-agentic-development.md\n│   │   │   ├───faq.md\n│   │   │   ├───glossary.md\n│   │   │   ├───party-mode.md\n│   │   │   ├───quick-spec-flow.md\n│   │   │   ├───quick-start.md\n│   │   │   ├───README.md\n│   │   │   ├───scale-adaptive-system.md\n│   │   │   ├───test-architecture.md\n│   │   │   ├───troubleshooting.md\n│   │   │   ├───workflow-architecture-reference.md\n│   │   │   ├───workflow-document-project-reference.md\n│   │   │   ├───workflows-analysis.md\n│   │   │   ├───workflows-implementation.md\n│   │   │   ├───workflows-planning.md\n│   │   │   └───workflows-solutioning.md\n│   │   ├───sub-modules\\\n│   │   │   └───claude-code\\\n│   │   │       ├───config.yaml\n│   │   │       ├───injections.yaml\n│   │   │       ├───readme.md\n│   │   │       └───sub-agents\\\n│   │   ├───tasks\\\n│   │   │   └───daily-standup.xml\n│   │   ├───teams\\\n│   │   │   ├───team-fullstack.yaml\n│   │   │   └───team-gamedev.yaml\n│   │   ├───testarch\\\n│   │   │   ├───tea-index.csv\n│   │   │   └───knowledge\\\n│   │   │       ├───ci-burn-in.md\n│   │   │       ├───component-tdd.md\n│   │   │       ├───contract-testing.md\n│   │   │       ├───data-factories.md\n│   │   │       ├───email-auth.md\n│   │   │       ├───error-handling.md\n│   │   │       ├───feature-flags.md\n│   │   │       ├───fixture-architecture.md\n│   │   │       ├───network-first.md\n│   │   │       ├───nfr-criteria.md\n│   │   │       ├───playwright-config.md\n│   │   │       ├───probability-impact.md\n│   │   │       ├───risk-governance.md\n│   │   │       ├───selective-testing.md\n│   │   │       └───selector-resilience.md\n│   │   │       └───...\n│   │   └───workflows\\\n│   │       ├───1-analysis\\\n│   │       ├───2-plan-workflows\\\n│   │       ├───3-solutioning\\\n│   │       ├───4-implementation\\\n│   │       ├───document-project\\\n│   │       ├───techdoc\\\n│   │       ├───testarch\\\n│   │       └───workflow-status\\\n│   ├───cis\\\n│   │   ├───config.yaml\n│   │   ├───readme.md\n│   │   ├───agents\\\n│   │   │   ├───brainstorming-coach.md\n│   │   │   ├───creative-problem-solver.md\n│   │   │   ├───design-thinking-coach.md\n│   │   │   ├───innovation-strategist.md\n│   │   │   ├───README.md\n│   │   │   └───storyteller.md\n│   │   ├───teams\\\n│   │   │   └───creative-squad.yaml\n│   │   └───workflows\\\n│   │       ├───README.md\n│   │       ├───design-thinking\\\n│   │       ├───innovation-strategy\\\n│   │       ├───problem-solving\\\n│   │       └───storytelling\\\n│   ├───core\\\n│   │   ├───config.yaml\n│   │   ├───agents\\\n│   │   │   ├───bmad-master.md\n│   │   │   └───bmad-web-orchestrator.agent.xml\n│   │   ├───tasks\\\n│   │   │   ├───adv-elicit-methods.csv\n│   │   │   ├───adv-elicit.xml\n│   │   │   ├───index-docs.xml\n│   │   │   ├───validate-workflow.xml\n│   │   │   └───workflow.xml\n│   │   ├───tools\\\n│   │   │   └───shard-doc.xml\n│   │   └───workflows\\\n│   │       ├───brainstorming\\\n│   │       └───party-mode\\\n│   └───docs\\\n│       ├───claude-code-instructions.md\n│       └───gemini-instructions.md\n└───docs\\\n    └───stories\\\n        └───.gitkeep\n\nReminder: Do not return an empty response when a tool call is required.\n\nMy setup is complete. I will provide my first command in the next turn."
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "text": "CRITICAL: You are now the BMad 'Business Analyst' agent. Adopt its persona and capabilities as defined in the following configuration.\r\n\r\nRead and internalize the full agent definition, following all instructions and maintaining this persona until explicitly told to switch or exit.\r\n\r\n@../SG-KI-med-KG/bmad/bmm/agents/analyst.md\r\n"
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "thoughtSignature": "Ci0B4/H/XkWA0JCAVHPSmUZMDB3t/nl0COs9mDky3EOGUxB8lPcZdhxeFTEUoegKewHj8f9eKpqS25LRVtbnzPsog69PKxuMYEfdbylsyYufpumug90QlUhgwxwh1eJj4jHhjk2r2T3/gZrRGuWHlh8aih2e8fRfJg5Imq7udHguxFiKdzO9QLauTTQcNttn+lAW7IlhZqxIs/qhq3TlyKeQ8QlpLZAr9fs+JwpuAePx/163X9b/SJMHMEr7BTKMvQrUtchRL70Cg8IptY/ZXhW2WaiDTJblMonn5j/Zl67UDTTkEhIKIRJGcjT95NhUhuTW72OfeTYX2yM28DuluNuko8yuDPl08fmDZ5I5lQmdYtJXJ98BuZFWHBoKPgHj8f9e29DSKZSD8SWM6xOins+SAglGZAEb63ilrPE0lqydDntmG7gazG4w+Ef5CKrxyRJssokforlXDv8T",
+              "text": "Okay, I understand. I will now read the `analyst.md` file to internalize the BMad 'Business Analyst' agent persona and capabilities."
+            },
+            {
+              "functionCall": {
+                "name": "read_file",
+                "args": {
+                  "absolute_path": "C:\\Users\\kjamt\\Documents\\Skole\\IBE 160 - Programmering med KI\\Risk Control Matrix\\SG-KI-med-KG/bmad/bmm/agents/analyst.md"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "functionResponse": {
+                "id": "read_file-1762611195754-25b3ddc1e54ae",
+                "name": "read_file",
+                "response": {
+                  "output": "---\r\nname: \"analyst\"\r\ndescription: \"Business Analyst\"\r\n---\r\n\r\nYou must fully embody this agent's persona and follow all activation instructions exactly as specified. NEVER break character until given an exit command.\r\n\r\n```xml\r\n<agent id=\"bmad/bmm/agents/analyst.md\" name=\"Mary\" title=\"Business Analyst\" icon=\"📊\">\r\n<activation critical=\"MANDATORY\">\r\n  <step n=\"1\">Load persona from this current agent file (already in context)</step>\r\n  <step n=\"2\">🚨 IMMEDIATE ACTION REQUIRED - BEFORE ANY OUTPUT:\r\n      - Load and read {project-root}/bmad/bmm/config.yaml NOW\r\n      - Store ALL fields as session variables: {user_name}, {communication_language}, {output_folder}\r\n      - VERIFY: If config not loaded, STOP and report error to user\r\n      - DO NOT PROCEED to step 3 until config is successfully loaded and variables stored</step>\r\n  <step n=\"3\">Remember: user's name is {user_name}</step>\r\n\r\n  <step n=\"4\">Show greeting using {user_name} from config, communicate in {communication_language}, then display numbered list of\r\n      ALL menu items from menu section</step>\r\n  <step n=\"5\">STOP and WAIT for user input - do NOT execute menu items automatically - accept number or trigger text</step>\r\n  <step n=\"6\">On user input: Number → execute menu item[n] | Text → case-insensitive substring match | Multiple matches → ask user\r\n      to clarify | No match → show \"Not recognized\"</step>\r\n  <step n=\"7\">When executing a menu item: Check menu-handlers section below - extract any attributes from the selected menu item\r\n      (workflow, exec, tmpl, data, action, validate-workflow) and follow the corresponding handler instructions</step>\r\n\r\n  <menu-handlers>\r\n      <handlers>\r\n  <handler type=\"workflow\">\r\n    When menu item has: workflow=\"path/to/workflow.yaml\"\r\n    1. CRITICAL: Always LOAD {project-root}/bmad/core/tasks/workflow.xml\r\n    2. Read the complete file - this is the CORE OS for executing BMAD workflows\r\n    3. Pass the yaml path as 'workflow-config' parameter to those instructions\r\n    4. Execute workflow.xml instructions precisely following all steps\r\n    5. Save outputs after completing EACH workflow step (never batch multiple steps together)\r\n    6. If workflow.yaml path is \"todo\", inform user the workflow hasn't been implemented yet\r\n  </handler>\r\n    </handlers>\r\n  </menu-handlers>\r\n\r\n  <rules>\r\n    - ALWAYS communicate in {communication_language} UNLESS contradicted by communication_style\r\n    - Stay in character until exit selected\r\n    - Menu triggers use asterisk (*) - NOT markdown, display exactly as shown\r\n    - Number all lists, use letters for sub-options\r\n    - Load files ONLY when executing menu items or a workflow or command requires it. EXCEPTION: Config file MUST be loaded at startup step 2\r\n    - CRITICAL: Written File Output in workflows will be +2sd your communication style and use professional {communication_language}.\r\n  </rules>\r\n</activation>\r\n  <persona>\r\n    <role>Strategic Business Analyst + Requirements Expert</role>\r\n    <identity>Senior analyst with deep expertise in market research, competitive analysis, and requirements elicitation. Specializes in translating vague business needs into actionable technical specifications. Background in data analysis, strategic consulting, and product strategy.</identity>\r\n    <communication_style>Analytical and systematic in approach - presents findings with clear data support. Asks probing questions to uncover hidden requirements and assumptions. Structures information hierarchically with executive summaries and detailed breakdowns. Uses precise, unambiguous language when documenting requirements. Facilitates discussions objectively, ensuring all stakeholder voices are heard.</communication_style>\r\n    <principles>I believe that every business challenge has underlying root causes waiting to be discovered through systematic investigation and data-driven analysis. My approach centers on grounding all findings in verifiable evidence while maintaining awareness of the broader strategic context and competitive landscape. I operate as an iterative thinking partner who explores wide solution spaces before converging on recommendations, ensuring that every requirement is articulated with absolute precision and every output delivers clear, actionable next steps.</principles>\r\n  </persona>\r\n  <menu>\r\n    <item cmd=\"*help\">Show numbered menu</item>\r\n    <item cmd=\"*workflow-init\" workflow=\"{project-root}/bmad/bmm/workflows/workflow-status/init/workflow.yaml\">Start a new sequenced workflow path</item>\r\n    <item cmd=\"*workflow-status\" workflow=\"{project-root}/bmad/bmm/workflows/workflow-status/workflow.yaml\">Check workflow status and get recommendations (START HERE!)</item>\r\n    <item cmd=\"*brainstorm-project\" workflow=\"{project-root}/bmad/bmm/workflows/1-analysis/brainstorm-project/workflow.yaml\">Guide me through Brainstorming</item>\r\n    <item cmd=\"*product-brief\" workflow=\"{project-root}/bmad/bmm/workflows/1-analysis/product-brief/workflow.yaml\">Produce Project Brief</item>\r\n    <item cmd=\"*document-project\" workflow=\"{project-root}/bmad/bmm/workflows/document-project/workflow.yaml\">Generate comprehensive documentation of an existing Project</item>\r\n    <item cmd=\"*research\" workflow=\"{project-root}/bmad/bmm/workflows/1-analysis/research/workflow.yaml\">Guide me through Research</item>\r\n    <item cmd=\"*exit\">Exit with confirmation</item>\r\n  </menu>\r\n</agent>\r\n```\r\n"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "thoughtSignature": "CiIB4/H/Xn/bshCmFb3jYh+cq8TP9B4kxXovZxL1wF+xsa1ICmgB4/H/Xr0DB1YpnPB/0cWGARAKzQ3srtvMScZcU+9AR14tvWad2tvo4lLhVly6deoC/PAx0KCElFxT7uVFv+11kjM2EObvXm5jsmENoTi5GnDbTAHZSZCGNQ33DPCypOUo0rkKakrIAgphAePx/15kbOwYtJHrc2DuS+gMW1JWeGi4m3egXJOAXmD5RuMXLuiWFJgFRJqdZfe4yCY1Vwa8cH/dnsftYc7LTHoCUTMWWQUd5tLjS3ETX/eu1H7nki6SUvJzdSa+1PViBAqYAQHj8f9eV7GBNdHq85WA2aFW3Hrcb0fTAXIrJUwLVc2t4s9VqRC0h6QAcmSpxrcS8crvKtOzWoEfSFOPerfcc0Ljqn8kFoh0faWGG76eXgKyt2mwv5+vE3UYWC3JrPkdnCplZXrovShTUESyth72w9+CXAOhc5yCrsYpgSsfiSrob7MkZLMQIXavMd4Eg/xD8fjJ4fso7n7SCrABAePx/15tZ86TftBinxBxCK4d3eL2eFC0F5zR4235wY5XtBp5o2tU7c20mQffBa+gxr7A1E0Zf+uAOh+AvaHKm+KMQibHA8CImPBoNcdjOHo3NCOLt8cVb2tfkaKDOLhddR3XfWrf9F1QHz8dI0HFODwJl9w6uAGULHiAddawcuHqMQEzITYBhJN2D397kgSE2KKYt9m1V6kvT+WKBIEPrYqhl4F2SaQZXO/pjYbWHbIKcwHj8f9eWdHLw3xkm8xtgIPkfQQ7xvzIuBP4dX37GRfNO8yPx8iAOUGmU0KJHlIXCvMJTeCfdQ+0HmnT+v2coRTKRyOdJyNOZrZSoOPzjwbZXWlOqfDdFsWS6pKcMzridmdPKO4f8EG0tuejniJcn0FCNzo=",
+              "text": "`analyst.md` loaded. Next, I'll load `config.yaml`, extract `{user_name}`, `{communication_language}`, and `{output_folder}` as session variables, and verify successful loading before proceeding."
+            },
+            {
+              "functionCall": {
+                "name": "read_file",
+                "args": {
+                  "absolute_path": "C:\\Users\\kjamt\\Documents\\Skole\\IBE 160 - Programmering med KI\\Risk Control Matrix\\SG-KI-med-KG/bmad/bmm/config.yaml"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "functionResponse": {
+                "id": "read_file-1762611197256-e01eef6b54e47",
+                "name": "read_file",
+                "response": {
+                  "output": "# BMM Module Configuration\r\n# Generated by BMAD installer\r\n# Version: 6.0.0-alpha.6\r\n# Date: 2025-11-06T11:32:40.512Z\r\n\r\nproject_name: ibe160\r\ninclude_game_planning: false\r\nuser_skill_level: beginner\r\ntech_docs: '{project-root}/docs'\r\ndev_story_location: '{project-root}/docs/stories'\r\ninstall_user_docs: true\r\ntea_use_mcp_enhancements: true\r\n\r\n# Core Configuration Values\r\nuser_name: ' BIP'\r\ncommunication_language: English\r\ndocument_output_language: English\r\noutput_folder: '{project-root}/docs'\r\n"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "model",
+          "parts": [
+            {
+              "thoughtSignature": "CjQB4/H/XvjOwUOFGh66+wudoQMITowHNX0Y0inhlWcbwLsX8sBtokBhfzwBqW1/4vaLgjB3Cl8B4/H/XkpTzoMIe8rUu1rzW+OX87hZNlyybdaz0Xs59aJTLXQ3h46pr6OSyu1HNBP6wK1ca1sYEkK5BGbTTiaw2X1sgB3OAGGyuee41f1KWhYeTTWmNtgzbAGRE86TogpnAePx/16vPrc0jBQxoSMhFNgth/o39jGCePkO3MIGIJ29u5Iu7H/b+kX2iDOcSY6gy7t31dE8pxdlSMDiR1JT6dLPd4N4pWM3UjVZR3OiUcCdiFoUNKVarxu3jBuiX7AOac9BLLIB5QqVAQHj8f9eCE1nhbwUC9RkZarW6wvUbfZ/xUfnJA7BZz7Ms45VnC+xpzpRnjpa/TQ8xluxzzQYaWOXsChfl5SNJKO4aaHNeWWHZSeZKymp/mDdgir/vYsFpQeIYLZzteLHZj3U5EWHj8zs90SqKrAzRNMw+Gc4Op8PMp/4xxwS3y1U3mBwMSHniTCqmMkLEq9wVFiBg4tCCnUB4/H/XsjH/7z90qcE9lAliFBQPsaz0HplvY+U+YIdapcaq3Q/jnOLfq9y5/b4BypmROmfVE1uUg+jFOZGzELfo3ynXC/1taEg3x5/29WBlrfta/vLyN2/fC+nwAW96QcY554lp/NonarVF+nEGNEPrMGMeis=",
+              "text": "`config.yaml` loaded. I'll now save `user_name` (' BIP'), `communication_language` (English), and `output_folder` ('{project-root}/docs') as session variables using `save_memory`."
+            },
+            {
+              "functionCall": {
+                "name": "save_memory",
+                "args": {
+                  "fact": "user_name is BIP"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "role": "user",
+          "parts": [
+            {
+              "functionResponse": {
+                "id": "save_memory-1762611216628-71402c59bb376",
+                "name": "save_memory",
+                "response": {
+                  "output": "{\"success\":true,\"message\":\"Okay, I've remembered that: \\\"user_name is BIP\\\"\"}"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    },
+    "response": {
+      "session.id": "0c7f5078-83cb-4813-9415-81da3c8ecff0",
+      "installation.id": "00b2157a-94d7-45f9-b3ca-16d15dbb65bd",
+      "user.email": "kjamtli@hotmail.com",
+      "event.name": "gemini_cli.api_response",
+      "event.timestamp": "2025-11-08T14:13:36.638Z",
+      "model": "gemini-2.5-flash",
+      "duration_ms": 1088,
+      "input_token_count": 10478,
+      "output_token_count": 60,
+      "cached_content_token_count": 9904,
+      "thoughts_token_count": 100,
+      "tool_token_count": 0,
+      "total_token_count": 10638,
+      "prompt_id": "0c7f5078-83cb-4813-9415-81da3c8ecff0########0",
+      "auth_type": "oauth-personal",
+      "status_code": 200,
+      "response_text": [
+        {
+          "candidates": [
+            {
+              "content": {
+                "role": "model",
+                "parts": [
+                  {
+                    "thoughtSignature": "CjQB4/H/XvjOwUOFGh66+wudoQMITowHNX0Y0inhlWcbwLsX8sBtokBhfzwBqW1/4vaLgjB3Cl8B4/H/XkpTzoMIe8rUu1rzW+OX87hZNlyybdaz0Xs59aJTLXQ3h46pr6OSyu1HNBP6wK1ca1sYEkK5BGbTTiaw2X1sgB3OAGGyuee41f1KWhYeTTWmNtgzbAGRE86TogpnAePx/16vPrc0jBQxoSMhFNgth/o39jGCePkO3MIGIJ29u5Iu7H/b+kX2iDOcSY6gy7t31dE8pxdlSMDiR1JT6dLPd4N4pWM3UjVZR3OiUcCdiFoUNKVarxu3jBuiX7AOac9BLLIB5QqVAQHj8f9eCE1nhbwUC9RkZarW6wvUbfZ/xUfnJA7BZz7Ms45VnC+xpzpRnjpa/TQ8xluxzzQYaWOXsChfl5SNJKO4aaHNeWWHZSeZKymp/mDdgir/vYsFpQeIYLZzteLHZj3U5EWHj8zs90SqKrAzRNMw+Gc4Op8PMp/4xxwS3y1U3mBwMSHniTCqmMkLEq9wVFiBg4tCCnUB4/H/XsjH/7z90qcE9lAliFBQPsaz0HplvY+U+YIdapcaq3Q/jnOLfq9y5/b4BypmROmfVE1uUg+jFOZGzELfo3ynXC/1taEg3x5/29WBlrfta/vLyN2/fC+nwAW96QcY554lp/NonarVF+nEGNEPrMGMeis=",
+                    "text": "`config.yaml` loaded. I'll now save `user_name` (' BIP'), `communication_language` (English), and `output_folder` ('{project-root}/docs') as session variables using `save_"
+                  }
+                ]
+              }
+            }
+          ],
+          "usageMetadata": {
+            "trafficType": "ON_DEMAND"
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "67e4fc24be38567e"
+        },
+        {
+          "candidates": [
+            {
+              "content": {
+                "role": "model",
+                "parts": [
+                  {
+                    "text": "memory`."
+                  }
+                ]
+              }
+            }
+          ],
+          "usageMetadata": {
+            "trafficType": "ON_DEMAND"
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "67e4fc24be38567e"
+        },
+        {
+          "candidates": [
+            {
+              "content": {
+                "role": "model",
+                "parts": [
+                  {
+                    "functionCall": {
+                      "name": "save_memory",
+                      "args": {
+                        "fact": "user_name is BIP"
+                      }
+                    }
+                  }
+                ]
+              },
+              "finishReason": "STOP"
+            }
+          ],
+          "usageMetadata": {
+            "promptTokenCount": 10478,
+            "candidatesTokenCount": 60,
+            "totalTokenCount": 10638,
+            "cachedContentTokenCount": 9904,
+            "trafficType": "ON_DEMAND",
+            "promptTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 10478
+              }
+            ],
+            "cacheTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 9904
+              }
+            ],
+            "candidatesTokensDetails": [
+              {
+                "modality": "TEXT",
+                "tokenCount": 60
+              }
+            ],
+            "thoughtsTokenCount": 100
+          },
+          "modelVersion": "gemini-2.5-flash",
+          "responseId": "67e4fc24be38567e"
+        }
+      ],
+      "http.status_code": 200
+    },
+    "error": {
+      "session.id": "0c7f5078-83cb-4813-9415-81da3c8ecff0",
+      "installation.id": "00b2157a-94d7-45f9-b3ca-16d15dbb65bd",
+      "user.email": "kjamtli@hotmail.com",
+      "event.name": "gemini_cli.api_error",
+      "event.timestamp": "2025-11-08T14:14:31.298Z",
+      "error.message": "[{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.\",\n    \"errors\": [\n      {\n        \"message\": \"Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.\",\n        \"domain\": \"global\",\n        \"reason\": \"rateLimitExceeded\"\n      }\n    ],\n    \"status\": \"RESOURCE_EXHAUSTED\"\n  }\n}\n]",
+      "model_name": "gemini-2.5-flash",
+      "duration": 14371,
+      "model": "gemini-2.5-flash",
+      "error": "[{\n  \"error\": {\n    \"code\": 429,\n    \"message\": \"Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.\",\n    \"errors\": [\n      {\n        \"message\": \"Resource exhausted. Please try again later. Please refer to https://cloud.google.com/vertex-ai/generative-ai/docs/error-code-429 for more details.\",\n        \"domain\": \"global\",\n        \"reason\": \"rateLimitExceeded\"\n      }\n    ],\n    \"status\": \"RESOURCE_EXHAUSTED\"\n  }\n}\n]",
+      "status_code": 429,
+      "duration_ms": 14371,
+      "prompt_id": "0c7f5078-83cb-4813-9415-81da3c8ecff0########0",
+      "auth_type": "oauth-personal",
+      "error.type": "Error",
+      "http.status_code": 429
+    }
+  }
+]
