@@ -210,7 +210,7 @@ The purpose of the Risk Control Matrix is to provide a centralized, dynamic plat
 - **API Documentation**: FastAPI automatic OpenAPI/Swagger documentation
 - **Testing**: Pytest for unit and integration tests
 - **Build Tool**: UV for fast Python package management
-- **Deployment**: Vercel (FastAPI supports Vercel deployment)
+- **Deployment**: **Railway**. This provides a persistent server environment, avoiding the timeout limitations of serverless functions (like Vercel's) which is critical for long-running AI tasks.
 
 **API Architecture**: RESTful API design with versioning (/api/v1/) and clear resource-oriented endpoints. Supabase Realtime will be used for live updates to create a collaborative experience, which is more efficient than managing a custom WebSocket solution.
 
@@ -242,11 +242,12 @@ The purpose of the Risk Control Matrix is to provide a centralized, dynamic plat
 
 
 **Implementation**:
-- Model: OpenAI GPT-4
-- **Prompt Design**: A "Chain of Thought" (CoT) prompting strategy will be used. Each prompt will be engineered to include role-based instructions (e.g., "You are a compliance expert..."), the relevant context (e.g., the business process), and a clear definition of the desired output format (e.g., JSON) to ensure consistent and auditable AI responses.
+- **Orchestration Library**: **Pydantic-AI**. This library is chosen for its strong focus on producing reliable, structured JSON output from LLMs, which is a critical project requirement. It simplifies prompt engineering, validation, and provider-switching.
+- **Model**: OpenAI GPT-4 (and others as needed, supported by Pydantic-AI).
+- **Prompt Design**: A "Chain of Thought" (CoT) prompting strategy will be used. Pydantic-AI will manage the formatting of prompts and Pydantic model schemas to ensure consistent and auditable AI responses.
 - **Rate Limiting**: A server-side rate limit will be implemented for AI-enabled user roles (e.g., Admin, Business Process Owner) using a token bucket algorithm. These specific users will be allocated a defined number of AI requests per minute to prevent abuse, manage costs, and ensure fair usage of AI resources.
-- **Fallback**: Rule-based AI with standard error messages if API fails
-- **Cost Management**: Budget monitoring and usage alerts
+- **Fallback**: Rule-based AI with standard error messages if API fails.
+- **Cost Management**: Budget monitoring and usage alerts.
 
 **API Integration Architecture**:
 - Separate service layer for AI calls
@@ -438,7 +439,7 @@ This timeline follows the 4-phase model of the BMAD-methodology, where phases 1 
 - Cross-browser testing
 
 **Day 6: Deployment Preparation**
-- Production environment setup (Vercel)
+- Production environment setup (Vercel for frontend, Railway for backend)
 - Environment variables and secrets configuration
 - Database migration to production
 - SSL certificate setup
@@ -519,8 +520,8 @@ This timeline follows the 4-phase model of the BMAD-methodology, where phases 1 
 - **Database Performance**: Table could grow very large
   - *Mitigation*: Implement pagination, archival strategy, and database indexing from the start
 
-- **Vercel Deployment for Python Backend**: Vercel's serverless environment has limitations (e.g., execution time) that may affect complex FastAPI applications or long-running AI tasks.
-  - *Mitigation*: Evaluate Vercel's suitability during development. Have alternative hosting platforms (e.g., Render, Railway) ready as a backup plan to ensure performance and scalability.
+- **Backend Deployment Environment**: Serverless environments like Vercel were initially considered but found to be a risk due to execution timeouts affecting AI tasks.
+  - *Mitigation*: The project has adopted **Railway** for backend deployment. Its persistent server architecture completely mitigates the timeout risk.
 
 **Project Risks**:
 - **Scope Creep**: Feature-rich proposal might exceed 4-week timeline

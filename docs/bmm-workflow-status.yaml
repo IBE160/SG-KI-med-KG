@@ -33,7 +33,7 @@ workflow_status:
   brainstorm-project:
     - "docs/brainstorming-session 1-results-Saturday, November 8, 2025.md"
     - "docs/brainstorming-session 2-results-Saturday, November 8, 2025.md"
-  research: required
+  research: "docs/research-technical-2025-11-16.md"
   product-brief: required
 
   # Phase 1: Planning
