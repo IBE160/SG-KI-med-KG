@@ -33,7 +33,11 @@ workflow_status:
   brainstorm-project:
     - "docs/brainstorming-session 1-results-Saturday, November 8, 2025.md"
     - "docs/brainstorming-session 2-results-Saturday, November 8, 2025.md"
-  research: "docs/research-technical-2025-11-16.md"
+  research:
+    - "docs/research-2025-11-08 buy-vs-build-analysis.md"
+    - "docs/research-technical-2025-11-16 LLM Orchestration.md"
+    - "docs/research-technical-2025-11-17 Backend Deployment Strategy.md"
+    - "docs/research-technical-2025-11-17-tech-stack-analysis.md"
   product-brief: required
 
   # Phase 1: Planning
