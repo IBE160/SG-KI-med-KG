@@ -38,7 +38,7 @@ workflow_status:
     - "docs/research-technical-2025-11-16 LLM Orchestration.md"
     - "docs/research-technical-2025-11-17 Backend Deployment Strategy.md"
     - "docs/research-technical-2025-11-17-tech-stack-analysis.md"
-  product-brief: required
+  product-brief: "docs/product-brief-ibe160-2025-11-17.md"
 
   # Phase 1: Planning
   prd: required
