@@ -41,7 +41,7 @@ workflow_status:
   product-brief: "docs/product-brief-ibe160-2025-11-17.md"
 
   # Phase 1: Planning
-  prd: required
+  prd: "docs/PRD.md"
   validate-prd: recommended
   create-design: recommended
 
