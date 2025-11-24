@@ -288,12 +288,12 @@ Requirements must be decomposed into epics and bite-sized stories (200k context 
 
 ## References
 
-- Product Brief: C:\Users\kjamt\Documents\Skole\IBE 160 - Programmering med KI\Risk Control Matrix\SG-KI-med-KG\docs\product-brief-ibe160-2025-11-17.md
+- Product Brief: {project-root}/docs/product-brief-ibe160-2025-11-17.md
 - Research:
-  - C:\Users\kjamt\Documents\Skole\IBE 160 - Programmering med KI\Risk Control Matrix\SG-KI-med-KG\docs\research-technical-2025-11-17-tech-stack-analysis.md
-  - C:\Users\kjamt\Documents\Skole\IBE 160 - Programmering med KI\Risk Control Matrix\SG-KI-med-KG\docs\research-technical-2025-11-17 Backend Deployment Strategy.md
-  - C:\Users\kjamt\Documents\Skole\IBE 160 - Programmering med KI\Risk Control Matrix\SG-KI-med-KG\docs\research-technical-2025-11-16 LLM Orchestration.md
-  - C:\Users\kjamt\Documents\Skole\IBE 160 - Programmering med KI\Risk Control Matrix\SG-KI-med-KG\docs\research-2025-11-08 buy-vs-build-analysis.md
+  - {project-root}/docs/research-technical-2025-11-17-tech-stack-analysis.md
+  - {project-root}/docs/research-technical-2025-11-17 Backend Deployment Strategy.md
+  - {project-root}/docs/research-technical-2025-11-16 LLM Orchestration.md
+  - {project-root}/docs/research-2025-11-08 buy-vs-build-analysis.md
 
 ---
 

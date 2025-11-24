@@ -46,6 +46,7 @@ workflow_status:
   create-design: recommended
 
   # Phase 2: Solutioning
+  create-epics-and-stories: "docs/epics.md"
   create-architecture: required
   create-security-architecture: required
   create-devops-strategy: required
