@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design Direction Showcase</title>
+    <style>
+        :root {
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --color-primary: #28a745;
+            --color-primary-hover: #218838;
+            --color-text: #1a1a1a;
+            --color-text-muted: #555;
+            --color-bg: #f8f9fa;
+            --color-surface: #ffffff;
+            --color-border: #e9ecef;
+            --color-success: #28a745;
+            --color-warning: #ffc107;
+            --color-error: #dc3545;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        body {
+            font-family: var(--font-sans);
+            background-color: #e9ecef;
+            color: var(--color-text);
+            margin: 0;
+        }
+        .main-header {
+            background-color: #343a40;
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .main-header h1 { font-size: 3rem; font-weight: 700; }
+        .main-header p { font-size: 1.2rem; color: #ced4da; max-width: 700px; margin: 0.5rem auto 0; }
+        
+        .direction {
+            margin: 2rem;
+            padding: 2rem;
+            background-color: var(--color-bg);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+        }
+        .direction-header {
+            margin-bottom: 2rem;
+            text-align: center;
+            border-bottom: 1px solid var(--color-border);
+            padding-bottom: 1.5rem;
+        }
+        .direction-header h2 { font-size: 2rem; font-weight: 600; color: var(--color-primary); }
+        .direction-header .philosophy { font-style: italic; color: var(--color-text-muted); margin-top: 0.5rem; }
+        .direction-header .best-for { margin-top: 0.75rem; font-size: 0.9rem; }
+        .direction-header .best-for span { background-color: #e9ecef; padding: 4px 8px; border-radius: 4px; font-weight: 500;}
+
+        .mockup-container {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        .mockup {
+            border: 1px solid var(--color-border);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            background-color: var(--color-surface);
+        }
+        .mockup-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            padding: 1rem;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid var(--color-border);
+        }
+
+        /* Generic component styles */
+        .button { padding: 0.6rem 1.2rem; border: none; border-radius: 6px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background-color: var(--color-primary); color: white; }
+        .btn-primary:hover { background-color: var(--color-primary-hover); }
+        .btn-secondary { background-color: var(--color-surface); color: var(--color-text); border: 1px solid var(--color-border); }
+        .tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 500; }
+        .tag-blue { background-color: #e7f5ff; color: #1971c2; }
+        .tag-red { background-color: #fff5f5; color: #c92a2a; }
+        .tag-green { background-color: #ebfbee; color: #2f9e44; }
+
+        /* --- Direction 1: Focused Dashboard --- */
+        .dir-1 .app-layout { display: flex; height: 700px; }
+        .dir-1 .sidebar { width: 240px; background-color: #343a40; color: white; padding: 1rem; display: flex; flex-direction: column; }
+        .dir-1 .sidebar .logo { font-size: 1.5rem; font-weight: 700; text-align: center; padding: 1rem 0; color: var(--color-primary); }
+        .dir-1 .sidebar nav a { display: block; color: #ced4da; text-decoration: none; padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 0.5rem; }
+        .dir-1 .sidebar nav a:hover { background-color: #495057; }
+        .dir-1 .sidebar nav a.active { background-color: var(--color-primary); color: white; }
+        .dir-1 .main-content { flex-grow: 1; background-color: var(--color-bg); padding: 2rem; overflow-y: auto;}
+        .dir-1 .main-content h3 { font-size: 1.5rem; margin-bottom: 1.5rem; }
+        .dir-1 .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;}
+        .dir-1 .stat-card { background-color: var(--color-surface); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow); }
+        .dir-1 .stat-card .label { color: var(--color-text-muted); }
+        .dir-1 .stat-card .value { font-size: 2.5rem; font-weight: 700; }
+        .dir-1 .list-table { width: 100%; border-collapse: collapse; background-color: var(--color-surface); border-radius: var(--border-radius); overflow:hidden; box-shadow: var(--shadow);}
+        .dir-1 .list-table th, .dir-1 .list-table td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--color-border); }
+        .dir-1 .list-table th { background-color: #f8f9fa; }
+        
+        .dir-1 .review-layout { display: flex; height: 600px; }
+        .dir-1 .review-list { width: 300px; border-right: 1px solid var(--color-border); padding: 1rem; overflow-y: auto; }
+        .dir-1 .review-item { padding: 1rem; border-radius: 6px; cursor: pointer; margin-bottom: 0.5rem; }
+        .dir-1 .review-item:hover { background-color: #e9ecef; }
+        .dir-1 .review-item.active { background-color: #dbebe4; border-left: 3px solid var(--color-primary); }
+        .dir-1 .review-item .title { font-weight: 600; }
+        .dir-1 .review-item .source { font-size: 0.8rem; color: var(--color-text-muted); }
+        .dir-1 .review-detail { flex-grow: 1; padding: 2rem; overflow-y: auto; }
+        .dir-1 .review-detail h3 { margin-bottom: 1rem; }
+        .dir-1 .review-actions { margin-top: 1.5rem; display: flex; gap: 1rem; }
+
+        /* --- Direction 2: Spacious Explorer --- */
+        .dir-2 .app-layout { display: flex; flex-direction: column; min-height: 700px; }
+        .dir-2 .top-nav { display: flex; align-items: center; padding: 0 2rem; height: 60px; background-color: var(--color-surface); border-bottom: 1px solid var(--color-border); }
+        .dir-2 .top-nav .logo { font-size: 1.5rem; font-weight: 700; color: var(--color-primary); margin-right: 2rem; }
+        .dir-2 .top-nav nav { display: flex; gap: 1rem; }
+        .dir-2 .top-nav nav a { color: var(--color-text-muted); text-decoration: none; font-weight: 500; }
+        .dir-2 .top-nav nav a.active { color: var(--color-primary); }
+        .dir-2 .main-content { padding: 3rem; background-color: var(--color-bg); flex-grow: 1;}
+        .dir-2 .main-content h3 { font-size: 2rem; font-weight: 600; margin-bottom: 2rem; }
+        .dir-2 .content-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; }
+        .dir-2 .main-panel, .dir-2 .side-panel { display: flex; flex-direction: column; gap: 2rem; }
+        .dir-2 .info-card { background-color: var(--color-surface); padding: 2rem; border-radius: 12px; box-shadow: var(--shadow); }
+        .dir-2 .info-card h4 { font-size: 1.2rem; margin-bottom: 1rem; }
+        
+        .dir-2 .review-layout { display: flex; flex-direction: column; height: 600px; }
+        .dir-2 .review-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid var(--color-border); }
+        .dir-2 .review-header .tabs { display: flex; gap: 1rem; }
+        .dir-2 .review-header .tabs span { padding: 0.5rem 1rem; border-radius: 6px; cursor: pointer; }
+        .dir-2 .review-header .tabs span.active { background-color: #dbebe4; color: var(--color-primary); font-weight: 600; }
+        .dir-2 .review-content { padding: 2rem; }
+        .dir-2 .review-form .form-group { margin-bottom: 1.5rem; }
+        .dir-2 .review-form label { display: block; font-weight: 500; margin-bottom: 0.5rem; }
+        .dir-2 .review-form input { width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid var(--color-border); }
+        .dir-2 .review-actions { margin-top: 1.5rem; display: flex; gap: 1rem; }
+
+        /* --- Direction 3: Action-Oriented Hub --- */
+        .dir-3 .app-layout { padding: 2rem; }
+        .dir-3 .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; }
+        .dir-3 .header h3 { font-size: 2rem; font-weight: 600; }
+        .dir-3 .card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; }
+        .dir-3 .action-card { background-color: var(--color-surface); padding: 1.5rem; border-radius: var(--border-radius); box-shadow: var(--shadow); display: flex; flex-direction: column; }
+        .dir-3 .action-card .card-title { font-size: 1.2rem; font-weight: 600; }
+        .dir-3 .action-card .card-desc { color: var(--color-text-muted); margin-top: 0.25rem; flex-grow: 1; }
+        .dir-3 .action-card .card-value { font-size: 2rem; font-weight: 700; margin: 1rem 0; }
+        
+        .dir-3 .review-layout { padding: 1rem; }
+        .dir-3 .review-item { background: var(--color-surface); border-radius: var(--border-radius); box-shadow: var(--shadow); padding: 1.5rem; margin-bottom: 1.5rem; }
+        .dir-3 .review-item-header { display: flex; justify-content: space-between; align-items: center; }
+        .dir-3 .review-item-header h4 { font-size: 1.2rem; font-weight: 600; }
+        .dir-3 .review-item-content { padding: 1rem 0; }
+        .dir-3 .review-actions { display: flex; gap: 1rem; justify-content: flex-end; }
+
+    </style>
+</head>
+<body>
+
+    <div class="main-header">
+        <h1>Design Direction Showcase</h1>
+        <p>Here are three distinct design directions for the application. Each mockup uses the "Clarity Green" theme but applies a different philosophy for layout and information hierarchy. Review each one to decide which "feel" is right for your project.</p>
+    </div>
+
+    <!-- 
+    ================================================
+    DIRECTION 1: THE FOCUSED DASHBOARD
+    ================================================ 
+    -->
+    <div class="direction dir-1">
+        <div class="direction-header">
+            <h2>Direction 1: The Focused Dashboard</h2>
+            <p class="philosophy">"A professional, data-dense interface for power users who need everything in one place."</p>
+            <p class="best-for">
+                <span>Best for:</span> Users who value information density and traditional, predictable layouts. Inspired by professional tools like Auditboard.
+            </p>
+        </div>
+
+        <div class="mockup-container">
+            <div class="mockup">
+                <div class="mockup-title">Mockup: Main Dashboard</div>
+                <div class="app-layout">
+                    <div class="sidebar">
+                        <div class="logo">ibe160</div>
+                        <nav>
+                            <a href="#" class="active">Dashboard</a>
+                            <a href="#">Risks</a>
+                            <a href="#">Controls</a>
+                            <a href="#">Regulations</a>
+                            <a href="#">AI Review</a>
+                            <a href="#">Settings</a>
+                        </nav>
+                    </div>
+                    <div class="main-content">
+                        <h3>Executive Dashboard</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="label">Open Risks</div>
+                                <div class="value">42</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="label">Controls Pending Review</div>
+                                <div class="value">16</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="label">Compliance Score</div>
+                                <div class="value">87%</div>
+                            </div>
+                        </div>
+
+                        <h3>High Priority Risks</h3>
+                        <table class="list-table">
+                            <thead><tr><th>ID</th><th>Risk</th><th>Status</th><th>Owner</th></tr></thead>
+                            <tbody>
+                                <tr><td>R-012</td><td>Unauthorized access to PII</td><td><span class="tag tag-red">High</span></td><td>B. Jones</td></tr>
+                                <tr><td>R-025</td><td>Data loss due to backup failure</td><td><span class="tag tag-red">High</span></td><td>S. Miller</td></tr>
+                                <tr><td>R-019</td><td>GDPR compliance gap in marketing</td><td><span class="tag tag-blue">Medium</span></td><td>A. Chen</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="mockup">
+                <div class="mockup-title">Mockup: AI Review Mode</div>
+                <div class="review-layout">
+                    <div class="review-list">
+                        <div class="review-item active">
+                            <div class="title">Risk: Unauthorized Access</div>
+                            <div class="source">Source: GDPR Art. 32</div>
+                        </div>
+                        <div class="review-item">
+                            <div class="title">Control: Access Policy</div>
+                            <div class="source">Source: GDPR Art. 32</div>
+                        </div>
+                        <div class="review-item">
+                            <div class="title">Control: Data Encryption</div>
+                            <div class="source">Source: GDPR Art. 32</div>
+                        </div>
+                    </div>
+                    <div class="review-detail">
+                        <h3>Reviewing Suggestion</h3>
+                        <p><b>Risk Title:</b> Unauthorized Access to PII</p>
+                        <p><b>Description:</b> Potential for unauthorized individuals to access personal identifiable information...</p>
+                        <p><b>Suggested Controls:</b> C-042, C-043</p>
+                        <p><b>Source:</b> <a href="#">GDPR Article 32: Security of processing</a></p>
+                        <div class="review-actions">
+                            <button class="button btn-primary">Accept</button>
+                            <button class="button btn-secondary">Edit</button>
+                            <button class="button btn-secondary">Dismiss</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 
+    ================================================
+    DIRECTION 2: THE SPACIOUS EXPLORER
+    ================================================ 
+    -->
+    <div class="direction dir-2">
+        <div class="direction-header">
+            <h2>Direction 2: The Spacious Explorer</h2>
+            <p class="philosophy">"A clean, modern, and minimalist interface that prioritizes clarity and calmness."</p>
+            <p class="best-for">
+                <span>Best for:</span> Users who appreciate a calm, uncluttered view and a guided experience. Inspired by Apple's design philosophy.
+            </p>
+        </div>
+
+        <div class="mockup-container">
+            <div class="mockup">
+                <div class="mockup-title">Mockup: Main Dashboard</div>
+                <div class="app-layout">
+                    <div class="top-nav">
+                        <div class="logo">ibe160</div>
+                        <nav>
+                            <a href="#" class="active">Dashboard</a>
+                            <a href="#">Compliance</a>
+                            <a href="#">AI Studio</a>
+                        </nav>
+                    </div>
+                    <div class="main-content">
+                        <h3>Welcome Back, BIP</h3>
+                        <div class="content-grid">
+                            <div class="main-panel">
+                                <div class="info-card">
+                                    <h4>Pending Reviews</h4>
+                                    <p>You have <b>16</b> controls assigned to you that need final approval.</p>
+                                    <button class="button btn-primary" style="margin-top: 1rem;">Review Now</button>
+                                </div>
+                                <div class="info-card">
+                                    <h4>Active Risks</h4>
+                                     <p>A summary of the current risk landscape.</p>
+                                     <!-- Chart would go here -->
+                                </div>
+                            </div>
+                            <div class="side-panel">
+                                <div class="info-card">
+                                    <h4>Compliance Score</h4>
+                                    <p style="font-size: 3rem; font-weight: 700; text-align: center; color: var(--color-primary);">87%</p>
+                                </div>
+                                <div class="info-card">
+                                    <h4>Recent Activity</h4>
+                                    <p style="font-size: 0.9rem; color: var(--color-text-muted);">C-041 was approved by A. Chen.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mockup">
+                <div class="mockup-title">Mockup: AI Review Mode</div>
+                <div class="review-layout">
+                    <div class="review-header">
+                         <div class="tabs">
+                            <span class="active">Reviewing (1)</span>
+                            <span>Accepted (0)</span>
+                            <span>Dismissed (0)</span>
+                        </div>
+                        <button class="button btn-secondary">Accept All</button>
+                    </div>
+                    <div class="review-content">
+                        <h4>Suggested Risk: Unauthorized Access</h4>
+                        <div class="review-form">
+                            <div class="form-group">
+                                <label>Description</label>
+                                <input type="text" value="Potential for unauthorized individuals to access PII...">
+                            </div>
+                            <div class="form-group">
+                                <label>Source Reference</label>
+                                <p><a href="#">GDPR Article 32: Security of processing</a></p>
+                            </div>
+                            <div class="review-actions">
+                                <button class="button btn-primary">Accept</button>
+                                <button class="button btn-secondary">Dismiss</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 
+    ================================================
+    DIRECTION 3: THE ACTION-ORIENTED HUB
+    ================================================ 
+    -->
+    <div class="direction dir-3">
+        <div class="direction-header">
+            <h2>Direction 3: The Action-Oriented Hub</h2>
+            <p class="philosophy">"A modular, card-based interface that presents information as clear, actionable tasks."</p>
+            <p class="best-for">
+                <span>Best for:</span> Users who want to quickly see what needs to be done and take immediate action.
+            </p>
+        </div>
+
+        <div class="mockup-container">
+            <div class="mockup">
+                <div class="mockup-title">Mockup: Main Dashboard</div>
+                <div class="app-layout">
+                    <div class="header">
+                        <h3>Your Hub</h3>
+                        <button class="button btn-primary">Analyze New Document</button>
+                    </div>
+                    <div class="card-grid">
+                        <div class="action-card">
+                            <span class="card-title">Pending Reviews</span>
+                            <p class="card-desc">Items waiting for your final approval.</p>
+                            <p class="card-value">16</p>
+                            <button class="button btn-secondary">View All</button>
+                        </div>
+                        <div class="action-card">
+                            <span class="card-title">High-Priority Risks</span>
+                            <p class="card-desc">Risks that require immediate attention.</p>
+                            <p class="card-value">3</p>
+                             <button class="button btn-secondary">View Risks</button>
+                        </div>
+                        <div class="action-card">
+                            <span class="card-title">Compliance Score</span>
+                            <p class="card-desc">Overall health of your compliance posture.</p>
+                            <p class="card-value">87%</p>
+                            <button class="button btn-secondary">View Report</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mockup">
+                <div class="mockup-title">Mockup: AI Review Mode</div>
+                <div class="review-layout">
+                    <div class="review-item">
+                        <div class="review-item-header">
+                            <h4>Suggested Risk: Unauthorized Access <span class="tag tag-green">New</span></h4>
+                            <div class="review-actions">
+                                <button class="button btn-primary">Accept</button>
+                                <button class="button btn-secondary">Dismiss</button>
+                            </div>
+                        </div>
+                        <div class="review-item-content">
+                            <p><b>Description:</b> Potential for unauthorized individuals to access PII...</p>
+                            <p><b>Source:</b> <a href="#">GDPR Article 32</a></p>
+                        </div>
+                    </div>
+                    <div class="review-item">
+                         <div class="review-item-header">
+                            <h4>Suggested Control: Access Policy <span class="tag tag-green">New</span></h4>
+                            <div class="review-actions">
+                                <button class="button btn-primary">Accept</button>
+                                <button class="button btn-secondary">Dismiss</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -95,7 +95,53 @@ A critical principle of this pattern is ensuring a complete chain of evidence.
 
 ### 3.1 Color System
 
-{{visual_foundation}}
+The visual foundation of the application is built on a dual-theme color system, a clear typography hierarchy, and a consistent spacing model. These elements work together to create a professional, accessible, and data-first user experience.
+
+### 1. Color System
+
+The application will support both a Light (default) and a Dark (user-selectable) theme to accommodate user preference and reduce eye strain in data-heavy environments.
+
+#### Light Mode (Default): "Clarity Green"
+This theme is designed to feel clean, calm, and positive, using green as the primary indicator for success and progress.
+
+-   **Primary:** `#28a745` (A strong, accessible green for primary actions)
+-   **Secondary:** `#17a2b8` (A complementary teal for secondary actions or information)
+-   **Semantic Colors:**
+    -   Success: `#28a745` (Green)
+    -   Warning: `#ffc107` (Yellow)
+    -   Error: `#dc3545` (Red)
+-   **Neutrals:** A scale of grays will be used for text, backgrounds, and borders to ensure content is legible and the interface is clean.
+
+#### Dark Mode: "Focused Slate"
+This theme is modern, sophisticated, and ideal for focusing on data visualizations and reducing eye strain.
+
+-   **Primary:** `#0A84FF` (A vibrant blue that stands out on a dark background)
+-   **Secondary:** `#5E5CE6` (A complementary purple for secondary elements)
+-   **Semantic Colors:**
+    -   Success: `#30D158` (A bright green)
+    -   Warning: `#FFD60A` (A vivid yellow)
+    -   Error: `#FF453A` (A clear red)
+-   **Neutrals:** A scale of dark grays and slate tones will be used for text, backgrounds (`#1C1C1E`), and surfaces (`#2C2C2E`) to create a sense of depth and focus.
+
+### 2. Typography
+
+The typography system is designed for maximum readability and a clear information hierarchy.
+
+-   **Font Families:**
+    -   **Body & Headings:** A system font stack (`-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif`) will be used for its high legibility and native performance.
+    -   **Monospace:** A standard monospace stack (`"SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace`) will be used for code snippets or tabular data where alignment is critical.
+-   **Type Scale:** A clear and consistent scale (e.g., H1: 36px, H2: 28px, H3: 24px, Body: 16px, Small: 14px) will be used to establish a strong visual hierarchy.
+-   **Font Weights:**
+    -   **Headings:** Bold (600 or 700)
+    -   **Body:** Normal (400)
+    -   **Labels/Emphasis:** Medium (500) or Semi-bold (600)
+
+### 3. Spacing & Layout
+
+A consistent spacing system will be used to create a visually rhythmic and organized layout.
+
+-   **Base Unit:** **8px**. All spacing values (padding, margins, gaps) will be multiples of 8px.
+-   **Scale:** A defined scale (e.g., `spacing-1`=8px, `spacing-2`=16px, `spacing-3`=24px) will be used by developers to ensure consistency and eliminate arbitrary values. This creates a predictable and professional visual structure.
 
 **Interactive Visualizations:**
 
@@ -107,7 +153,25 @@ A critical principle of this pattern is ensuring a complete chain of evidence.
 
 ### 4.1 Chosen Design Approach
 
-{{design_direction_decision}}
+After a thorough review of three distinct visual concepts, a final hybrid design direction was chosen. This approach combines the strongest elements of **"Direction 1: The Focused Dashboard"** and **"Direction 3: The Action-Oriented Hub"** to create an interface that is both professional and highly efficient.
+
+### The Hybrid Design Approach
+
+The chosen design provides a scalable structure with a modern, task-focused user experience.
+
+1.  **Primary Layout & Navigation (from Direction 1):** The application will use a professional layout featuring a **collapsible left-hand sidebar** for main navigation. This provides a consistent and predictable structure that can easily scale as more features are added. The ability to collapse the sidebar gives users the flexibility to maximize their content area, which is crucial for reviewing dense data.
+
+2.  **Dashboard Experience (from Direction 3):** The main dashboard will be designed as an **"Action-Oriented Hub."** Instead of a static report, the dashboard will feature a grid of modular cards representing the user's most immediate tasks and priorities (e.g., "Pending Reviews," "High-Priority Risks"). This makes the entry point of the application highly engaging and functional.
+
+3.  **Core Action Placement (from Direction 3):** A prominent **"Analyze New Document" button** will be placed on the main dashboard. This elevates the application's most critical feature, making it immediately accessible and reinforcing its importance in the user's workflow.
+
+4.  **Data Display (from Direction 1):** When drilling down from the dashboard into specific data sets (e.g., viewing a full list of risks), the UI will use clean, structured **data tables**. This approach is ideal for presenting dense, sortable information in a clear and professional manner.
+
+5.  **AI Review Mode (from Direction 1):** The two-panel layout for the AI Review Mode is confirmed and will be a cornerstone of the design, providing a focused environment for reviewing AI suggestions.
+
+### Rationale
+
+This hybrid direction was chosen because it successfully marries the robust, scalable navigation of a traditional professional application with a modern, modular, and task-focused dashboard. It provides the structure needed for a complex GRC tool while ensuring the user experience is direct, intuitive, and efficient.
 
 **Interactive Mockups:**
 
@@ -119,7 +183,41 @@ A critical principle of this pattern is ensuring a complete chain of evidence.
 
 ### 5.1 Critical User Paths
 
-{{user_journey_flows}}
+This section documents the critical user journeys, defining the step-by-step user experience for the most important workflows in the application.
+
+### Journey 1: AI-Powered Gap Analysis
+
+This is the core workflow of the application, detailing how a Compliance Officer (CO) processes a new regulatory document and routes AI-generated suggestions to the appropriate Business Process Owners (BPOs) for final approval. The journey follows a deliberate "Send & Notify" model.
+
+**Actor:** Compliance Officer (CO)
+**Goal:** To analyze a new document, triage AI suggestions, and formally send them to BPOs for review.
+
+#### Step-by-Step Flow:
+
+1.  **Initiate Analysis:** From the main dashboard, the CO clicks the prominent **"Analyze New Document"** button.
+2.  **Upload Document:** The CO is presented with an upload interface and selects a regulatory document (e.g., PDF, TXT) from their local machine.
+3.  **AI Processing:** The system shows clear feedback that the AI is working, displaying the current stage of analysis (e.g., "Analyzing Clauses," "Generating Controls").
+4.  **Triage in "AI Review Mode":** Upon completion, the CO enters the two-panel "AI Review Mode." They efficiently review the list of suggestions, using **"Accept"** to keep promising suggestions or **"Dismiss"** to discard irrelevant ones. Batch actions ("Accept All") are available for high-confidence results.
+5.  **Finish Triage:** Once the CO has reviewed all suggestions, they click a **"Finish Review"** button.
+6.  **Summary & Assignment View:** The CO is taken to a summary screen. This screen lists all the suggestions they "Accepted," automatically grouped by the suggested BPO who will be assigned the review.
+7.  **Send for Review:** After a final look, the CO clicks the definitive **"Send for Review"** button.
+8.  **Handoff & Notification:** The system officially routes the items to the respective BPOs' "Pending Review" queues and sends out notifications (e.g., email, in-app) to alert them of their new tasks.
+
+#### Journey Visualization (Mermaid Diagram):
+
+```mermaid
+graph TD
+    A[CO on Dashboard] -->|1. Clicks 'Analyze New Document'| B(Upload Interface);
+    B -->|2. Uploads Document| C{AI Processing...};
+    C -->|3. AI Completes| D("AI Review Mode");
+    subgraph "4. CO Triage"
+      D -- "Accept/Dismiss Suggestions" --> D;
+    end
+    D -->|5. Clicks 'Finish Review'| E(Summary & Assignment Screen);
+    E -->|6. CO Confirms Assignments| E;
+    E -->|7. Clicks 'Send for Review'| F(Items Routed to BPO Queues);
+    F -->|8. System Sends Notifications| G[BPO Notified of New Tasks];
+```
 
 ---
 
@@ -159,9 +257,11 @@ A critical principle of this pattern is ensuring a complete chain of evidence.
 
 ### Related Documents
 
-- Product Requirements: `{{prd_file}}`
-- Product Brief: `{{brief_file}}`
-- Brainstorming: `{{brainstorm_file}}`
+- Proposal: proposal.md
+- Product Requirements: docs/PRD.md
+- Product Brief: docs/product-brief-ibe160-2025-11-17.md
+- Brainstorming: docs/brainstorming-session 1-results-Saturday, November 8, 2025.md
+             docs/brainstorming-session 2-results-Saturday, November 8, 2025.md
 
 ### Core Interactive Deliverables
 
