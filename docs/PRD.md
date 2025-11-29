@@ -1,12 +1,12 @@
-# {{project_name}} - Product Requirements Document
+# ibe160 - Product Requirements Document
 
 ## TL;DR
 *   **What:** We are building a SaaS tool to replace compliance spreadsheets.
 *   **How:** An "AI Legal Specialist" will automatically find compliance gaps in documents.
 *   **Goal:** Reduce audit preparation time and provide real-time risk visibility.
 
-**Author:** {{user_name}}
-**Date:** {{date}}
+**Author:** BIP
+**Date:** November 23, 2025
 **Version:** 1.0
 
 ---
@@ -278,11 +278,18 @@ The application should be usable by all employees within a customer's organizati
 
 ## Implementation Planning
 
-### Epic Breakdown Required
+### Epic Breakdown
 
-Requirements must be decomposed into epics and bite-sized stories (200k context limit).
+The functional requirements have been decomposed into 5 epics, each representing a major phase of development that delivers incremental value. The full breakdown of epics into user stories can be found in the `epics.md` document.
 
-**Next Step:** Run `workflow epics-stories` to create the implementation breakdown.
+-   **Epic 1: Foundational Setup & Core Compliance Data Model:** Establishes the project's technical foundation and creates the core data structures for managing compliance information.
+-   **Epic 2: User Identity & Access Management (IAM):** Enables secure user access and enforces role-based permissions for Admins, BPOs, Executives, and General Users.
+-   **Epic 3: AI-Powered Gap Analysis & Auditing:** Delivers the core "AI Legal Specialist" by enabling document analysis, human-in-the-loop validation, and a complete audit trail.
+-   **Epic 4: Real-Time Risk Monitoring & Assessment:** Provides real-time dashboards tailored to user roles and the primary workflow for Business Process Owners to assess controls.
+-   **Epic 5: Advanced Compliance Mapping & Reporting:** Enables the central many-to-many compliance mapping feature, allowing controls to be linked to regulatory requirements.
+
+**Next Step:** With the PRD and initial epic breakdown complete, the next steps involve detailed technical design and user experience planning.
+
 
 ---
 
