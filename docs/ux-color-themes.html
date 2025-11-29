@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UX Color Themes</title>
+    <style>
+        :root {
+            --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: #F7F7F7;
+            color: #111;
+            margin: 0;
+            padding: 2rem;
+        }
+
+        h1, h2, h3, p {
+            margin: 0;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        .header h1 { font-size: 2.5rem; font-weight: 700; }
+        .header p { font-size: 1.1rem; color: #555; max-width: 600px; margin: 0.5rem auto 0; }
+
+        .theme-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .theme {
+            border: 1px solid #DDD;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.2s ease-in-out;
+        }
+        .theme:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+        }
+
+        .theme-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #DDD;
+        }
+        .theme-header h2 { font-size: 1.75rem; font-weight: 600; }
+        .theme-header p { font-size: 1rem; color: #555; margin-top: 0.25rem; }
+
+        .theme-content {
+            padding: 1.5rem;
+        }
+
+        .palette {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+        }
+
+        .swatch {
+            height: 50px;
+            border-radius: 6px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 4px;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: white;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .components h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid #EEE;
+            padding-bottom: 0.5rem;
+        }
+        
+        .component-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .button {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .alert {
+            flex-grow: 1;
+            padding: 1rem;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            border: 1px solid;
+        }
+
+        .card {
+            flex-grow: 1;
+            border-radius: 8px;
+            padding: 1rem;
+            border: 1px solid;
+        }
+        .card-header {
+            font-weight: 600;
+            padding-bottom: 0.5rem;
+            margin-bottom: 0.5rem;
+            border-bottom: 1px solid;
+        }
+
+        /* Trusted Blue Theme */
+        .theme.blue .palette .p-primary { background-color: #007AFF; }
+        .theme.blue .palette .p-secondary { background-color: #5856D6; }
+        .theme.blue .palette .p-accent { background-color: #FF9500; }
+        .theme.blue .palette .p-success { background-color: #34C759; }
+        .theme.blue .palette .p-warning { background-color: #FFCC00; }
+        .theme.blue<div class="swatch p-error" style="color: white;">#FF3B30</div> .palette .p-error { background-color: #FF3B30; }
+        .theme.blue .button.primary { background-color: #007AFF; color: white; }
+        .theme.blue .button.primary:hover { background-color: #005ecb; }
+        .theme.blue .button.secondary { background-color: #EFEFF4; color: #007AFF; border: 1px solid #007AFF;}
+        .theme.blue .button.secondary:hover { background-color: #dcdce0; }
+        .theme.blue .alert.success { background-color: #eaf8ed; color: #206531; border-color: #a7d9b4; }
+        .theme.blue .alert.error { background-color: #ffeeed; color: #a52a2a; border-color: #f7c5c5; }
+        .theme.blue .card { border-color: #EAEAEA; background-color: #FAFAFA; }
+        .theme.blue .card-header { border-color: #EAEAEA; color: #111; }
+        .theme.blue .text-primary { color: #007AFF; }
+        .theme.blue .bg-light { background-color: #F7F7F7; }
+
+
+        /* Focused Slate (Dark) Theme */
+        .theme.dark { background-color: #1C1C1E; color: #FFF; border-color: #444; }
+        .theme.dark .theme-header { border-bottom-color: #444;}
+        .theme.dark .theme-header p { color: #AAA; }
+        .theme.dark .components h3 { border-bottom-color: #444; }
+        .theme.dark .palette .p-primary { background-color: #0A84FF; }
+        .theme.dark .palette .p-secondary { background-color: #5E5CE6; }
+        .theme.dark .palette .p-accent { background-color: #FF9F0A; }
+        .theme.dark .palette .p-success { background-color: #30D158; }
+        .theme.dark .palette .p-warning { background-color: #FFD60A; }
+        .theme.dark .palette .p-error { background-color: #FF453A; }
+        .theme.dark .button.primary { background-color: #0A84FF; color: white; }
+        .theme.dark .button.primary:hover { background-color: #0060df; }
+        .theme.dark .button.secondary { background-color: #3A3A3C; color: #FFF; border: 1px solid #555;}
+        .theme.dark .button.secondary:hover { background-color: #4a4a4c; }
+        .theme.dark .alert.success { background-color: #2c4f34; color: #a7e0b4; border-color: #3a6845; }
+        .theme.dark .alert.error { background-color: #652d2d; color: #f7c5c5; border-color: #a53d3d; }
+        .theme.dark .card { border-color: #444; background-color: #2C2C2E; }
+        .theme.dark .card-header { border-color: #444; color: #FFF; }
+        .theme.dark .text-primary { color: #0A84FF; }
+        .theme.dark .bg-light { background-color: #111; }
+
+        /* Clarity Green Theme */
+        .theme.green .palette .p-primary { background-color: #28a745; }
+        .theme.green .palette .p-secondary { background-color: #17a2b8; }
+        .theme.green .palette .p-accent { background-color: #fd7e14; }
+        .theme.green .palette .p-success { background-color: #28a745; }
+        .theme.green .palette .p-warning { background-color: #ffc107; }
+        .theme.green .palette .p-error { background-color: #dc3545; }
+        .theme.green .button.primary { background-color: #28a745; color: white; }
+        .theme.green .button.primary:hover { background-color: #218838; }
+        .theme.green .button.secondary { background-color: #f0f9f2; color: #28a745; border: 1px solid #28a745;}
+        .theme.green .button.secondary:hover { background-color: #e0f2e5; }
+        .theme.green .alert.success { background-color: #eaf8ed; color: #1e7e34; border-color: #a7d9b4; }
+        .theme.green .alert.error { background-color: #fbebed; color: #a52a2a; border-color: #f7c5c5; }
+        .theme.green .card { border-color: #EAEAEA; background-color: #FAFAFA; }
+        .theme.green .card-header { border-color: #EAEAEA; color: #111; }
+        .theme.green .text-primary { color: #28a745; }
+        .theme.green .bg-light { background-color: #F7F7F7; }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Color Theme Exploration</h1>
+        <p>Review the three professionally selected themes below. Each one is designed to give your application a distinct personality while maintaining clarity and trust. Click the buttons and review the components to see how each theme feels in practice.</p>
+    </div>
+
+    <div class="theme-container">
+        
+        <!-- Theme 1: Trusted Blue -->
+        <div class="theme blue">
+            <div class="theme-header">
+                <h2>1. Trusted Blue</h2>
+                <p>Classic, confident, and stable. This theme inspires trust and security, perfect for a tool handling critical compliance data.</p>
+            </div>
+            <div class="theme-content">
+                <div class="palette">
+                    <div class="swatch p-primary">#007AFF</div>
+                    <div class="swatch p-secondary">#5856D6</div>
+                    <div class="swatch p-accent">#FF9500</div>
+                    <div class="swatch p-success">#34C759</div>
+                    <div class="swatch p-warning">#FFCC00</div>
+                    <div class="swatch p-error">#FF3B30</div>
+                </div>
+                <div class="components">
+                    <h3>Components</h3>
+                    <div class="component-group">
+                        <button class="button primary">Primary Action</button>
+                        <button class="button secondary">Secondary</button>
+                    </div>
+                    <div class="component-group">
+                        <div class="alert success">This is a success message.</div>
+                    </div>
+                     <div class="component-group">
+                        <div class="alert error">This is an error message.</div>
+                    </div>
+                    <div class="component-group">
+                        <div class="card">
+                            <div class="card-header">Card Header</div>
+                            <div>This is the body of the card. It contains content and information.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme 2: Focused Slate (Dark) -->
+        <div class="theme dark">
+            <div class="theme-header">
+                <h2>2. Focused Slate</h2>
+                <p>Modern, sophisticated, and data-focused. A dark theme reduces eye strain and makes dashboards and charts pop.</p>
+            </div>
+            <div class="theme-content">
+                <div class="palette">
+                    <div class="swatch p-primary">#0A84FF</div>
+                    <div class="swatch p-secondary">#5E5CE6</div>
+                    <div class="swatch p-accent">#FF9F0A</div>
+                    <div class="swatch p-success">#30D158</div>
+                    <div class="swatch p-warning">#FFD60A</div>
+                    <div class="swatch p-error">#FF453A</div>
+                </div>
+                <div class="components">
+                    <h3>Components</h3>
+                    <div class="component-group">
+                        <button class="button primary">Primary Action</button>
+                        <button class="button secondary">Secondary</button>
+                    </div>
+                    <div class="component-group">
+                        <div class="alert success">This is a success message.</div>
+                    </div>
+                     <div class="component-group">
+                        <div class="alert error">This is an error message.</div>
+                    </div>
+                    <div class="component-group">
+                        <div class="card">
+                            <div class="card-header">Card Header</div>
+                            <div>This is the body of the card. It contains content and information.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Theme 3: Clarity Green -->
+        <div class="theme green">
+            <div class="theme-header">
+                <h2>3. Clarity Green</h2>
+                <p>Clean, calm, and positive. Green is associated with success and safety, creating a reassuring and modern feel.</p>
+            </div>
+            <div class="theme-content">
+                <div class="palette">
+                    <div class="swatch p-primary">#28a745</div>
+                    <div class="swatch p-secondary">#17a2b8</div>
+                    <div class="swatch p-accent">#fd7e14</div>
+                    <div class="swatch p-success">#28a745</div>
+                    <div class="swatch p-warning">#ffc107</div>
+                    <div class="swatch p-error">#dc3545</div>
+                </div>
+                 <div class="components">
+                    <h3>Components</h3>
+                    <div class="component-group">
+                        <button class="button primary">Primary Action</button>
+                        <button class="button secondary">Secondary</button>
+                    </div>
+                    <div class="component-group">
+                        <div class="alert success">This is a success message.</div>
+                    </div>
+                     <div class="component-group">
+                        <div class="alert error">This is an error message.</div>
+                    </div>
+                    <div class="component-group">
+                        <div class="card">
+                            <div class="card-header">Card Header</div>
+                            <div>This is the body of the card. It contains content and information.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

@@ -42,7 +42,7 @@ workflow_status:
 
   # Phase 1: Planning
   prd: "docs/PRD.md"
-  validate-prd: recommended
+  validate-prd: "docs/validation-report-2025-11-29-final.md"
   create-design: recommended
 
   # Phase 2: Solutioning
