@@ -48,11 +48,13 @@ workflow_status:
   # Phase 2: Solutioning
   create-epics-and-stories: "docs/epics.md"
   create-architecture: "docs/architecture.md"
-  create-security-architecture: required
-  create-devops-strategy: required
-  create-test-strategy: required
-  validate-architecture: optional
-  solutioning-gate-check: required
+  create-security-architecture: skipped
+  create-devops-strategy: skipped
+  create-test-strategy: skipped
+  validate-architecture: "docs/validation-report-architecture-2025-11-30.md"
+  test-design: recommended
+  implementation-readiness: "docs/implementation-readiness-report-2025-11-30.md"
+  solutioning-gate-check: skipped
 
   # Phase 3: Implementation
   sprint-planning: required

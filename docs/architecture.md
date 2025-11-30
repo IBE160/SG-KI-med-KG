@@ -159,7 +159,75 @@ The project will be organized as a monorepo, following the structure provided by
 - **Epic 4 (Monitoring & Assessment):** Lives in `frontend/app/(dashboard)` and utilizes `Supabase Realtime` subscriptions in `frontend/hooks`.
 - **Epic 5 (Mapping & Reporting):** Lives in `backend/app/api/v1/mapping.py` and `frontend/app/(dashboard)/reports`.
 
-## 6. Implementation Patterns (Consistency Rules)
+## 6. Novel Pattern Architecture: AI Review Mode
+
+This section provides the detailed architectural breakdown for the novel "AI Review Mode" and its two-stage approval workflow, as identified in the UX Design Specification. This pattern is central to the product's value and requires specific architectural guidance to ensure a consistent and robust implementation.
+
+### 6.1. Component Diagram
+
+The following diagram illustrates the key frontend and backend components involved in the AI Review Mode and how they interact.
+
+![AI Review Mode Component Diagram](./diagrams/component-diagram-ai-review-mode.excalidraw)
+
+### 6.2. Sequence Diagram
+
+The sequence of interactions for the two-stage approval process (Compliance Officer triage followed by Business Process Owner approval) is detailed below. This flow ensures both efficiency and accountability.
+
+![AI Review Mode Sequence Diagram](./diagrams/sequence-diagram-approval-flow.excalidraw)
+
+### 6.3. Data Contracts
+
+To ensure type safety and clear communication between the frontend and backend, the following Pydantic models will be used as data transfer objects (DTOs) for this workflow.
+
+#### Suggestion Promotion (CO Triage)
+
+When a Compliance Officer promotes an AI suggestion, the frontend will send the following payload to the backend.
+
+```python
+# In backend/app/schemas/suggestion.py
+from pydantic import BaseModel
+from typing import Optional
+
+class PromoteSuggestionRequest(BaseModel):
+    """
+    Payload sent when a CO promotes a suggestion for BPO review.
+    """
+    suggestion_id: int
+    assigned_bpo_id: int
+    # The CO can optionally edit the text before promoting
+    edited_risk_description: Optional[str] = None
+    edited_control_description: Optional[str] = None
+
+```
+
+#### Suggestion Approval (BPO Final Approval)
+
+When a Business Process Owner gives final approval, they provide the mandatory residual risk assessment.
+
+```python
+# In backend/app/schemas/suggestion.py
+from pydantic import BaseModel, Field
+from enum import Enum
+
+class ResidualRisk(str, Enum):
+    low = "low"
+    medium = "medium"
+    high = "high"
+
+class ApproveSuggestionRequest(BaseModel):
+    """
+    Payload sent when a BPO approves a suggestion, making it active.
+    """
+    suggestion_id: int
+    # The BPO must categorize the residual risk
+    residual_risk: ResidualRisk = Field(..., description="The assessed residual risk after the control is implemented.")
+    # The BPO can also make final edits
+    final_risk_description: Optional[str] = None
+    final_control_description: Optional[str] = None
+    final_business_process: Optional[str] = None
+```
+
+## 7. Implementation Patterns (Consistency Rules)
 
 To ensure consistency across code written by different developers or AI agents, the following patterns are **MANDATORY**.
 
@@ -184,7 +252,7 @@ To ensure consistency across code written by different developers or AI agents, 
 ### Code Style & Formatting
 - The pre-commit hooks provided by the starter template (which include `black` for Python and `prettier` for TypeScript/JSON) will be the single source of truth for code style. All code **must** pass these checks before being committed.
 
-## 7. Final Validation and Next Steps
+## 8. Final Validation and Next Steps
 
 The architecture defined in this document is coherent and complete for the MVP. All functional and non-functional requirements from the PRD are addressed by the chosen technologies and patterns. The combination of the `vintasoftware` starter template with the Supabase ecosystem provides a powerful, modern, and efficient foundation for development.
 
