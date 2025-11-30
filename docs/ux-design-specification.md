@@ -183,7 +183,6 @@ This hybrid direction was chosen because it successfully marries the robust, sca
 
 ### 5.1 Critical User Paths
 
-This section documents the critical user journeys, defining the step-by-step user experience for the most important workflows in the application.
 
 ### Journey 1: AI-Powered Gap Analysis
 
@@ -219,13 +218,100 @@ graph TD
     F -->|8. System Sends Notifications| G[BPO Notified of New Tasks];
 ```
 
+### Journey 2: Control Assessment Journey (for BPOs)
+
+This journey details the Business Process Owner's (BPO) workflow for reviewing and acting upon AI-generated suggestions promoted by a Compliance Officer (CO). It emphasizes the BPO's final accountability in integrating new controls or risks into the system.
+
+**Actor:** Business Process Owner (BPO)
+**Goal:** To efficiently review, approve, edit, or discard AI-suggested controls/risks, ensuring they are accurately aligned with business processes, and making final decisions.
+
+#### Step-by-Step Flow:
+
+1.  **Access Pending Reviews:** From their main dashboard, the BPO clicks on the "Pending Reviews" card (part of the Action-Oriented Hub), which leads them to a dedicated list of items awaiting their final decision.
+2.  **Initial Overview & Business Process Centricity:** The list prominently displays the **suggested Business Process**, along with the associated Risk and Control name/summary. This immediate visibility of the business process is crucial for the BPO to quickly determine relevance and identify if existing documentation already covers the suggestion.
+3.  **Detailed Review View:** The BPO clicks on an item from the list to open a detailed, dedicated review screen. This screen is structured to provide all necessary context for a decision:
+    *   **Comprehensive Details:** All AI-suggested information for the Business Process, Risk, and Control is displayed in an editable form, including descriptions, proposed owners, and relevant metadata.
+    *   **Persistent Source Link:** The `source_reference` link, originally from the AI's analysis, is clearly visible and accessible for immediate verification.
+    *   **Residual Risk Categorization:** A prominent dropdown menu allows the BPO to categorize the **Residual Risk** associated with the control as "low," "medium," or "high." This is a mandatory step for final approval.
+    *   **Integrated AI Chat:** The AI chat icon remains visible on the right, providing an option for conversational queries or modifications.
+4.  **Action Buttons:** "Approve," "Edit," and "Discard" buttons are clearly positioned on the screen, reflecting the BPO's authority.
+5.  **"Edit" Experience:** If the BPO clicks "Edit," the form fields become directly editable (inline editing). A readily accessible **"Change Log" window** is available, documenting all modifications made to the item (who, what, when), thereby ensuring an auditable history of changes.
+6.  **"Approve" Action:**
+    *   If the BPO clicks "Approve," the item is formally accepted into the system.
+    *   **Feedback:** The system displays "✅ Successfully added to register" and provides a direct link to view the newly active item within the core system.
+    *   The item's status changes from "Pending Review" to **"Active."**
+7.  **"Discard" Action:**
+    *   If the BPO clicks "Discard," the item is rejected from the active workflow.
+    *   **Feedback:** The system displays "🗑️ Item disregarded."
+    *   The item is moved to a **"Temporary Archive"** (or a "bin folder") where it remains for a defined period (e.g., 30-90 days) before permanent deletion. This allows for recovery or re-evaluation if needed.
+8.  **Return to List:** After taking action on an item, the BPO automatically returns to their list of "Pending Reviews."
+
+#### Journey Visualization (Mermaid Diagram):
+
+```mermaid
+graph TD
+    A[BPO on Dashboard] -->|1. Clicks 'Pending Reviews' Card| B(List of Pending Review Items);
+    B -->|2. Clicks on an Item| C(Detailed Review Screen);
+    subgraph "3. Review & Edit"
+      C -->|View Details & Source| C;
+      C -->|Select 'Residual Risk'| C;
+      C -->|Optionally Clicks 'Edit'| D(Inline Editing Mode with Change Log);
+      D --> C;
+    end
+    C -->|4. Clicks 'Approve'| E(Confirmation & Item becomes Active);
+    C -->|4. Clicks 'Discard'| F(Confirmation & Item moves to Temporary Archive);
+    E -->|5. Returns to List| B;
+    F -->|5. Returns to List| B;
+```
+
 ---
 
 ## 6. Component Library
 
 ### 6.1 Component Strategy
 
-{{component_library_strategy}}
+The component library strategy balances the efficiency of using a robust design system with the necessity of developing custom components for unique functionalities, especially for the core AI interactions.
+
+#### Standard Components (Leveraging Shadcn/UI)
+
+The majority of standard UI elements will be built using **Shadcn/UI**, providing a consistent, accessible, and performant foundation. This includes:
+
+*   **Buttons:** For all primary, secondary, destructive, and tertiary actions.
+*   **Form Elements:** Inputs, textareas, select dropdowns (e.g., for Residual Risk categorization), radio buttons, and checkboxes.
+*   **Data Display:** Highly configurable data tables for displaying lists of risks, controls, and other core entities. Cards for dashboard metrics and action items.
+*   **Navigation:** Collapsible sidebar navigation.
+*   **Feedback:** Toast notifications for success/error messages, alerts, spinners, and progress bars.
+*   **Overlays:** Modals for confirmations, complex forms, and detailed views.
+*   **Tooltips/Popovers:** For contextual help and interactive elements like the AI chat icon.
+
+#### Custom Components & Heavy Customizations
+
+Specific functionalities require bespoke components or heavy customization of standard components to meet the unique UX requirements:
+
+1.  **AI Chat Interface:** The conversational AI assistant within the "AI Review Mode."
+2.  **Change Log Window:** A dedicated interface to display historical modifications and audit trails, integrated seamlessly with inline editing capabilities.
+3.  **Document Upload & AI Processing Feedback:** A custom UI to manage file uploads, display progress feedback during AI analysis, and potentially preview documents.
+4.  **Dashboard Action Cards:** While built on a standard card component, the specific content, metrics, embedded actions, and dynamic nature of these cards will be custom to the "Action-Oriented Hub" design.
+
+---
+
+### Custom Component Focus: The AI Chat Interface
+
+The **AI Chat Interface** is a critical, novel component designed to function as a professional legal helper, seamlessly integrated into the "AI Review Mode." Its purpose is to clarify AI suggestions, facilitate data modification through conversational prompts, and provide additional context or information.
+
+*   **Purpose:** To provide professional, conversational assistance for reviewing and refining AI-generated suggestions within the "AI Review Mode." It acts as a legal expert that the user can query or instruct to make changes to the suggested data.
+*   **Anatomy:**
+    *   **Chat Input:** A text input field for the user to type questions or instructions.
+    *   **Chat History:** A scrollable area displaying conversational turns (user queries, AI responses).
+    *   **Action Buttons (within chat):** Buttons within AI responses to apply suggested changes directly to the editable form fields.
+    *   **Contextual Icon:** An always-visible icon (e.g., speech bubble, AI icon) that, when clicked, reveals/hides the chat interface within the review screen.
+*   **Initial Prompt:** The AI will initiate interaction with a professional, open-ended question like: "What can I help you with regarding this suggestion?"
+*   **User Actions:** Users can type questions, give instructions for modifications, or accept AI-generated suggestions directly into the form fields.
+*   **States:** The component will clearly communicate its current state:
+    *   **Waiting for Input:** Standard chat input field.
+    *   **AI Typing/Thinking:** Visual indicators (e.g., ellipsis, brief loading spinner within the chat) to show the AI is processing or generating a response.
+    *   **Error State:** Clear, concise error messages if the AI cannot fulfill a request or encounters an issue.
+*   **Variants:** A single, consistent, versatile design will be used across the application. The interface will adapt its content and functionality contextually based on the user's query and the current AI suggestion being reviewed.
 
 ---
 
@@ -233,7 +319,33 @@ graph TD
 
 ### 7.1 Consistency Rules
 
-{{ux_pattern_decisions}}
+To ensure a predictable, intuitive, and professional user experience, the following UX patterns will be applied consistently across the entire application.
+
+*   **1. Button Hierarchy:**
+    *   **Primary Action (e.g., "Approve," "Save"):** A solid button using the primary theme color (`Clarity Green`) to draw the most attention for the main action on a page.
+    *   **Secondary Action (e.g., "Cancel," "Edit"):** A subtle button with a thin border and transparent background to offer an alternative, less-emphasized action.
+    *   **Destructive Action (e.g., "Discard," "Delete"):** A secondary-style button that reveals a red color on hover. This clearly communicates a dangerous action while preventing visual clutter and accidental clicks.
+
+*   **2. Feedback & Loading Patterns:**
+    *   **Success/Info Feedback (e.g., "Item saved"):** A non-intrusive "toast" notification will appear briefly at the bottom of the screen and then automatically dismiss. This informs the user without interrupting their workflow.
+    *   **Critical Error Feedback:** A modal dialog will be used for critical errors that require the user's full attention and acknowledgement. The user must actively dismiss this dialog to continue.
+    *   **Loading States:** For page-level loading or table filtering, a subtle progress bar at the top of the screen will be used. For individual components loading content (like a dashboard card), a "skeleton" placeholder will be used to show the shape of the impending content, reducing perceived wait time.
+
+*   **3. Form Patterns:**
+    *   **Labels:** Form labels will always be positioned **above** their corresponding input field for maximum clarity and accessibility.
+    *   **Validation:** Input fields will be validated as the user moves out of the field (`onBlur`). This provides immediate feedback without being disruptive during typing.
+    *   **Error Display:** A simple, concise error message will appear in red text directly below the field that has an error.
+
+*   **4. Modal (Popup) Patterns:**
+    *   **Behavior:** Modals will be used for critical confirmations or focused tasks that require interrupting the user's workflow. They can be dismissed by clicking a "Cancel" or "Close" button, pressing the `Escape` key, or clicking on the shaded background overlay.
+
+*   **5. Empty State Patterns:**
+    *   **Purpose:** To provide guidance when a view has no data to display.
+    *   **Design:** An empty state will consist of a relevant icon, a helpful and encouraging message, and, where appropriate, a primary action button to guide the user on what to do next (e.g., "You have no pending reviews. Great job!" or "No risks found. Get started by analyzing a document.").
+
+*   **6. Confirmation Patterns:**
+    *   **Destructive Actions:** A confirmation modal will **always** be used before a permanent, destructive action (e.g., "Are you sure you want to permanently delete this control? This action cannot be undone.").
+    *   **Reversible Actions:** For less critical, reversible actions (e.g., moving an item to the "Temporary Archive"), a toast notification with an "Undo" button will be used. This is faster for the user but still provides an escape hatch.
 
 ---
 
@@ -241,7 +353,28 @@ graph TD
 
 ### 8.1 Responsive Strategy
 
-{{responsive_accessibility_strategy}}
+This section defines the application's strategy for handling different screen sizes and ensuring usability for people with disabilities.
+
+### Responsive Strategy: Desktop-First
+
+The application is explicitly designed with a **desktop-first** approach. The primary goal is to deliver a rich, powerful, and data-dense user experience optimized for larger screens (laptops and desktop monitors).
+
+*   **MVP Focus:** For the Minimum Viable Product, development and design efforts will be concentrated on perfecting the experience on screen widths of 1024px and wider.
+*   **Smaller Screens:** While the application will not be fully optimized for tablet or mobile devices in the MVP, the layout will be built using responsive principles to prevent "breaking." It will remain usable on smaller screens, but without a custom-tailored mobile UX.
+
+This focused strategy ensures that the core experience for the primary user on their main device is of the highest quality.
+
+### Accessibility (A11y) Strategy: WCAG 2.1 Level AA
+
+The application will be developed to meet the standards of the **Web Content Accessibility Guidelines (WCAG) 2.1 at Level AA**. This is the globally recognized standard for professional and enterprise-grade web applications, ensuring the product is inclusive and meets the procurement requirements of most large organizations.
+
+Key requirements for achieving AA compliance include:
+
+*   **Color Contrast:** All text and critical UI elements will meet the minimum contrast ratio of 4.5:1 to be easily readable. This will be a primary consideration for both the "Clarity Green" (Light) and "Focused Slate" (Dark) themes.
+*   **Keyboard Navigation:** All interactive elements—including buttons, links, form fields, and navigation—will be fully operable using only a keyboard.
+*   **Focus Indicators:** A clear and visible focus state will be present on all interactive elements, allowing keyboard users to easily identify where they are on the page.
+*   **Screen Reader Support:** Proper semantic HTML and ARIA (Accessible Rich Internet Applications) labels will be used to ensure the application is understandable and navigable by users with screen readers. This includes providing alternative text for all meaningful images and icons.
+*   **Form Labels:** All form inputs will be explicitly linked to their corresponding labels, a critical requirement for accessibility.
 
 ---
 
@@ -249,7 +382,25 @@ graph TD
 
 ### 9.1 Completion Summary
 
-{{completion_summary}}
+This UX Design Specification is complete. Through a collaborative process, we have defined a comprehensive blueprint for the application's user experience. All placeholders have been filled, and all major design decisions have been made and documented.
+
+### What we created together:
+
+*   **A Clear Vision:** We established that the application should feel like an "empowering, efficient, and expert partner," with the proactive AI Legal Specialist as its core "wow" experience.
+*   **Design System:** We confirmed **Shadcn/UI** as our foundational system, providing a balance of consistency and customizability.
+*   **Visual Foundation:** We defined a dual-theme color system with **"Clarity Green" (Light Mode)** and **"Focused Slate" (Dark Mode)**, along with a robust typography and spacing system.
+*   **Design Direction:** We created a unique **hybrid design direction**, combining a collapsible sidebar with a modular, action-oriented dashboard to offer a professional and efficient user experience.
+*   **Critical User Journeys:** We mapped out the two most critical workflows: the "AI-Powered Gap Analysis" for Compliance Officers and the "Control Assessment Journey" for Business Process Owners.
+*   **Component & Pattern Strategy:** We identified necessary standard and custom components (like the AI Chat Interface) and established a complete set of UX consistency rules.
+*   **Responsive & Accessibility Strategy:** We confirmed a **desktop-first** approach for the MVP and committed to meeting the **WCAG 2.1 Level AA** accessibility standard.
+
+### Your Deliverables:
+
+*   **UX Design Specification:** This document (`docs/ux-design-specification.md`) serves as the complete and final record of all UX decisions.
+*   **Interactive Color Themes:** `docs/ux-color-themes.html`
+*   **Design Direction Mockups:** `docs/ux-design-directions.html`
+
+This specification provides a solid foundation for designers to create high-fidelity mockups and for developers to begin implementation with clear UX guidance and rationale.
 
 ---
 
