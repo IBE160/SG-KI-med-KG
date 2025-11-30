@@ -25,6 +25,7 @@ The primary emotional goal is to make the user feel **empowered, in control, eff
 ### 1.1 Design System Choice
 
 The foundational design system chosen for this project is **Shadcn/UI**.
+- **Current Version**: (To be specified, e.g., ^0.8.0)
 
 This decision was based on its unique approach that balances pre-built component structure with deep customizability, aligning perfectly with the project's core UX principles.
 
@@ -142,6 +143,10 @@ A consistent spacing system will be used to create a visually rhythmic and organ
 
 -   **Base Unit:** **8px**. All spacing values (padding, margins, gaps) will be multiples of 8px.
 -   **Scale:** A defined scale (e.g., `spacing-1`=8px, `spacing-2`=16px, `spacing-3`=24px) will be used by developers to ensure consistency and eliminate arbitrary values. This creates a predictable and professional visual structure.
+-   **Layout Grid:** A **12-column grid system** with a `24px` gutter will be used for consistent horizontal alignment across all major layouts.
+-   **Container Widths:** Main content containers will have `max-width` constraints:
+    -   **Desktop (1280px+):** `1280px` (`max-w-7xl` equivalent)
+    -   **Laptop (1024px-1279px):** `960px` (`max-w-5xl` equivalent)
 
 **Interactive Visualizations:**
 
@@ -313,6 +318,57 @@ The **AI Chat Interface** is a critical, novel component designed to function as
     *   **Error State:** Clear, concise error messages if the AI cannot fulfill a request or encounters an issue.
 *   **Variants:** A single, consistent, versatile design will be used across the application. The interface will adapt its content and functionality contextually based on the user's query and the current AI suggestion being reviewed.
 
+### Custom Component Focus: The Change Log Window
+
+*   **Purpose:** To provide a clear, auditable, and immutable historical record of all modifications made to an item (Risk, Control, Business Process, etc.), particularly crucial during the BPO's review and editing process.
+*   **Anatomy:**
+    *   **Trigger:** Typically accessed via an "Activity Log" or "History" button within the detail view of an editable item.
+    *   **Modal Structure:** Presented as a read-only modal dialog.
+    *   **Content:** A chronological, scrollable list of individual change entries. Each entry clearly displays:
+        *   **Who:** User who made the change.
+        *   **When:** Timestamp of the change.
+        *   **What:** Type of action (e.g., "Created," "Edited Field," "Status Changed").
+        *   **Field (if applicable):** The specific field that was modified (e.g., "Description," "Owner").
+        *   **Previous Value (if applicable):** The value of the field before the change.
+        *   **New Value (if applicable):** The new value of the field after the change.
+*   **Behavior:**
+    *   Read-only: Users can view but not alter the log entries.
+    *   Filter/Sort (Future): Advanced versions may include filtering by user, date range, or field.
+*   **States:** Default (showing all entries), Empty (no changes yet).
+*   **Variants:** Not applicable; a single consistent design for all change logs.
+
+### Custom Component Focus: Document Upload & AI Processing Feedback
+
+*   **Purpose:** To manage the user flow for uploading regulatory documents and providing transparent, real-time feedback during the AI analysis process.
+*   **Anatomy:**
+    *   **Upload Area:** A drag-and-drop zone with a file selection button. Clearly indicates supported file types (e.g., PDF, DOCX, TXT).
+    *   **File List:** Displays files currently uploaded or in queue, with their status (e.g., "Ready," "Uploading," "Processing").
+    *   **Progress Indicators:**
+        *   **Upload Progress:** A percentage bar for file upload.
+        *   **AI Analysis Progress:** A multi-stage progress bar or status messages (e.g., "Analyzing Clauses," "Extracting Requirements," "Generating Suggestions") to guide the user through the AI's workflow.
+    *   **Cancel Button:** Allows the user to stop an ongoing upload or analysis.
+    *   **Error Display:** Clear messages for upload failures or AI processing errors.
+*   **Behavior:**
+    *   Asynchronous processing: AI analysis occurs in the background, allowing the user to navigate away (though they would typically wait for results). Notifications are sent upon completion.
+    *   Visual feedback: Continuous updates on progress ensure the user understands the system's activity.
+*   **States:** Idle, Uploading, Processing (AI), Completed, Error.
+*   **Variants:** May have a simplified version for quick uploads vs. a more detailed one for multi-file processing.
+
+### Custom Component Focus: Dashboard Action Cards
+
+*   **Purpose:** To serve as the "Action-Oriented Hub" entry points on the main dashboard, providing users with immediate, glanceable information and direct access to critical tasks.
+*   **Anatomy:**
+    *   **Card Structure:** Standard Shadcn/UI card component.
+    *   **Title/Metric:** Prominent display of a key metric (e.g., "Pending Reviews," "High-Priority Risks," "Overdue Assessments").
+    *   **Contextual Icon:** An icon relevant to the card's content.
+    *   **Summary Text:** A brief, actionable description (e.g., "You have 5 items awaiting your approval").
+    *   **Primary Action Button:** A direct link to the relevant section or workflow (e.g., "View Pending Reviews," "Analyze New Document").
+*   **Behavior:**
+    *   Dynamic Content: Metrics and summary text update in real-time based on user data.
+    *   Clickable: The entire card (or a specific action button) acts as an entry point.
+*   **States:** Default, Loading (skeleton placeholder), Empty (displays helpful message and potential action).
+*   **Variants:** Different layouts for different types of metrics (e.g., single large number, small chart, list of items).
+
 ---
 
 ## 7. UX Pattern Decisions
@@ -347,6 +403,27 @@ To ensure a predictable, intuitive, and professional user experience, the follow
     *   **Destructive Actions:** A confirmation modal will **always** be used before a permanent, destructive action (e.g., "Are you sure you want to permanently delete this control? This action cannot be undone.").
     *   **Reversible Actions:** For less critical, reversible actions (e.g., moving an item to the "Temporary Archive"), a toast notification with an "Undo" button will be used. This is faster for the user but still provides an escape hatch.
 
+*   **7. Navigation Patterns:**
+    *   **Active State:** The currently selected item in the sidebar navigation will always have a distinct visual indicator (e.g., background color, bold text) to clearly show the user's current location.
+    *   **Breadcrumbs:** Breadcrumbs will be used on interior pages to show the user's hierarchical path within the application and provide easy navigation back to parent sections.
+    *   **Back Button:** Standard browser back button functionality will be supported; no custom in-app back buttons are required unless for specific modal workflows.
+
+*   **8. Notification Patterns:**
+    *   **Placement:** Non-critical "toast" notifications will appear in the **top-right** corner of the screen.
+    *   **Stacking:** New notifications will stack vertically, pushing older notifications down. A maximum of 3 notifications will be visible at once, with older ones fading out.
+    *   **Duration:** Toasts automatically dismiss after 5 seconds but can also be dismissed manually by the user.
+    *   **Priority:** Critical system alerts will use modal dialogues, while informational messages will use toasts.
+
+*   **9. Search Patterns:**
+    *   **Global Search:** A global search bar will be prominently placed in the main application header for quick access.
+    *   **Behavior:** Typing in the search bar and hitting 'Enter' will navigate the user to a dedicated search results page, categorized by type (e.g., Risks, Controls, Processes).
+    *   **No Results:** Clear feedback will be provided when no search results are found, suggesting alternative keywords.
+
+*   **10. Date/Time Patterns:**
+    *   **Display Format:** All dates displayed to the user should be in the `YYYY-MM-DD` format (e.g., `2025-11-30`). Time will be displayed in `HH:MM (24-hour)` format (e.g., `14:30`).
+    *   **Timezone:** All internal date/time values will be stored in UTC and converted to the user's local timezone for display.
+    *   **Input:** When a user needs to select a date, the application will use the standard date picker component provided by Shadcn/UI.
+
 ---
 
 ## 8. Responsive Design & Accessibility
@@ -355,14 +432,20 @@ To ensure a predictable, intuitive, and professional user experience, the follow
 
 This section defines the application's strategy for handling different screen sizes and ensuring usability for people with disabilities.
 
-### Responsive Strategy: Desktop-First
+### Responsive Strategy: Desktop-First (MVP Focus)
 
-The application is explicitly designed with a **desktop-first** approach. The primary goal is to deliver a rich, powerful, and data-dense user experience optimized for larger screens (laptops and desktop monitors).
+The application is explicitly designed with a **desktop-first** approach. The primary goal for the **Minimum Viable Product (MVP)** is to deliver a rich, powerful, and data-dense user experience optimized for larger screens (laptops and desktop monitors), specifically targeting screen widths of 1024px and wider.
 
-*   **MVP Focus:** For the Minimum Viable Product, development and design efforts will be concentrated on perfecting the experience on screen widths of 1024px and wider.
-*   **Smaller Screens:** While the application will not be fully optimized for tablet or mobile devices in the MVP, the layout will be built using responsive principles to prevent "breaking." It will remain usable on smaller screens, but without a custom-tailored mobile UX.
+*   **MVP Focus:** For the MVP, development and design efforts will be concentrated on perfecting the experience on desktop.
+*   **Mobile/Tablet (Future Phase):** Full optimization for tablet or mobile devices is explicitly reserved for a later phase post-MVP. In the MVP, the layout will be built using responsive principles to prevent "breaking" on smaller screens, ensuring basic usability. However, a custom-tailored mobile/tablet UX is not within the MVP scope.
+*   **Navigation Adaptation (Future):**
+    *   **Tablets (below 1024px):** The collapsible left sidebar will likely transition to a collapsed-by-default state to maximize content space.
+    *   **Mobile (below 768px):** The left sidebar would typically be replaced by a "hamburger" menu icon in the top-left, opening the navigation as an overlay. These adaptations are planned for a post-MVP phase.
+*   **Content Adaptation (Future):**
+    *   **Dashboard:** Modular cards would reflow from multiple columns into a single-column stack on smaller screens.
+    *   **Data Tables:** Data tables would likely become horizontally scrollable or introduce simplified views on mobile. These adaptations are planned for a post-MVP phase.
 
-This focused strategy ensures that the core experience for the primary user on their main device is of the highest quality.
+This focused strategy ensures that the core experience for the primary user on their main device is of the highest quality for the MVP, with a clear roadmap for future mobile/tablet enhancements.
 
 ### Accessibility (A11y) Strategy: WCAG 2.1 Level AA
 
@@ -375,6 +458,13 @@ Key requirements for achieving AA compliance include:
 *   **Focus Indicators:** A clear and visible focus state will be present on all interactive elements, allowing keyboard users to easily identify where they are on the page.
 *   **Screen Reader Support:** Proper semantic HTML and ARIA (Accessible Rich Internet Applications) labels will be used to ensure the application is understandable and navigable by users with screen readers. This includes providing alternative text for all meaningful images and icons.
 *   **Form Labels:** All form inputs will be explicitly linked to their corresponding labels, a critical requirement for accessibility.
+
+#### Accessibility Testing Strategy
+
+To ensure compliance, a multi-layered testing strategy will be employed:
+*   **Automated Testing:** Integration of `axe-core` or similar tools into the CI/CD pipeline to automatically scan for common accessibility violations.
+*   **Manual Testing:** Regular manual checks for keyboard navigation, focus management, and screen reader compatibility (using tools like NVDA for Windows, VoiceOver for macOS) on critical user flows.
+*   **User Acceptance Testing (UAT):** Inclusion of accessibility considerations and feedback from users with disabilities during UAT phases.
 
 ---
 
