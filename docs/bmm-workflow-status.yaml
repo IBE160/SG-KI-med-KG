@@ -47,7 +47,7 @@ workflow_status:
 
   # Phase 2: Solutioning
   create-epics-and-stories: "docs/epics.md"
-  create-architecture: required
+  create-architecture: "docs/architecture.md"
   create-security-architecture: required
   create-devops-strategy: required
   create-test-strategy: required
