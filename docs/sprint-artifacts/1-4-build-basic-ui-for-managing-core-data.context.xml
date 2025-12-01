@@ -1,0 +1,151 @@
+<story-context id="1.4" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.4</storyId>
+    <title>Build Basic UI for Managing Core Data</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-4-build-basic-ui-for-managing-core-data.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Admin</asA>
+    <iWant>a basic web interface to manage Controls, Risks, Business Processes, and Regulatory Frameworks</iWant>
+    <soThat>I can populate and maintain the system's core compliance data without using direct database tools</soThat>
+    <tasks>
+- [ ] **Set up Frontend Routing and Navigation** (AC: #2, #3)
+  - [ ] Create new route/page for "Data Management".
+  - [ ] Implement navigation links/menu for Controls, Risks, Business Processes, Regulatory Frameworks.
+- [ ] **Implement List Views for Core Entities** (AC: #4)
+  - [ ] Create reusable "DataTable" or list component.
+  - [ ] Implement data fetching from Story 1.3 API endpoints (GET /api/v1/{entity}).
+  - [ ] Display key columns for each entity type.
+- [ ] **Implement "Create" Forms** (AC: #5, #8)
+  - [ ] Create forms for Controls, Risks, Business Processes, Regulatory Frameworks using React Hook Form (or similar).
+  - [ ] Implement form validation (client-side and handling server-side errors).
+  - [ ] Connect form submission to POST API endpoints.
+- [ ] **Implement "Edit" Functionality** (AC: #6, #8)
+  - [ ] Add "Edit" button to list view items.
+  - [ ] Implement form pre-filling with existing data.
+  - [ ] Connect form submission to PUT API endpoints.
+- [ ] **Implement "Delete" Functionality** (AC: #7, #8)
+  - [ ] Add "Delete" button to list view items.
+  - [ ] Implement confirmation modal/dialog.
+  - [ ] Connect confirmation action to DELETE API endpoints.
+- [ ] **Develop and execute UI integration tests** (AC: #3, #4, #5, #6, #7, #8)
+  - [ ] Write tests for navigation to Data Management pages.
+  - [ ] Write tests for rendering list views with mock data.
+  - [ ] Write tests for form interactions (create, edit) and submission success/failure.
+  - [ ] Write tests for delete confirmation and execution.</tasks>
+  </story>
+
+  <acceptanceCriteria>1.  **Given** an authenticated Admin user with access to the system,
+2.  **When** the user navigates to the "Data Management" section of the frontend application,
+3.  **Then** they should see a clear, navigable dashboard or menu for accessing "Controls", "Risks", "Business Processes", and "Regulatory Frameworks".
+4.  **And** for each entity type, the user can view a list of existing records (paginated if necessary).
+5.  **And** the user can click "Create New" to open a form, fill in required fields, and submit to create a new record (consuming the API from Story 1.3).
+6.  **And** the user can click "Edit" on an existing record to modify its fields and save changes.
+7.  **And** the user can click "Delete" (with a confirmation dialog) to remove a record.
+8.  **And** the UI handles API errors gracefully (e.g., displaying validation messages or unauthorized access alerts).</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>Epic 1: Foundational Setup & Core Compliance Data Model</title>
+        <section>Story 1.4: Build Basic UI for Managing Core Data</section>
+        <snippet>As an Admin, I want a basic user interface to Create, Read, Update, and Delete the core compliance entities, So that I can manage the foundational data of the system through the web application. Includes ACs for listing, creating, editing, and deleting controls, risks, business processes, and regulatory frameworks.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Epic 1</title>
+        <section>Detailed Design</section>
+        <snippet>Building basic data management UI pages in Next.js using Shadcn UI components for all core entities. Includes Admin viewing list, creating, editing, and deleting controls via UI. Performance requirement: Initial load time (LCP) < 2.5s.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>5. Project Structure & Boundaries</section>
+        <snippet>Frontend application structure: `frontend/app/(dashboard)/admin` for Epic 1 UI. Components: Reusable React components (Shadcn/UI). State Management: React Query for server state, Zustand for global state.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <!-- No existing code artifacts yet as this is a greenfield story for the frontend part of Epic 1 -->
+    </code>
+    <dependencies>
+      <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>next</package>
+        <version>latest</version>
+      </dependency>
+      <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>react-hook-form</package>
+        <version>latest</version>
+      </dependency>
+      <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>@tanstack/react-query</package>
+        <version>latest</version>
+      </dependency>
+       <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>zod</package>
+        <version>latest</version>
+      </dependency>
+       <dependency>
+        <ecosystem>Node.js</ecosystem>
+        <package>shadcn-ui</package>
+        <version>latest</version>
+      </dependency>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Frontend must handle JWT token storage and inclusion in API headers.</constraint>
+    <constraint>Components should be modular and reusable (generic List/Table, generic Form).</constraint>
+    <constraint>Adhere to monorepo structure: frontend code in `frontend` directory.</constraint>
+    <constraint>Use React Query for server state management.</constraint>
+    <constraint>Use Shadcn/UI components.</constraint>
+    <constraint>Performance: LCP < 2.5s.</constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>Controls API</name>
+      <kind>REST Endpoint</kind>
+      <signature>GET/POST/PUT/DELETE /api/v1/controls</signature>
+      <path>backend/app/api/v1/controls.py</path>
+    </interface>
+    <interface>
+      <name>Risks API</name>
+      <kind>REST Endpoint</kind>
+      <signature>GET/POST/PUT/DELETE /api/v1/risks</signature>
+      <path>backend/app/api/v1/risks.py</path>
+    </interface>
+     <interface>
+      <name>Business Processes API</name>
+      <kind>REST Endpoint</kind>
+      <signature>GET/POST/PUT/DELETE /api/v1/business-processes</signature>
+      <path>backend/app/api/v1/business_processes.py</path>
+    </interface>
+     <interface>
+      <name>Regulatory Frameworks API</name>
+      <kind>REST Endpoint</kind>
+      <signature>GET/POST/PUT/DELETE /api/v1/regulatory-frameworks</signature>
+      <path>backend/app/api/v1/regulatory_frameworks.py</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>Use Playwright for End-to-End (E2E) testing of frontend UI flows. Use React Testing Library/Jest (if configured) for component unit tests. Ensure tests cover navigation, rendering, form interactions, and error handling.</standards>
+    <locations>frontend/tests, frontend/__tests__</locations>
+    <ideas>
+      <idea>Test navigation to Data Management pages.</idea>
+      <idea>Test rendering of list views with mock data.</idea>
+      <idea>Test Create form submission success and error handling.</idea>
+      <idea>Test Edit form pre-filling and submission.</idea>
+      <idea>Test Delete confirmation dialog and action.</idea>
+      <idea>Test tenant isolation (ensure user only sees their own data).</idea>
+    </ideas>
+  </tests>
+</story-context>
