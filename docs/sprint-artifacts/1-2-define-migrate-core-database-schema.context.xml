@@ -1,0 +1,147 @@
+<story-context id="{bmad_folder}/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>2</storyId>
+    <title>Define &amp; Migrate Core Database Schema</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-2-define-migrate-core-database-schema.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>system</asA>
+    <iWant>the database schema for the core compliance entities (Business Processes, Risks, Controls, Regulatory Frameworks) to be defined and migrated</iWant>
+    <soThat>the application has a persistent storage layer for its fundamental data</soThat>
+    <tasks>
+- [ ] **Define SQLAlchemy models for core entities.** (AC: #3, #4)
+  - [ ] Create `BusinessProcess`, `Risk`, `Control`, `RegulatoryFramework` models in `backend/app/models/`.
+  - [ ] Include `id`, `name`, `description`, `created_at`, `tenant_id` columns with appropriate data types.
+  - [ ] Ensure `tenant_id` is linked to user/tenant context (e.g., foreign key or inferred from authenticated user).
+- [ ] **Generate and apply Alembic migration.** (AC: #2, #3, #4)
+  - [ ] Use Alembic to generate a migration script from the SQLAlchemy models.
+  - [ ] Review the generated migration script to ensure it accurately creates the specified tables and columns.
+  - [ ] Apply the migration to the development Supabase PostgreSQL database.
+- [ ] **Implement Row-Level Security (RLS) policies.** (AC: #5)
+  - [ ] Define RLS policies in Supabase for `business_processes`, `risks`, `controls`, and `regulatory_frameworks` tables.
+  - [ ] Ensure RLS policies restrict data access and modification based on the `tenant_id` column for authenticated users.
+- [ ] **Develop and execute unit/integration tests for schema and RLS.** (AC: #2, #3, #4, #5)
+  - [ ] Write unit tests to verify the structure and properties of the SQLAlchemy models.
+  - [ ] Write integration tests to confirm that applying the Alembic migration creates the correct tables and columns in the database.
+  - [ ] Write integration tests to verify that RLS policies are correctly enforced, preventing unauthorized cross-tenant data access.
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1.  **Given** the project foundation from Story 1.1,
+2.  **When** the database migration is run via Alembic,
+3.  **Then** tables for `business_processes`, `risks`, `controls`, and `regulatory_frameworks` are created in the Supabase PostgreSQL database.
+4.  **And** each table includes necessary columns like `id`, `name`, `description`, `created_at`, and a `tenant_id`.
+5.  **And** Row-Level Security (RLS) is enabled on all tables to enforce tenant isolation.
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundational Setup &amp; Core Compliance Data Model</title>
+        <section>Data Models and Contracts</section>
+        <snippet>The core data models will be defined in `backend/app/models/`. Similar schemas will be created for `risks`, `business_processes`, and `regulatory_frameworks`.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-1.md</path>
+        <title>Epic Technical Specification: Foundational Setup &amp; Core Compliance Data Model</title>
+        <section>Acceptance Criteria (Authoritative)</section>
+        <snippet>5. Alembic migration creates tables for `business_processes`, `risks`, `controls`, and `regulatory_frameworks`. 6. All core tables have RLS enabled for tenant isolation.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>4.1. Data Persistence</section>
+        <snippet>Decision: Supabase (PostgreSQL) ... provides a robust, relational database suitable for the structured and interconnected nature of GRC data.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>7. Implementation Patterns (Consistency Rules)</section>
+        <snippet>Database Tables: Plural nouns, snake_case (e.g., `business_processes`). Database Columns: snake_case (e.g., `created_at`, `process_owner_id`).</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>ibe160 - Epic Breakdown</title>
+        <section>Story 1.2: Define &amp; Migrate Core Database Schema</section>
+        <snippet>As a system, I want the database schema for the core compliance entities (Business Processes, Risks, Controls, Regulatory Frameworks) to be defined and migrated...</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>backend/app/models/</path>
+        <kind>directory</kind>
+        <reason>SQLAlchemy models for core entities will be defined here.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/migrations/</path>
+        <kind>directory</kind>
+        <reason>Alembic migration scripts will be generated and managed here.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <python>
+        <package name="SQLAlchemy" purpose="ORM for database interaction" />
+        <package name="Alembic" purpose="Database migrations" />
+        <package name="Pydantic" purpose="Data validation" />
+        <framework name="FastAPI" purpose="Backend API framework" />
+        <tool name="uv" purpose="Python package installer" />
+        <package name="Pytest" purpose="Backend testing framework" />
+      </python>
+      <javascript>
+        <framework name="Next.js" purpose="Frontend framework" />
+        <library name="Shadcn/UI" purpose="Frontend component library" />
+        <tool name="pnpm" purpose="Node.js package manager" />
+      </javascript>
+      <database>
+        <platform name="Supabase" engine="PostgreSQL" purpose="Core data persistence and services" />
+      </database>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <type>Database</type>
+      <rule>Supabase (PostgreSQL) is the chosen data persistence layer.</rule>
+      <source>docs/architecture.md#4.1. Data Persistence</source>
+    </constraint>
+    <constraint>
+      <type>Naming Convention</type>
+      <rule>Database tables should use plural nouns and snake_case.</rule>
+      <source>docs/architecture.md#7. Implementation Patterns (Consistency Rules)</source>
+    </constraint>
+    <constraint>
+      <type>Naming Convention</type>
+      <rule>Database columns should use snake_case.</rule>
+      <source>docs/architecture.md#7. Implementation Patterns (Consistency Rules)</source>
+    </constraint>
+    <constraint>
+      <type>Schema Definition</type>
+      <rule>Core entities schema will be defined using SQLAlchemy models.</rule>
+      <source>docs/sprint-artifacts/1-2-define-migrate-core-database-schema.md#Tasks-Subtasks</source>
+    </constraint>
+    <constraint>
+      <type>Migrations</type>
+      <rule>Database migrations will be managed using Alembic.</rule>
+      <source>docs/sprint-artifacts/1-2-define-migrate-core-database-schema.md#Tasks-Subtasks</source>
+    </constraint>
+  </constraints>
+  <interfaces>{{interfaces}}</interfaces>
+  <tests>
+    <standards>Backend testing will utilize Pytest. Pre-commit hooks are in place for static checks (linting, formatting). A specific database testing strategy for migrations and data integrity must be developed.</standards>
+    <locations>
+      <location>backend/tests/</location>
+    </locations>
+    <ideas>
+      <idea ac_ref="#3,#4">Write unit tests to verify the structure and properties of the SQLAlchemy models (columns, types, constraints).</idea>
+      <idea ac_ref="#2,#3,#4">Write integration tests to confirm that applying the Alembic migration creates the correct tables and columns in the database.</idea>
+      <idea ac_ref="#5">Write integration tests to verify that Row-Level Security (RLS) policies are correctly enforced, preventing unauthorized cross-tenant data access.</idea>
+    </ideas>
+  </tests>
+</story-context>
