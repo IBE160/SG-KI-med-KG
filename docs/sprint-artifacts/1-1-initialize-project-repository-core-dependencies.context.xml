@@ -1,0 +1,95 @@
+<story-context id="docs/sprint-artifacts/1-1-initialize-project-repository-core-dependencies.context.xml" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>1.1</storyId>
+    <title>Initialize Project Repository &amp; Core Dependencies</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-1-initialize-project-repository-core-dependencies.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>development team</asA>
+    <iWant>to initialize the project from the chosen `vintasoftware/nextjs-fastapi-template`</iWant>
+    <soThat>we have a stable and consistent foundation for building the application, aligned with architectural decisions</soThat>
+    <tasks>
+- [ ] **Setup Repository** (AC: #1)
+  - [ ] Create a new GitHub repository using the `vintasoftware/nextjs-fastapi-template`.
+  - [ ] Clone the new repository to the local development environment.
+  - [ ] **Test:** Manually verify that the new repository exists on GitHub and is a correct fork of the template.
+- [ ] **Install Dependencies** (AC: #2)
+  - [ ] Run `pnpm install` in the `frontend` directory.
+  - [ ] Run `uv pip install -r requirements.txt` in the `backend` directory.
+  - [ ] **Test:** Check for the presence of `node_modules` and the `uv` virtual environment, and ensure no installation errors were reported.
+- [ ] **Configure Environment** (AC: #3)
+  - [ ] Create a `.env` file in the root directory.
+  - [ ] Add placeholders for `SUPABASE_URL`, `SUPABASE_KEY`, `OPENAI_API_KEY`, `SENDGRID_API_KEY`.
+  - [ ] **Test:** Manually verify that the `.env` file is present and contains the correct placeholder keys.
+- [ ] **Verify Application** (AC: #4)
+  - [ ] Run `docker compose up --build`.
+  - [ ] Access the frontend at `http://localhost:3000` and the backend docs at `http://localhost:8000/docs`.
+  - [ ] **Test:** Confirm that the frontend loads without errors and the backend API documentation is accessible.
+- [ ] **Configure Database** (AC: #5)
+  - [ ] Log in to the Supabase dashboard.
+  - [ ] Navigate to the SQL Editor.
+  - [ ] Execute `CREATE EXTENSION IF NOT EXISTS pgvector;` to enable the `pgvector` extension.
+  - [ ] **Test:** Run `SELECT * FROM pg_extension WHERE extname = 'pgvector';` in the Supabase SQL Editor to confirm the extension is installed.
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. A new repository is created from the `vintasoftware/nextjs-fastapi-template`.
+2. All dependencies are installed using `uv` and `pnpm`.
+3. Environment variables (`.env`) are configured for Supabase, OpenAI, and SendGrid.
+4. The application runs successfully via `docker compose up`.
+5. The `pgvector` extension is enabled in the Supabase database.
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>3.1. Starter Template Decision</section>
+        <snippet>Based on the project's technical specifications, the `vintasoftware/nextjs-fastapi-template` has been chosen as the foundational starter template.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>ibe160 - Epic Breakdown</title>
+        <section>Story 1.1: Initialize Project Repository &amp; Core Dependencies</section>
+        <snippet>As a development team, I want to initialize the project from the chosen `vintasoftware/nextjs-fastapi-template`, so that we have a stable and consistent foundation for building the application, aligned with architectural decisions.</snippet>
+      </doc>
+    </docs>
+    <code>
+        <!-- No existing code is relevant as this is the first story -->
+    </code>
+    <dependencies>
+        <dependency ecosystem="python">uv</dependency>
+        <dependency ecosystem="node">pnpm</dependency>
+        <dependency ecosystem="container">Docker Compose</dependency>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Must use the `vintasoftware/nextjs-fastapi-template`.</constraint>
+    <constraint>Must use `uv` for Python dependencies and `pnpm` for Node.js dependencies.</constraint>
+    <constraint>Project must be runnable via `docker compose up`.</constraint>
+  </constraints>
+  <interfaces>
+    <!-- No new interfaces are defined in this story -->
+  </interfaces>
+  <tests>
+    <standards>The starter template includes pre-commit hooks for linting and formatting. Ensure they are active. Backend testing will use `Pytest`.</standards>
+    <locations>
+        <location>`backend/tests/`</location>
+    </locations>
+    <ideas>
+        <idea for="AC#1">Manual verification of repository creation.</idea>
+        <idea for="AC#2">Manual verification of dependency installation.</idea>
+        <idea for="AC#3">Manual verification of `.env` file.</idea>
+        <idea for="AC#4">Manual verification of application startup.</idea>
+        <idea for="AC#5">SQL query to verify `pgvector` extension.</idea>
+    </ideas>
+  </tests>
+</story-context>
