@@ -1,0 +1,67 @@
+# generated: 2025-12-01
+# project: ibe160
+# project_key: 
+# tracking_system: file-system
+# story_location: {project-root}/docs/sprint-artifacts
+
+# STATUS DEFINITIONS:
+# ==================
+# Epic Status:
+#   - backlog: Epic exists in epic file but not contexted
+#   - contexted: Epic tech context created (required before drafting stories)
+#
+# Story Status:
+#   - backlog: Story only exists in epic file
+#   - drafted: Story file created in stories folder
+#   - ready-for-dev: Draft approved and story context created
+#   - in-progress: Developer actively working on implementation
+#   - review: Under SM review (via code-review workflow)
+#   - done: Story completed
+#
+# Retrospective Status:
+#   - optional: Can be completed but not required
+#   - completed: Retrospective has been done
+#
+# WORKFLOW NOTES:
+# ===============
+# - Epics should be 'contexted' before stories can be 'drafted'
+# - Stories can be worked in parallel if team capacity allows
+# - SM typically drafts next story after previous one is 'done' to incorporate learnings
+# - Dev moves story to 'review', SM reviews, then Dev moves to 'done'
+
+generated: 2025-12-01
+project: ibe160
+project_key:
+tracking_system: file-system
+story_location: '{project-root}/docs/sprint-artifacts'
+
+development_status:
+  epic-1: backlog
+  1-1-initialize-project-repository-core-dependencies: backlog
+  1-2-define-migrate-core-database-schema: backlog
+  1-3-implement-api-endpoints-for-core-data-crud: backlog
+  1-4-build-basic-ui-for-managing-core-data: backlog
+  epic-1-retrospective: optional
+
+  epic-2: backlog
+  2-1-implement-user-registration-login-email-password: backlog
+  2-2-implement-role-based-access-control-rbac: backlog
+  epic-2-retrospective: optional
+
+  epic-3: backlog
+  3-1-implement-document-upload-for-ai-analysis: backlog
+  3-2-integrate-ai-for-document-analysis-suggestion-generation: backlog
+  3-3-build-human-in-the-loop-hitl-validation-interface: backlog
+  3-4-implement-immutable-audit-trail: backlog
+  epic-3-retrospective: optional
+
+  epic-4: backlog
+  4-1-develop-role-specific-dashboards: backlog
+  4-2-implement-real-time-status-updates: backlog
+  4-3-develop-streamlined-control-assessment-workflow-for-bpos: backlog
+  epic-4-retrospective: optional
+
+  epic-5: backlog
+  5-1-implement-many-to-many-compliance-mapping-ui: backlog
+  5-2-develop-gap-analysis-report-generation: backlog
+  epic-5-retrospective: optional
