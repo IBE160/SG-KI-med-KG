@@ -1,0 +1,299 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>1</epicId>
+    <storyId>3</storyId>
+    <title>Implement API Endpoints for Core Data CRUD</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-01</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/1-3-implement-api-endpoints-for-core-data-crud.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>an Admin</asA>
+    <iWant>to be able to Create, Read, Update, and Delete the core compliance entities via the API</iWant>
+    <soThat>the frontend has a secure and reliable way to manage the foundational data</soThat>
+    <tasks>
+      - [ ] **Implement API Endpoints for Controls** (AC: #2, #3, #4, #5)
+        - [ ] Define Pydantic schemas for request/response bodies (e.g., `ControlCreate`, `ControlUpdate`).
+        - [ ] Implement `POST /api/v1/controls` to create a new control.
+        - [ ] Implement `GET /api/v1/controls` to list controls.
+        - [ ] Implement `GET /api/v1/controls/{control_id}` to retrieve a single control.
+        - [ ] Implement `PUT /api/v1/controls/{control_id}` to update a control.
+        - [ ] Implement `DELETE /api/v1/controls/{control_id}` to delete a control.
+        - [ ] Ensure `tenant_id` is automatically associated with created/updated resources based on authenticated user.
+      - [ ] **Implement API Endpoints for Risks, Business Processes, Regulatory Frameworks** (AC: #2, #3, #4, #5)
+        - [ ] Define Pydantic schemas for request/response bodies for each entity.
+        - [ ] Implement CRUD endpoints (`GET`, `POST`, `PUT`, `DELETE`) for each entity, similar to controls.
+        - [ ] Ensure `tenant_id` is automatically associated with created/updated resources.
+      - [ ] **Implement Tenant Isolation with JWT** (AC: #5)
+        - [ ] Configure FastAPI security to extract `tenant_id` from JWT.
+        - [ ] Apply security dependencies to all CRUD endpoints to ensure only resources belonging to the authenticated user's tenant are accessible.
+        - [ ] Handle cases where a user tries to access another tenant's resource (e.g., return 404 or 403).
+      - [ ] **Develop and execute integration tests for API endpoints** (AC: #1, #2, #3, #4, #5)
+        - [ ] Write tests for `POST` endpoints to verify resource creation and correct tenant association.
+        - [ ] Write tests for `GET` (list and by ID) endpoints, including positive and negative cases (e.g., accessing own vs. other tenant's resources).
+        - [ ] Write tests for `PUT` endpoints to verify updates and tenant isolation.
+        - [ ] Write tests for `DELETE` endpoints to verify resource deletion and tenant isolation.
+        - [ ] Use `Pytest` for testing.
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1.  **Given** the database schema from Story 1.2 and an authenticated Admin user,
+    2.  **When** a POST request is sent to `/api/v1/controls` with valid data,
+    3.  **Then** a new control is created in the database and a 201 status is returned.
+    4.  **And** GET (list and by ID), PUT, and DELETE endpoints are functional for `controls`, `risks`, `business_processes`, and `regulatory_frameworks`.
+    5.  **And** all API endpoints enforce tenant isolation based on the authenticated user's JWT token, failing with a 404 if a resource from another tenant is requested.
+  </acceptanceCriteria>
+
+  <artifacts>
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>Product Scope - MVP - Core Data Management</section>
+        <snippet>Full CRUD (Create, Read, Update, Delete) capabilities for the central risk matrix table, the risk register, and the control library.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>SaaS B2B Specific Requirements - Multi-Tenancy Architecture</section>
+        <snippet>The system will be designed as a multi-tenant application where data from one customer (tenant) is logically isolated from all others. Data will be partitioned using a unique `tenant_id` on all relevant tables. Row-Level Security (RLS) policies in the database will enforce this separation.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>Functional Requirements - FR-2: Core Data CRUD</section>
+        <snippet>Authorized users (primarily Admins) must be able to Create, Read, Update, and Delete the core data entities: Business Processes, Risks, Controls, and Regulatory Frameworks.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>Executive Summary</section>
+        <snippet>The chosen architecture is a decoupled, full-stack application using a Next.js frontend and a FastAPI (Python) backend. The core data platform is Supabase, which provides the PostgreSQL database, authentication, file storage, real-time updates, and vector database capabilities.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>4.1. Data Persistence</section>
+        <snippet>Decision: Supabase (PostgreSQL). It provides a robust, relational database suitable for the structured and interconnected nature of GRC data. Furthermore, the Supabase platform provides a suite of integrated tools that are required by the project.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>5. Project Structure & Boundaries</section>
+        <snippet>The project will be organized as a monorepo, following the structure provided by the chosen starter template. Includes backend/app/api/v1, backend/app/crud, backend/app/models, backend/app/schemas.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>5. Project Structure & Boundaries - Epic-to-Architecture Mapping</section>
+        <snippet>Epic 1 (Foundational Setup): Lives in `backend/app/models`, `backend/migrations`, `backend/app/api/v1`, and `frontend/app/(dashboard)/admin`.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>7. Implementation Patterns (Consistency Rules) - Naming Conventions</section>
+        <snippet>API Endpoints: Plural nouns, kebab-case (e.g., `/api/v1/business-processes`). Database Tables: Plural nouns, snake_case. Database Columns: snake_case.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>7. Implementation Patterns (Consistency Rules) - API Structure</section>
+        <snippet>Versioning: All API routes will be prefixed with `/api/v1/`. Response Format: JSON object directly. Error Format: `{ "detail": "Error message here" }`. Authentication: JWT in `Authorization: Bearer <token>` header.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>ibe160 UX Design Specification</title>
+        <section>Executive Summary</section>
+        <snippet>The vision for ibe160 is to create a GRC platform that feels like an empowering, efficient, and expert partner. The platform will be a desktop-first experience, ensuring a rich, data-centric interface.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>ibe160 UX Design Specification</title>
+        <section>7. UX Pattern Decisions - Form Patterns</section>
+        <snippet>Form labels will always be positioned above their corresponding input field. Input fields will be validated onBlur. Error messages will appear in red text directly below the field.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>ibe160 UX Design Specification</title>
+        <section>7. UX Pattern Decisions - Confirmation Patterns</section>
+        <snippet>A confirmation modal will always be used before a permanent, destructive action (e.g., "Are you sure you want to permanently delete this control?").</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>ibe160 - Epic Breakdown</title>
+        <section>Epic 1: Foundational Setup & Core Compliance Data Model - Story 1.3: Implement API Endpoints for Core Data CRUD</section>
+        <snippet>As an Admin, I want to be able to Create, Read, Update, and Delete the core compliance entities via the API, So that the frontend has a secure and reliable way to manage the foundational data.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>ibe160 - Epic Breakdown</title>
+        <section>Epic 1: Foundational Setup & Core Compliance Data Model - Story 1.2: Define & Migrate Core Database Schema</section>
+        <snippet>As a system, I want the database schema for the core compliance entities (Business Processes, Risks, Controls, Regulatory Frameworks) to be defined and migrated, So that the application has a persistent storage layer for its fundamental data.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>ibe160 - Epic Breakdown</title>
+        <section>Epic 1: Foundational Setup & Core Compliance Data Model - Story 1.1: Initialize Project Repository & Core Dependencies</section>
+        <snippet>As a development team, I want to initialize the project from the chosen `vintasoftware/nextjs-fastapi-template`, So that we have a stable and consistent foundation for building the application, aligned with architectural decisions.</snippet>
+      </doc>
+    </docs>
+
+    <code></code>
+    <dependencies>
+      <ecosystem name="Python">
+        <package name="FastAPI" reason="Backend framework" />
+        <package name="SQLAlchemy" reason="ORM for database interaction" />
+        <package name="Alembic" reason="Database migrations" />
+        <package name="Pydantic" reason="Data validation" />
+        <package name="fastapi-users" reason="Authentication" />
+        <package name="Celery" reason="Background jobs" />
+        <package name="Redis" reason="Message broker for Celery" />
+        <package name="Pydantic-AI" reason="Potential library for OpenAI API interaction" />
+        <package name="Pytest" reason="Backend testing framework" />
+      </ecosystem>
+      <ecosystem name="Node.js/TypeScript">
+        <package name="Next.js" reason="Frontend framework" />
+        <package name="Shadcn/UI" reason="Frontend component library" />
+        <package name="Tailwind CSS" reason="Styling framework" />
+        <package name="React Query" reason="Frontend server state management" />
+        <package name="@supabase/supabase-js" version="^2.86.0" reason="Supabase client library" />
+        <package name="Playwright" reason="Frontend E2E testing framework (implied from Architecture)" />
+      </ecosystem>
+      <ecosystem name="Database">
+        <package name="PostgreSQL" reason="Relational database (via Supabase)" />
+        <package name="pgvector" reason="Vector database extension for PostgreSQL" />
+      </ecosystem>
+      <ecosystem name="Cloud Services">
+        <package name="Supabase" reason="Database, Auth, Storage, Realtime" />
+        <package name="OpenAI GPT-4" reason="AI LLM" />
+        <package name="SendGrid" reason="Email service" />
+        <package name="Vercel" reason="Frontend deployment target" />
+        <package name="Railway" reason="Backend deployment target" />
+      </ecosystem>
+      <tool name="uv" reason="Python package manager" />
+      <tool name="pnpm" reason="Node.js package manager" />
+      <tool name="Docker Compose" reason="Local development orchestration" />
+      <tool name="black" reason="Python code formatter" />
+      <tool name="prettier" reason="Code formatter" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>
+      <category>Naming Conventions</category>
+      <rule>API Endpoints: Plural nouns, kebab-case (e.g., `/api/v1/business-processes`).</rule>
+    </constraint>
+    <constraint>
+      <category>Naming Conventions</category>
+      <rule>Database Tables: Plural nouns, snake_case (e.g., `business_processes`).</rule>
+    </constraint>
+    <constraint>
+      <category>Naming Conventions</category>
+      <rule>Database Columns: snake_case (e.g., `created_at`, `process_owner_id`).</rule>
+    </constraint>
+    <constraint>
+      <category>API Structure</category>
+      <rule>Versioning: All API routes will be prefixed with `/api/v1/`.</rule>
+    </constraint>
+    <constraint>
+      <category>API Structure</category>
+      <rule>Response Format: All successful `GET`, `PUT`, `POST` responses will return a JSON object directly. `DELETE` will return a `204 No Content`.</rule>
+    </constraint>
+    <constraint>
+      <category>API Structure</category>
+      <rule>Error Format: Errors will follow a consistent structure: `{ "detail": "Error message here" }`. FastAPI handles this by default.</rule>
+    </constraint>
+    <constraint>
+      <category>API Structure</category>
+      <rule>Authentication: All protected routes will expect a JWT in the `Authorization: Bearer <token>` header.</rule>
+    </constraint>
+    <constraint>
+      <category>Code Style &amp; Formatting</category>
+      <rule>Pre-commit hooks (`black` for Python and `prettier` for TypeScript/JSON) will be the single source of truth for code style. All code must pass these checks.</rule>
+    </constraint>
+    <constraint>
+      <category>Domain-Specific Requirements</category>
+      <rule>Auditability is Paramount: Every significant action must be logged in an immutable audit trail.</rule>
+    </constraint>
+    <constraint>
+      <category>Domain-Specific Requirements</category>
+      <rule>Data Security and Confidentiality: Standard industry practices for data security (encryption at rest/in transit).</rule>
+    </constraint>
+    <constraint>
+      <category>Domain-Specific Requirements</category>
+      <rule>Regulatory Flexibility: System must support multiple, user-defined regulatory frameworks.</rule>
+    </constraint>
+    <constraint>
+      <category>Domain-Specific Requirements</category>
+      <rule>Human-in-the-Loop Validation: Every AI suggestion must be presented for validation and approval.</rule>
+    </constraint>
+    <constraint>
+      <category>Domain-Specific Requirements</category>
+      <rule>Reliability over Speed: Accuracy and reliability over processing speed.</rule>
+    </constraint>
+    <constraint>
+      <category>Project Structure</category>
+      <rule>Adhere strictly to the monorepo structure with distinct `frontend` and `backend` directories. API endpoints will reside in the `backend` project.</rule>
+    </constraint>
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>Controls API</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/v1/controls: List all controls for the tenant.</signature>
+    </interface>
+    <interface>
+      <name>Controls API</name>
+      <kind>REST endpoint</kind>
+      <signature>POST /api/v1/controls: Create a new control.</signature>
+    </interface>
+    <interface>
+      <name>Controls API</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/v1/controls/{control_id}: Retrieve a single control.</signature>
+    </interface>
+    <interface>
+      <name>Controls API</name>
+      <kind>REST endpoint</kind>
+      <signature>PUT /api/v1/controls/{control_id}: Update a control.</signature>
+    </interface>
+    <interface>
+      <name>Controls API</name>
+      <kind>REST endpoint</kind>
+      <signature>DELETE /api/v1/controls/{control_id}: Delete a control.</signature>
+    </interface>
+    <interface>
+      <name>Risks API</name>
+      <kind>REST endpoint</kind>
+      <signature>Similar CRUD endpoints as Controls API for `/api/v1/risks`.</signature>
+    </interface>
+    <interface>
+      <name>Business Processes API</name>
+      <kind>REST endpoint</kind>
+      <signature>Similar CRUD endpoints as Controls API for `/api/v1/business-processes`.</signature>
+    </interface>
+    <interface>
+      <name>Regulatory Frameworks API</name>
+      <kind>REST endpoint</kind>
+      <signature>Similar CRUD endpoints as Controls API for `/api/v1/regulatory-frameworks`.</signature>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+      The primary testing framework for the backend will be Pytest. Unit tests will cover individual functions in the CRUD layer, and integration tests will cover the full request/response cycle of the FastAPI API endpoints. Code style and formatting will be enforced via pre-commit hooks, ensuring consistency.
+    </standards>
+    <locations>
+      <location>backend/tests/</location>
+    </locations>
+    <ideas>
+      <idea acId="1,2,3,4,5">Write tests for POST endpoints to verify resource creation and correct tenant association.</idea>
+      <idea acId="1,2,3,4,5">Write tests for GET (list and by ID) endpoints, including positive and negative cases (e.g., accessing own vs. other tenant's resources).</idea>
+      <idea acId="1,2,3,4,5">Write tests for PUT endpoints to verify updates and tenant isolation.</idea>
+      <idea acId="1,2,3,4,5">Write tests for DELETE endpoints to verify resource deletion and tenant isolation.</idea>
+    </ideas>
+  </tests>
+</story-context>
