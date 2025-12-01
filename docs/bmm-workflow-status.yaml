@@ -52,9 +52,9 @@ workflow_status:
   create-devops-strategy: skipped
   create-test-strategy: skipped
   validate-architecture: "docs/validation-report-architecture-2025-11-30.md"
-  test-design: recommended
+  test-design: skipped
   implementation-readiness: "docs/implementation-readiness-report-2025-11-30.md"
   solutioning-gate-check: skipped
 
   # Phase 3: Implementation
-  sprint-planning: required
+  sprint-planning: "docs/sprint-artifacts/sprint-status.yaml"
