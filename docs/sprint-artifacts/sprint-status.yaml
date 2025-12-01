@@ -43,7 +43,7 @@ development_status:
   1-4-build-basic-ui-for-managing-core-data: backlog
   epic-1-retrospective: optional
 
-  epic-2: backlog
+  epic-2: contexted
   2-1-implement-user-registration-login-email-password: backlog
   2-2-implement-role-based-access-control-rbac: backlog
   epic-2-retrospective: optional
