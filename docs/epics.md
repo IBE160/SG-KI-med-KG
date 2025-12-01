@@ -64,19 +64,20 @@ This map shows which Functional Requirements (FRs) are addressed by each propose
 
 ### Story 1.1: Initialize Project Repository & Core Dependencies
 As a **development team**,
-I want **a standardized project structure with all core dependencies (Next.js, FastAPI, Supabase client) installed and configured**,
-So that **we have a stable and consistent foundation for building the application**.
+I want **to initialize the project from the chosen `vintasoftware/nextjs-fastapi-template`**,
+So that **we have a stable and consistent foundation for building the application, aligned with architectural decisions**.
 
 **Acceptance Criteria:**
-**Given** a new project environment,
-**When** the initialization script is run,
-**Then** a monorepo is created with separate `frontend` (Next.js) and `backend` (FastAPI) directories.
-**And** Supabase client is installed and configured in the frontend.
-**And** core backend dependencies (FastAPI, SQLAlchemy, Alembic, Pydantic-AI) are installed.
-**And** basic "hello world" endpoints are functional for both frontend and backend.
+**Given** the `vintasoftware/nextjs-fastapi-template` is selected,
+**When** the project initialization process is complete,
+**Then** a new repository is created from the template.
+**And** all dependencies are installed using `uv` and `pnpm`.
+**And** environment variables (`.env`) are configured for Supabase, OpenAI, and SendGrid.
+**And** the application runs successfully via `docker compose up`.
+**And** the `pgvector` extension is enabled in the Supabase database.
 
 **Prerequisites:** None
-**Technical Notes:** This story sets up the entire repository and CI/CD pipeline foundation. It should include basic linting, formatting, and environment variable setup.
+**Technical Notes:** This story sets up the entire repository and CI/CD pipeline foundation. It should include basic linting, formatting, and environment variable setup, as well as the initial database setup.
 
 ### Story 1.2: Define & Migrate Core Database Schema
 As a **system**,
@@ -196,20 +197,21 @@ So that **I can generate suggestions for risks and controls**.
 **Technical Notes:** Implement Pydantic-AI for structured LLM output. Integrate with OpenAI GPT-4 (or similar LLM). Define clear prompts for "AI Legal Specialist" persona.
 
 ### Story 3.3: Build Human-in-the-Loop (HITL) Validation Interface
-As a **Compliance Officer**,
-I want **to review and explicitly approve or reject AI-generated suggestions for risks and controls**,
-So that **I maintain oversight and ensure accuracy before they become active in the system**.
+As a **Compliance Officer (CO)**,
+I want **to use the two-stage "AI Review Mode" to efficiently triage AI suggestions and route them for final BPO approval**,
+So that **I can act as an effective gatekeeper while ensuring business-level accountability**.
 
 **Acceptance Criteria:**
-**Given** AI-generated suggestions are available (Story 3.2),
-**When** I access the HITL validation interface,
-**Then** I see a clear list of suggestions, visually distinct from verified data.
-**And** for each suggestion, there are "Approve" and "Reject" buttons.
-**And** approving a suggestion adds it to the active `risks` or `controls` library (FR-2).
-**And** rejecting a suggestion removes it from the pending list and optionally allows me to provide feedback.
+**Given** a document has been analyzed by the AI,
+**When** I enter "AI Review Mode",
+**Then** I see a two-panel layout with a list of suggestions on the left and details on the right.
+**And** I can use "Accept" to promote a suggestion to the "Pending Review" queue for the designated BPO.
+**And** promoting a suggestion routes it to the BPO's dashboard and sends a notification.
+**And** the original `source_reference` from the AI analysis is permanently attached to the item for the BPO to see.
+**And** dismissing a suggestion removes it from my triage view.
 
 **Prerequisites:** Story 3.2.
-**Technical Notes:** Frontend development for the HITL interface. Backend endpoints to handle approval/rejection logic.
+**Technical Notes:** Frontend development for the "AI Review Mode" interface with two-panel layout. Backend endpoints to handle suggestion promotion and routing to BPO queues. Supabase Realtime for notifications.
 
 ### Story 3.4: Implement Immutable Audit Trail
 As a **system**,
@@ -234,17 +236,19 @@ So that **there is a comprehensive and verifiable history for compliance audits*
 
 ### Story 4.1: Develop Role-Specific Dashboards
 As a **user**,
-I want **a tailored dashboard experience upon login**,
-So that **I immediately see the most relevant information and actions for my role**.
+I want **an "Action-Oriented Hub" dashboard tailored to my role upon login**,
+So that **I immediately see the most critical information and actions, and can easily initiate core workflows**.
 
 **Acceptance Criteria:**
 **Given** I am logged in with a specific role (Admin, BPO, Executive, General User),
 **When** I land on the dashboard,
-**Then** the content and layout of the dashboard are customized to my role (e.g., Executive sees high-level risk metrics, BPO sees pending assessments).
+**Then** the content and layout of the dashboard are customized to my role with a grid of modular cards.
+**And** the dashboard features a prominent "Analyze New Document" button for COs.
+**And** a BPO sees a "Pending Reviews" card with a count of items awaiting action.
 **And** the dashboard loads quickly (LCP < 2.5s).
 
 **Prerequisites:** Epic 2 (RBAC), Epic 1 (Core Data CRUD for metrics).
-**Technical Notes:** Frontend conditional rendering based on user role. Utilize Recharts for data visualization. Backend endpoints providing role-specific data feeds.
+**Technical Notes:** Frontend conditional rendering based on user role. Utilize Shadcn/UI for modular cards and Recharts for data visualization. Backend endpoints providing role-specific data feeds.
 
 ### Story 4.2: Implement Real-Time Status Updates
 As a **user**,
@@ -262,18 +266,20 @@ So that **I always have up-to-date information for decision-making**.
 
 ### Story 4.3: Develop Streamlined Control Assessment Workflow for BPOs
 As a **Business Process Owner (BPO)**,
-I want **a simple and intuitive interface to assess assigned controls**,
-So that **I can efficiently complete my compliance tasks**.
+I want **to act on items in my "Pending Review" queue via a dedicated review screen**,
+So that **I can make the final, accountable decision on new controls and risks**.
 
 **Acceptance Criteria:**
-**Given** I am logged in as a BPO,
-**When** I access my dashboard,
-**Then** I see a list of controls assigned to me that require assessment.
-**And** I can select a control, choose an assessment status (e.g., "Effective", "Ineffective", "Needs Improvement"), and add comments in under 5 clicks.
-**And** the assessment action is logged to the immutable audit trail (FR-8).
+**Given** a CO has routed an item to my "Pending Review" queue (from Story 3.3),
+**When** I access my dashboard and click on the "Pending Reviews" card,
+**Then** I see a list of items awaiting my final decision.
+**And** selecting an item takes me to a detailed review screen with editable AI-suggested data.
+**And** I can "Approve" (making it Active), "Edit" (with changes tracked in a "Change Log"), or "Discard" (moving it to a temporary archive).
+**And** I must categorize the "Residual Risk" (low, medium, high) before approval.
+**And** the assessment action, including edits and final decision, is logged to the immutable audit trail (FR-8).
 
-**Prerequisites:** Epic 2 (BPO role), Epic 4.1 (BPO Dashboard), Epic 3.4 (Audit Trail).
-**Technical Notes:** Dedicated frontend forms/modals for assessments. Backend endpoints to process assessments and trigger audit logging.
+**Prerequisites:** Epic 2 (BPO role), Epic 4.1 (BPO Dashboard), Epic 3.4 (Audit Trail), Story 3.3.
+**Technical Notes:** Dedicated frontend review screen leveraging Shadcn/UI. Backend endpoints to process assessments, manage change logs, and trigger audit logging.
 
 ---
 

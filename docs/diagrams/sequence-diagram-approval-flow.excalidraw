@@ -1,0 +1,352 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://gemini.google.com",
+  "elements": [
+    {
+      "id": "CO",
+      "type": "rectangle",
+      "x": 50,
+      "y": 50,
+      "width": 150,
+      "height": 40
+    },
+    {
+      "id": "T-CO",
+      "type": "text",
+      "x": 60,
+      "y": 60,
+      "width": 130,
+      "height": 20,
+      "text": "Compliance Officer"
+    },
+    {
+      "id": "ReviewPage",
+      "type": "rectangle",
+      "x": 250,
+      "y": 50,
+      "width": 150,
+      "height": 40
+    },
+    {
+      "id": "T-ReviewPage",
+      "type": "text",
+      "x": 260,
+      "y": 60,
+      "width": 130,
+      "height": 20,
+      "text": "AIReviewPage"
+    },
+    {
+      "id": "API",
+      "type": "rectangle",
+      "x": 450,
+      "y": 50,
+      "width": 150,
+      "height": 40
+    },
+    {
+      "id": "T-API",
+      "type": "text",
+      "x": 460,
+      "y": 60,
+      "width": 130,
+      "height": 20,
+      "text": "SuggestionsAPI"
+    },
+    {
+      "id": "Service",
+      "type": "rectangle",
+      "x": 650,
+      "y": 50,
+      "width": 150,
+      "height": 40
+    },
+    {
+      "id": "T-Service",
+      "type": "text",
+      "x": 660,
+      "y": 60,
+      "width": 130,
+      "height": 20,
+      "text": "ApprovalService"
+    },
+    {
+      "id": "DB",
+      "type": "rectangle",
+      "x": 850,
+      "y": 50,
+      "width": 150,
+      "height": 40
+    },
+    {
+      "id": "T-DB",
+      "type": "text",
+      "x": 890,
+      "y": 60,
+      "width": 70,
+      "height": 20,
+      "text": "Database"
+    },
+    {
+      "id": "Notify",
+      "type": "rectangle",
+      "x": 1050,
+      "y": 50,
+      "width": 150,
+      "height": 40
+    },
+    {
+      "id": "T-Notify",
+      "type": "text",
+      "x": 1060,
+      "y": 60,
+      "width": 130,
+      "height": 20,
+      "text": "NotificationService"
+    },
+    {
+      "id": "BPO",
+      "type": "rectangle",
+      "x": 1250,
+      "y": 50,
+      "width": 150,
+      "height": 40
+    },
+    {
+      "id": "T-BPO",
+      "type": "text",
+      "x": 1255,
+      "y": 60,
+      "width": 140,
+      "height": 20,
+      "text": "Business Process Owner"
+    },
+    {
+      "id": "BPODashboard",
+      "type": "rectangle",
+      "x": 1450,
+      "y": 50,
+      "width": 150,
+      "height": 40
+    },
+    {
+      "id": "T-BPODashboard",
+      "type": "text",
+      "x": 1470,
+      "y": 60,
+      "width": 110,
+      "height": 20,
+      "text": "BPO Dashboard"
+    },
+    {
+      "type": "line",
+      "x1": 125,
+      "y1": 90,
+      "x2": 125,
+      "y2": 700
+    },
+    {
+      "type": "line",
+      "x1": 325,
+      "y1": 90,
+      "x2": 325,
+      "y2": 700
+    },
+    {
+      "type": "line",
+      "x1": 525,
+      "y1": 90,
+      "x2": 525,
+      "y2": 700
+    },
+    {
+      "type": "line",
+      "x1": 725,
+      "y1": 90,
+      "x2": 725,
+      "y2": 700
+    },
+    {
+      "type": "line",
+      "x1": 925,
+      "y1": 90,
+      "x2": 925,
+      "y2": 700
+    },
+    {
+      "type": "line",
+      "x1": 1125,
+      "y1": 90,
+      "x2": 1125,
+      "y2": 700
+    },
+    {
+      "type": "line",
+      "x1": 1325,
+      "y1": 90,
+      "x2": 1325,
+      "y2": 700
+    },
+    {
+      "type": "line",
+      "x1": 1525,
+      "y1": 90,
+      "x2": 1525,
+      "y2": 700
+    },
+    {
+      "type": "text",
+      "text": "Stage 1: CO Triage",
+      "x": 50,
+      "y": 120,
+      "fontSize": 24,
+      "fontStyle": "bold"
+    },
+    {
+      "type": "arrow",
+      "x1": 125,
+      "y1": 160,
+      "x2": 325,
+      "y2": 160,
+      "label": {
+        "text": "1. Clicks 'Accept'"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 325,
+      "y1": 190,
+      "x2": 525,
+      "y2": 190,
+      "label": {
+        "text": "2. POST /suggestions/{id}/promote"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 525,
+      "y1": 220,
+      "x2": 725,
+      "y2": 220,
+      "label": {
+        "text": "3. promoteToReview()"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 725,
+      "y1": 250,
+      "x2": 925,
+      "y2": 250,
+      "label": {
+        "text": "4. UPDATE status = 'Pending'"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 725,
+      "y1": 280,
+      "x2": 1125,
+      "y2": 280,
+      "label": {
+        "text": "5. triggerNotification()"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 1125,
+      "y1": 310,
+      "x2": 1525,
+      "y2": 310,
+      "label": {
+        "text": "6. Real-time event"
+      },
+      "strokeStyle": "dashed"
+    },
+    {
+      "type": "text",
+      "text": "Stage 2: BPO Approval",
+      "x": 50,
+      "y": 350,
+      "fontSize": 24,
+      "fontStyle": "bold"
+    },
+    {
+      "type": "arrow",
+      "x1": 1325,
+      "y1": 390,
+      "x2": 1525,
+      "y2": 390,
+      "label": {
+        "text": "7. Views Dashboard"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 1525,
+      "y1": 420,
+      "x2": 1325,
+      "y2": 420,
+      "label": {
+        "text": "8. Sees pending item"
+      },
+      "strokeStyle": "dashed"
+    },
+    {
+      "type": "arrow",
+      "x1": 1325,
+      "y1": 450,
+      "x2": 525,
+      "y2": 450,
+      "label": {
+        "text": "9. Clicks 'Approve' -> POST /suggestions/{id}/approve"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 525,
+      "y1": 480,
+      "x2": 725,
+      "y2": 480,
+      "label": {
+        "text": "10. approveSuggestion()"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 725,
+      "y1": 510,
+      "x2": 925,
+      "y2": 510,
+      "label": {
+        "text": "11. UPDATE status = 'Active'"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 725,
+      "y1": 540,
+      "x2": 925,
+      "y2": 540,
+      "label": {
+        "text": "12. INSERT into audit_log"
+      }
+    },
+    {
+      "type": "arrow",
+      "x1": 525,
+      "y1": 570,
+      "x2": 1325,
+      "y2": 570,
+      "label": {
+        "text": "13. 200 OK"
+      },
+      "strokeStyle": "dashed"
+    }
+  ],
+  "appState": {
+    "viewBackgroundColor": "#ffffff",
+    "gridSize": 20
+  }
+}
