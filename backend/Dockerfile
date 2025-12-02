@@ -26,8 +26,11 @@ ENV PATH="/app/.venv/bin:$PATH"
 # Copy the rest of the application code
 COPY . .
 
+# Create start.sh with LF line endings and set permissions outside of volume mount
+RUN printf "#!/bin/bash\n\nif [ -f /.dockerenv ]; then\n    echo \"Running in Docker\"\n    echo \"Running migrations...\"\n    alembic upgrade head\n    echo \"Starting FastAPI...\"\n    fastapi dev app/main.py --host 0.0.0.0 --port 8000 --reload &\n    python watcher.py\nelse\n    echo \"Running locally with uv\"\n    echo \"Running migrations...\"\n    uv run alembic upgrade head\n    echo \"Starting FastAPI...\"\n    uv run fastapi dev app/main.py --host 0.0.0.0 --port 8000 --reload &\n    uv run python watcher.py\nfi\n\nwait\n" > /usr/local/bin/start-app.sh && chmod +x /usr/local/bin/start-app.sh
+
 # Expose the application port
 EXPOSE 8000
 
 # Command to run the application
-CMD ["./start.sh"]
+CMD ["/usr/local/bin/start-app.sh"]

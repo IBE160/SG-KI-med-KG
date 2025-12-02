@@ -1,0 +1,24 @@
+"""enable pgvector
+
+Revision ID: c123456789ab
+Revises: b389592974f8
+Create Date: 2025-12-02 12:00:00.000000
+
+"""
+from alembic import op
+import sqlalchemy as sa
+
+
+# revision identifiers, used by Alembic.
+revision = 'c123456789ab'
+down_revision = 'b389592974f8'
+branch_labels = None
+depends_on = None
+
+
+def upgrade():
+    op.execute("CREATE EXTENSION IF NOT EXISTS vector")
+
+
+def downgrade():
+    op.execute("DROP EXTENSION IF EXISTS vector")

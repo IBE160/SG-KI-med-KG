@@ -9,16 +9,19 @@ RUN npm install -g pnpm
 # Copy package files and install dependencies
 COPY package*.json ./
 
-# Install dependencies as root (or myappuser, depending on your structure)
+# Install dependencies as root
 RUN pnpm install
 
-## Switch to the non-root user
-USER node
+# Copy the rest of your application code with correct ownership
+COPY --chown=node:node . .
 
-# Copy the rest of your application code
-COPY . .
+# Create start.sh with LF line endings and set permissions outside of volume mount
+RUN printf "#!/bin/bash\n\npnpm run dev &\n\nnode watcher.js\n\nwait\n" > /usr/local/bin/start-app.sh && chmod +x /usr/local/bin/start-app.sh
+
+# Switch to the non-root user
+USER node
 
 EXPOSE 3000
 
 # Start the application
-CMD ["./start.sh"]
+CMD ["/usr/local/bin/start-app.sh"]

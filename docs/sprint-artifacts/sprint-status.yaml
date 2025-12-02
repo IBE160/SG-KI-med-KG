@@ -37,7 +37,7 @@ story_location: '{project-root}/docs/sprint-artifacts'
 
 development_status:
   epic-1: contexted
-  1-1-initialize-project-repository-core-dependencies: in-progress
+  1-1-initialize-project-repository-core-dependencies: review
   1-2-define-migrate-core-database-schema: ready-for-dev
   1-3-implement-api-endpoints-for-core-data-crud: ready-for-dev
   1-4-build-basic-ui-for-managing-core-data: ready-for-dev

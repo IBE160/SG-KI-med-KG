@@ -2,10 +2,12 @@ services:
   backend:
     build:
       context: backend
+    env_file:
+      - .env
     environment:
       - OPENAPI_OUTPUT_FILE=./shared-data/openapi.json
       - DATABASE_URL=postgresql+asyncpg://postgres:password@db:5432/mydatabase
-      - TEST_DATABASE_URL=postgresql+asyncpg://postgres:password@db:5433/testdatabase
+      - TEST_DATABASE_URL=postgresql+asyncpg://postgres:password@db_test:5432/testdatabase
       - MAIL_SERVER=mailhog
     ports:
       - "8000:8000"
@@ -18,7 +20,7 @@ services:
     depends_on:
       - db
   db:
-    image: postgres:17
+    image: pgvector/pgvector:pg17
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -30,7 +32,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
   db_test:
-    image: postgres:17
+    image: pgvector/pgvector:pg17
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -44,6 +46,8 @@ services:
     build:
       context: ./frontend
     user: node
+    env_file:
+      - .env
     ports:
       - "3000:3000"
     networks:
