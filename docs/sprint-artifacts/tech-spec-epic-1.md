@@ -147,8 +147,9 @@ The following RESTful API endpoints will be created in the FastAPI backend under
 *   **Assumption:** The developer has the necessary permissions to configure Supabase.
 *   **Question:** What are the exact fields required for each core data model beyond `id`, `name`, `description`?
 
-## Test Strategy Summary
+### Post-Review Follow-ups (AI)
 
-*   **Unit Tests:** Pytest will be used for testing individual functions in the backend, especially in the `crud` layer.
-*   **Integration Tests:** Pytest will be used to test the full request/response cycle of the FastAPI API endpoints.
-*   **E2E Tests:** Playwright will be used for end-to-end testing of the frontend UI flows for data management.
+**Epic 1: Foundational Setup & Core Compliance Data Model - Follow-ups**
+
+*   - [ ] [AI-Review][High] **Implement RLS Policies:** Add `op.execute("CREATE POLICY ...")` statements to the migration file for each table to define actual access rules (AC #5). [file: `backend/alembic_migrations/versions/a8c234ea5923_create_core_compliance_tables.py`] (Story 1.2)
+*   - [ ] [AI-Review][High] **Write Tests:** Implement unit tests for models and integration tests for DB persistence. [file: `backend/tests/test_compliance_models.py`] (Story 1.2)
