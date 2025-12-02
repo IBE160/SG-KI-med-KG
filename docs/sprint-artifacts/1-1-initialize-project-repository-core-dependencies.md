@@ -74,6 +74,13 @@ First story in epic - no predecessor context
 
 ### Debug Log References
 
+- **Plan for Task 1 (Setup Repository):**
+  1. Since I am in an existing git repo `SG-KI-med-KG`, I will treat this as the target repository.
+  2. I will fetch the `vintasoftware/nextjs-fastapi-template` code into this repository.
+  3. Command: `git remote add template https://github.com/vintasoftware/nextjs-fastapi-template.git`
+  4. Command: `git pull template main --allow-unrelated-histories`
+  5. Verify `frontend` and `backend` directories exist.
+
 ### Completion Notes List
 
 ### File List
