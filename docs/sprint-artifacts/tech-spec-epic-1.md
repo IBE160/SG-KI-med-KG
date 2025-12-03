@@ -149,7 +149,14 @@ The following RESTful API endpoints will be created in the FastAPI backend under
 
 ### Post-Review Follow-ups (AI)
 
+
+
 **Epic 1: Foundational Setup & Core Compliance Data Model - Follow-ups**
 
+
+
 *   - [ ] [AI-Review][High] **Implement RLS Policies:** Add `op.execute("CREATE POLICY ...")` statements to the migration file for each table to define actual access rules (AC #5). [file: `backend/alembic_migrations/versions/a8c234ea5923_create_core_compliance_tables.py`] (Story 1.2)
+
 *   - [ ] [AI-Review][High] **Write Tests:** Implement unit tests for models and integration tests for DB persistence. [file: `backend/tests/test_compliance_models.py`] (Story 1.2)
+
+*   - [ ] [AI-Review][Low] **Refactor Tenant ID:** Refactor `tenant_id` logic when User model supports explicit organization/tenant association (Tech Debt). [file: `backend/app/routes/compliance.py`] (Story 1.3)

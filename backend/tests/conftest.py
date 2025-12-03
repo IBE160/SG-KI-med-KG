@@ -52,14 +52,14 @@ async def test_client(db_session):
         try:
             yield session
         finally:
-            await db_session.close()
+            pass # We want db_session to be closed by the fixture itself, not dependency
 
     # General database override (raw session access)
     async def override_get_async_session():
         try:
             yield db_session
         finally:
-            await db_session.close()
+            pass # We want db_session to be closed by the fixture itself, not dependency
 
     # Set up test database overrides
     app.dependency_overrides[get_user_db] = override_get_user_db
@@ -69,6 +69,8 @@ async def test_client(db_session):
         transport=ASGITransport(app=app), base_url="http://localhost:8000"
     ) as client:
         yield client
+    
+    app.dependency_overrides.clear()
 
 
 @pytest_asyncio.fixture(scope="function")
@@ -101,3 +103,29 @@ async def authenticated_user(test_client, db_session):
         "user": user,
         "user_data": {"email": user_data["email"], "password": "TestPassword123#"},
     }
+
+@pytest_asyncio.fixture(scope="function")
+async def superuser_token_headers(test_client, db_session):
+    """Fixture to create and authenticate a superuser."""
+
+    # Create user data
+    user_data = {
+        "id": uuid.uuid4(),
+        "email": "admin@example.com",
+        "hashed_password": PasswordHelper().hash("AdminPassword123#"),
+        "is_active": True,
+        "is_superuser": True,
+        "is_verified": True,
+    }
+
+    # Create user directly in database
+    user = User(**user_data)
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+
+    # Generate token using the strategy directly
+    strategy = get_jwt_strategy()
+    access_token = await strategy.write_token(user)
+
+    return {"Authorization": f"Bearer {access_token}"}
