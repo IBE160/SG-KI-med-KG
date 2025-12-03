@@ -22,6 +22,49 @@ export type Body_auth_verify_verify = {
   token: string;
 };
 
+export type BusinessProcessCreate = {
+  name: string;
+  description?: string | null;
+};
+
+export type BusinessProcessRead = {
+  name: string;
+  description?: string | null;
+  id: string;
+  tenant_id: string;
+  owner_id?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type BusinessProcessUpdate = {
+  name: string;
+  description?: string | null;
+};
+
+export type ControlCreate = {
+  name: string;
+  description?: string | null;
+  type?: string | null;
+};
+
+export type ControlRead = {
+  name: string;
+  description?: string | null;
+  type?: string | null;
+  id: string;
+  tenant_id: string;
+  owner_id?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ControlUpdate = {
+  name: string;
+  description?: string | null;
+  type?: string | null;
+};
+
 export type ErrorModel = {
   detail:
     | string
@@ -57,12 +100,89 @@ export type login = {
   client_secret?: string | null;
 };
 
+export type Page_BusinessProcessRead_ = {
+  items: Array<BusinessProcessRead>;
+  total?: number | null;
+  page: number | null;
+  size: number | null;
+  pages?: number | null;
+};
+
+export type Page_ControlRead_ = {
+  items: Array<ControlRead>;
+  total?: number | null;
+  page: number | null;
+  size: number | null;
+  pages?: number | null;
+};
+
 export type Page_ItemRead_ = {
   items: Array<ItemRead>;
   total?: number | null;
   page: number | null;
   size: number | null;
   pages?: number | null;
+};
+
+export type Page_RegulatoryFrameworkRead_ = {
+  items: Array<RegulatoryFrameworkRead>;
+  total?: number | null;
+  page: number | null;
+  size: number | null;
+  pages?: number | null;
+};
+
+export type Page_RiskRead_ = {
+  items: Array<RiskRead>;
+  total?: number | null;
+  page: number | null;
+  size: number | null;
+  pages?: number | null;
+};
+
+export type RegulatoryFrameworkCreate = {
+  name: string;
+  description?: string | null;
+  version?: string | null;
+};
+
+export type RegulatoryFrameworkRead = {
+  name: string;
+  description?: string | null;
+  version?: string | null;
+  id: string;
+  tenant_id: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RegulatoryFrameworkUpdate = {
+  name: string;
+  description?: string | null;
+  version?: string | null;
+};
+
+export type RiskCreate = {
+  name: string;
+  description?: string | null;
+  category?: string | null;
+};
+
+export type RiskRead = {
+  name: string;
+  description?: string | null;
+  category?: string | null;
+  id: string;
+  tenant_id: string;
+  owner_id?: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RiskUpdate = {
+  name: string;
+  description?: string | null;
+  category?: string | null;
 };
 
 export type UserCreate = {
@@ -227,3 +347,227 @@ export type DeleteItemData = {
 export type DeleteItemResponse = unknown;
 
 export type DeleteItemError = HTTPValidationError;
+
+export type CreateControlData = {
+  body: ControlCreate;
+};
+
+export type CreateControlResponse = ControlRead;
+
+export type CreateControlError = HTTPValidationError;
+
+export type ReadControlsData = {
+  query?: {
+    /**
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page size
+     */
+    size?: number;
+  };
+};
+
+export type ReadControlsResponse = Page_ControlRead_;
+
+export type ReadControlsError = HTTPValidationError;
+
+export type ReadControlData = {
+  path: {
+    control_id: string;
+  };
+};
+
+export type ReadControlResponse = ControlRead;
+
+export type ReadControlError = HTTPValidationError;
+
+export type UpdateControlData = {
+  body: ControlUpdate;
+  path: {
+    control_id: string;
+  };
+};
+
+export type UpdateControlResponse = ControlRead;
+
+export type UpdateControlError = HTTPValidationError;
+
+export type DeleteControlData = {
+  path: {
+    control_id: string;
+  };
+};
+
+export type DeleteControlResponse = void;
+
+export type DeleteControlError = HTTPValidationError;
+
+export type CreateRiskData = {
+  body: RiskCreate;
+};
+
+export type CreateRiskResponse = RiskRead;
+
+export type CreateRiskError = HTTPValidationError;
+
+export type ReadRisksData = {
+  query?: {
+    /**
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page size
+     */
+    size?: number;
+  };
+};
+
+export type ReadRisksResponse = Page_RiskRead_;
+
+export type ReadRisksError = HTTPValidationError;
+
+export type ReadRiskData = {
+  path: {
+    risk_id: string;
+  };
+};
+
+export type ReadRiskResponse = RiskRead;
+
+export type ReadRiskError = HTTPValidationError;
+
+export type UpdateRiskData = {
+  body: RiskUpdate;
+  path: {
+    risk_id: string;
+  };
+};
+
+export type UpdateRiskResponse = RiskRead;
+
+export type UpdateRiskError = HTTPValidationError;
+
+export type DeleteRiskData = {
+  path: {
+    risk_id: string;
+  };
+};
+
+export type DeleteRiskResponse = void;
+
+export type DeleteRiskError = HTTPValidationError;
+
+export type CreateBusinessProcessData = {
+  body: BusinessProcessCreate;
+};
+
+export type CreateBusinessProcessResponse = BusinessProcessRead;
+
+export type CreateBusinessProcessError = HTTPValidationError;
+
+export type ReadBusinessProcessesData = {
+  query?: {
+    /**
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page size
+     */
+    size?: number;
+  };
+};
+
+export type ReadBusinessProcessesResponse = Page_BusinessProcessRead_;
+
+export type ReadBusinessProcessesError = HTTPValidationError;
+
+export type ReadBusinessProcessData = {
+  path: {
+    process_id: string;
+  };
+};
+
+export type ReadBusinessProcessResponse = BusinessProcessRead;
+
+export type ReadBusinessProcessError = HTTPValidationError;
+
+export type UpdateBusinessProcessData = {
+  body: BusinessProcessUpdate;
+  path: {
+    process_id: string;
+  };
+};
+
+export type UpdateBusinessProcessResponse = BusinessProcessRead;
+
+export type UpdateBusinessProcessError = HTTPValidationError;
+
+export type DeleteBusinessProcessData = {
+  path: {
+    process_id: string;
+  };
+};
+
+export type DeleteBusinessProcessResponse = void;
+
+export type DeleteBusinessProcessError = HTTPValidationError;
+
+export type CreateRegulatoryFrameworkData = {
+  body: RegulatoryFrameworkCreate;
+};
+
+export type CreateRegulatoryFrameworkResponse = RegulatoryFrameworkRead;
+
+export type CreateRegulatoryFrameworkError = HTTPValidationError;
+
+export type ReadRegulatoryFrameworksData = {
+  query?: {
+    /**
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page size
+     */
+    size?: number;
+  };
+};
+
+export type ReadRegulatoryFrameworksResponse = Page_RegulatoryFrameworkRead_;
+
+export type ReadRegulatoryFrameworksError = HTTPValidationError;
+
+export type ReadRegulatoryFrameworkData = {
+  path: {
+    framework_id: string;
+  };
+};
+
+export type ReadRegulatoryFrameworkResponse = RegulatoryFrameworkRead;
+
+export type ReadRegulatoryFrameworkError = HTTPValidationError;
+
+export type UpdateRegulatoryFrameworkData = {
+  body: RegulatoryFrameworkUpdate;
+  path: {
+    framework_id: string;
+  };
+};
+
+export type UpdateRegulatoryFrameworkResponse = RegulatoryFrameworkRead;
+
+export type UpdateRegulatoryFrameworkError = HTTPValidationError;
+
+export type DeleteRegulatoryFrameworkData = {
+  path: {
+    framework_id: string;
+  };
+};
+
+export type DeleteRegulatoryFrameworkResponse = void;
+
+export type DeleteRegulatoryFrameworkError = HTTPValidationError;

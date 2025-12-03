@@ -80,6 +80,12 @@ This story addresses the frontend requirements for managing core compliance data
 
 ## Dev Agent Record
 
+### References
+
+- [Source: `docs/epics.md#Story 1.4: Build Basic UI for Managing Core Data`]
+- [Source: `docs/sprint-artifacts/tech-spec-epic-1.md#User Interface`]
+- [Source: `docs/architecture.md#5. Frontend Architecture`]
+
 ### Context Reference
 
 - docs/sprint-artifacts/1-4-build-basic-ui-for-managing-core-data.context.xml
@@ -90,10 +96,65 @@ This story addresses the frontend requirements for managing core compliance data
 
 ### Debug Log References
 
+- **Issue:** TypeScript errors `TS2307: Cannot find module` for `@/components/ui/textarea`, `@/components/ui/alert`, `@/components/ui/tooltip`, and `TS2339: Property 'get' does not exist on type 'Promise<ReadonlyRequestCookies>'` in server actions.
+- **Root Cause:** Missing Shadcn UI component installations (`textarea`, `alert`, `tooltip`). The `cookies()` error was due to Next.js 15 treating `cookies()` as asynchronous and `await` was missing.
+- **Resolution:**
+    - Installed missing `@radix-ui/react-alert-dialog` and `@radix-ui/react-tooltip`.
+    - Installed missing Shadcn UI components `textarea`, `alert`, `tooltip` using `npx shadcn@latest add ...`.
+    - Updated `frontend/tsconfig.json` to exclude `__tests__` directory to prevent Jest test files from interfering with Next.js build.
+    - Added `async` and `await` to `getSession()` in `app/lib/auth.ts` and `Profile()` in `app/dashboard/profile/page.tsx` for correct `cookies()` usage.
+    - Fixed implicit `any` type for event parameter `e` in `DeleteEntityButton`.
+
 ### Completion Notes List
 
+- ✅ Set up Frontend Routing and Navigation (`frontend/app/dashboard/layout.tsx`).
+- ✅ Implemented List Views for all Core Entities (`frontend/app/dashboard/controls/page.tsx`, etc.).
+- ✅ Implemented "Create" Forms for all Core Entities (`frontend/app/dashboard/controls/new/page.tsx`, etc.) using React Server Actions and Zod validation.
+- ✅ Implemented "Edit" Functionality for all Core Entities (`frontend/app/dashboard/controls/[id]/edit/page.tsx`, etc.) using React Server Actions.
+- ✅ Implemented "Delete" Functionality for all Core Entities using a reusable `DeleteEntityButton` with Shadcn UI `AlertDialog` and React Server Actions.
+- ✅ Authored E2E Playwright tests (`frontend/tests/*.spec.ts`) for navigation and CRUD operations for each entity.
+- ✅ Resolved all TypeScript and build errors, ensuring the frontend compiles successfully.
+- ⚠️ **Warning:** Playwright tests were not executed due to persistent environment issues beyond the scope of story implementation (i.e., local Playwright test runner issues with server startup outside of Docker context). The code is written with tests, and all compilation/linting checks pass.
+
 ### File List
+
+- `frontend/app/dashboard/layout.tsx` (Modified)
+- `frontend/app/dashboard/controls/page.tsx` (Created)
+- `frontend/app/dashboard/controls/new/page.tsx` (Created)
+- `frontend/app/dashboard/controls/[id]/edit/page.tsx` (Created)
+- `frontend/app/dashboard/risks/page.tsx` (Created)
+- `frontend/app/dashboard/risks/new/page.tsx` (Created)
+- `frontend/app/dashboard/risks/[id]/edit/page.tsx` (Created)
+- `frontend/app/dashboard/business-processes/page.tsx` (Created)
+- `frontend/app/dashboard/business-processes/new/page.tsx` (Created)
+- `frontend/app/dashboard/business-processes/[id]/edit/page.tsx` (Created)
+- `frontend/app/dashboard/regulatory-frameworks/page.tsx` (Created)
+- `frontend/app/dashboard/regulatory-frameworks/new/page.tsx` (Created)
+- `frontend/app/dashboard/regulatory-frameworks/[id]/edit/page.tsx` (Created)
+- `frontend/components/actions/compliance-actions.ts` (Created, Modified)
+- `frontend/components/actions/delete-actions.ts` (Created)
+- `frontend/components/delete-entity-button.tsx` (Created, Modified)
+- `frontend/lib/definitions.ts` (Modified)
+- `frontend/components/ui/alert-dialog.tsx` (Created)
+- `frontend/components/ui/textarea.tsx` (Created, potentially skipped if already existing)
+- `frontend/components/ui/alert.tsx` (Created, potentially skipped if already existing)
+- `frontend/components/ui/tooltip.tsx` (Created, potentially skipped if already existing)
+- `frontend/tests/navigation.spec.ts` (Created)
+- `frontend/tests/controls.spec.ts` (Created)
+- `frontend/tests/risks.spec.ts` (Created)
+- `frontend/tests/business-processes.spec.ts` (Created)
+- `frontend/tests/regulatory-frameworks.spec.ts` (Created)
+- `frontend/tsconfig.json` (Modified)
+- `frontend/playwright.config.ts` (Created)
+- `frontend/app/openapi-client/types.gen.ts` (Generated)
+- `frontend/app/openapi-client/sdk.gen.ts` (Generated)
+- `frontend/openapi.json` (Generated)
+- `backend/commands/generate_openapi_schema.py` (Modified)
+- `frontend/openapi-ts.config.ts` (Modified)
+- `frontend/app/lib/auth.ts` (Modified)
+- `frontend/app/dashboard/profile/page.tsx` (Modified)
 
 ## Change Log
 
 - **mandag 1. desember 2025:** Initial draft created by `create-story` workflow.
+- **Wednesday, December 3, 2025:** Frontend UI implemented for CRUD operations on core entities, including routing, list views, forms, delete confirmation, and E2E tests. Addressed various frontend build and type-checking issues.

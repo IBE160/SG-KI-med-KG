@@ -42,3 +42,28 @@ export const itemSchema = z.object({
       message: "Quantity must be a positive integer",
     }),
 });
+
+// --- Compliance Entities Schemas ---
+
+export const controlSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  description: z.string().optional(),
+  type: z.string().optional(),
+});
+
+export const riskSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  description: z.string().optional(),
+  category: z.string().optional(),
+});
+
+export const businessProcessSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  description: z.string().optional(),
+});
+
+export const regulatoryFrameworkSchema = z.object({
+  name: z.string().min(1, { message: "Name is required" }),
+  description: z.string().optional(),
+  version: z.string().optional(),
+});

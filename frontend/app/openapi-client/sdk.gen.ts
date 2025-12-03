@@ -50,6 +50,66 @@ import type {
   DeleteItemData,
   DeleteItemError,
   DeleteItemResponse,
+  CreateControlData,
+  CreateControlError,
+  CreateControlResponse,
+  ReadControlsData,
+  ReadControlsError,
+  ReadControlsResponse,
+  ReadControlData,
+  ReadControlError,
+  ReadControlResponse,
+  UpdateControlData,
+  UpdateControlError,
+  UpdateControlResponse,
+  DeleteControlData,
+  DeleteControlError,
+  DeleteControlResponse,
+  CreateRiskData,
+  CreateRiskError,
+  CreateRiskResponse,
+  ReadRisksData,
+  ReadRisksError,
+  ReadRisksResponse,
+  ReadRiskData,
+  ReadRiskError,
+  ReadRiskResponse,
+  UpdateRiskData,
+  UpdateRiskError,
+  UpdateRiskResponse,
+  DeleteRiskData,
+  DeleteRiskError,
+  DeleteRiskResponse,
+  CreateBusinessProcessData,
+  CreateBusinessProcessError,
+  CreateBusinessProcessResponse,
+  ReadBusinessProcessesData,
+  ReadBusinessProcessesError,
+  ReadBusinessProcessesResponse,
+  ReadBusinessProcessData,
+  ReadBusinessProcessError,
+  ReadBusinessProcessResponse,
+  UpdateBusinessProcessData,
+  UpdateBusinessProcessError,
+  UpdateBusinessProcessResponse,
+  DeleteBusinessProcessData,
+  DeleteBusinessProcessError,
+  DeleteBusinessProcessResponse,
+  CreateRegulatoryFrameworkData,
+  CreateRegulatoryFrameworkError,
+  CreateRegulatoryFrameworkResponse,
+  ReadRegulatoryFrameworksData,
+  ReadRegulatoryFrameworksError,
+  ReadRegulatoryFrameworksResponse,
+  ReadRegulatoryFrameworkData,
+  ReadRegulatoryFrameworkError,
+  ReadRegulatoryFrameworkResponse,
+  UpdateRegulatoryFrameworkData,
+  UpdateRegulatoryFrameworkError,
+  UpdateRegulatoryFrameworkResponse,
+  DeleteRegulatoryFrameworkData,
+  DeleteRegulatoryFrameworkError,
+  DeleteRegulatoryFrameworkResponse,
 } from "./types.gen";
 
 export const client = createClient(createConfig());
@@ -296,5 +356,325 @@ export const deleteItem = <ThrowOnError extends boolean = false>(
   >({
     ...options,
     url: "/items/{item_id}",
+  });
+};
+
+/**
+ * Create Control
+ */
+export const createControl = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<CreateControlData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).post<
+    CreateControlResponse,
+    CreateControlError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/controls",
+  });
+};
+
+/**
+ * Read Controls
+ */
+export const readControls = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<ReadControlsData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    ReadControlsResponse,
+    ReadControlsError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/controls",
+  });
+};
+
+/**
+ * Read Control
+ */
+export const readControl = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ReadControlData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    ReadControlResponse,
+    ReadControlError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/controls/{control_id}",
+  });
+};
+
+/**
+ * Update Control
+ */
+export const updateControl = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UpdateControlData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).put<
+    UpdateControlResponse,
+    UpdateControlError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/controls/{control_id}",
+  });
+};
+
+/**
+ * Delete Control
+ */
+export const deleteControl = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<DeleteControlData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).delete<
+    DeleteControlResponse,
+    DeleteControlError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/controls/{control_id}",
+  });
+};
+
+/**
+ * Create Risk
+ */
+export const createRisk = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<CreateRiskData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).post<
+    CreateRiskResponse,
+    CreateRiskError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/risks",
+  });
+};
+
+/**
+ * Read Risks
+ */
+export const readRisks = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<ReadRisksData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    ReadRisksResponse,
+    ReadRisksError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/risks",
+  });
+};
+
+/**
+ * Read Risk
+ */
+export const readRisk = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ReadRiskData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    ReadRiskResponse,
+    ReadRiskError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/risks/{risk_id}",
+  });
+};
+
+/**
+ * Update Risk
+ */
+export const updateRisk = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UpdateRiskData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).put<
+    UpdateRiskResponse,
+    UpdateRiskError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/risks/{risk_id}",
+  });
+};
+
+/**
+ * Delete Risk
+ */
+export const deleteRisk = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<DeleteRiskData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).delete<
+    DeleteRiskResponse,
+    DeleteRiskError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/risks/{risk_id}",
+  });
+};
+
+/**
+ * Create Business Process
+ */
+export const createBusinessProcess = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<CreateBusinessProcessData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).post<
+    CreateBusinessProcessResponse,
+    CreateBusinessProcessError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/business-processes",
+  });
+};
+
+/**
+ * Read Business Processes
+ */
+export const readBusinessProcesses = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<ReadBusinessProcessesData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    ReadBusinessProcessesResponse,
+    ReadBusinessProcessesError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/business-processes",
+  });
+};
+
+/**
+ * Read Business Process
+ */
+export const readBusinessProcess = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ReadBusinessProcessData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    ReadBusinessProcessResponse,
+    ReadBusinessProcessError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/business-processes/{process_id}",
+  });
+};
+
+/**
+ * Update Business Process
+ */
+export const updateBusinessProcess = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UpdateBusinessProcessData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).put<
+    UpdateBusinessProcessResponse,
+    UpdateBusinessProcessError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/business-processes/{process_id}",
+  });
+};
+
+/**
+ * Delete Business Process
+ */
+export const deleteBusinessProcess = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<DeleteBusinessProcessData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).delete<
+    DeleteBusinessProcessResponse,
+    DeleteBusinessProcessError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/business-processes/{process_id}",
+  });
+};
+
+/**
+ * Create Regulatory Framework
+ */
+export const createRegulatoryFramework = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<CreateRegulatoryFrameworkData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).post<
+    CreateRegulatoryFrameworkResponse,
+    CreateRegulatoryFrameworkError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/regulatory-frameworks",
+  });
+};
+
+/**
+ * Read Regulatory Frameworks
+ */
+export const readRegulatoryFrameworks = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<ReadRegulatoryFrameworksData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    ReadRegulatoryFrameworksResponse,
+    ReadRegulatoryFrameworksError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/regulatory-frameworks",
+  });
+};
+
+/**
+ * Read Regulatory Framework
+ */
+export const readRegulatoryFramework = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ReadRegulatoryFrameworkData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    ReadRegulatoryFrameworkResponse,
+    ReadRegulatoryFrameworkError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/regulatory-frameworks/{framework_id}",
+  });
+};
+
+/**
+ * Update Regulatory Framework
+ */
+export const updateRegulatoryFramework = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UpdateRegulatoryFrameworkData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).put<
+    UpdateRegulatoryFrameworkResponse,
+    UpdateRegulatoryFrameworkError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/regulatory-frameworks/{framework_id}",
+  });
+};
+
+/**
+ * Delete Regulatory Framework
+ */
+export const deleteRegulatoryFramework = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<DeleteRegulatoryFrameworkData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).delete<
+    DeleteRegulatoryFrameworkResponse,
+    DeleteRegulatoryFrameworkError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/regulatory-frameworks/{framework_id}",
   });
 };
