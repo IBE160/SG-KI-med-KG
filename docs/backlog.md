@@ -1,4 +1,7 @@
 | Date | Story | Epic | Type | Severity | Owner | Status | Notes |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| Wednesday, December 3, 2025 | 1.2 | 1 | TechDebt | High | TBD | Open | Implement RLS Policies: Add `op.execute("CREATE POLICY ...")` statements to the migration file. (AC #5) |
-| Wednesday, December 3, 2025 | 1.2 | 1 | TechDebt | High | TBD | Open | Write Tests: Implement unit tests for models and integration tests for DB persistence. |
+|---|---|---|---|---|---|---|---|
+| 2025-12-01 | 1.2 | 1 | Bug | High | TBD | Open | **Implement RLS Policies:** Add `op.execute("CREATE POLICY ...")` statements to the migration file for each table to define actual access rules (AC #5). [file: `backend/alembic_migrations/versions/a8c234ea5923_create_core_compliance_tables.py`] |
+| 2025-12-01 | 1.2 | 1 | TechDebt | High | TBD | Open | **Write Tests:** Implement unit tests for models and integration tests for DB persistence. [file: `backend/tests/test_compliance_models.py`] |
+| 2025-12-01 | 1.3 | 1 | TechDebt | Low | TBD | Open | **Refactor Tenant ID:** Refactor `tenant_id` logic when User model supports explicit organization/tenant association (Tech Debt). [file: `backend/app/routes/compliance.py`] |
+| 2025-12-03 | 1.4 | 1 | TechDebt | Low | TBD | Open | **Run Playwright Tests:** Ensure `npx playwright test` is run locally or in CI to validate the authored E2E tests. |
+| 2025-12-03 | 1.4 | 1 | Enhancement | Low | TBD | Open | **Error Toast:** Consider adding a toast notification library (like `sonner` or `react-hot-toast`) for better user feedback on success/failure actions, replacing or augmenting the inline alerts. |

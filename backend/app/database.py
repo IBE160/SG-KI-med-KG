@@ -12,11 +12,16 @@ from .models import Base, User
 
 parsed_db_url = urlparse(settings.DATABASE_URL)
 
-async_db_connection_url = (
-    f"postgresql+asyncpg://{parsed_db_url.username}:{parsed_db_url.password}@"
-    f"{parsed_db_url.hostname}{':' + str(parsed_db_url.port) if parsed_db_url.port else ''}"
-    f"{parsed_db_url.path}"
-)
+if parsed_db_url.scheme in ["postgresql", "postgres"]:
+    async_db_connection_url = (
+        f"postgresql+asyncpg://{parsed_db_url.username}:{parsed_db_url.password}@"
+        f"{parsed_db_url.hostname}{':' + str(parsed_db_url.port) if parsed_db_url.port else ''}"
+        f"{parsed_db_url.path}"
+    )
+elif parsed_db_url.scheme == "sqlite":
+    async_db_connection_url = settings.DATABASE_URL.replace("sqlite://", "sqlite+aiosqlite://")
+else:
+    async_db_connection_url = settings.DATABASE_URL
 
 # Disable connection pooling for serverless environments like Vercel
 engine = create_async_engine(async_db_connection_url, poolclass=NullPool)

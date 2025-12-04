@@ -160,3 +160,7 @@ The following RESTful API endpoints will be created in the FastAPI backend under
 *   - [ ] [AI-Review][High] **Write Tests:** Implement unit tests for models and integration tests for DB persistence. [file: `backend/tests/test_compliance_models.py`] (Story 1.2)
 
 *   - [ ] [AI-Review][Low] **Refactor Tenant ID:** Refactor `tenant_id` logic when User model supports explicit organization/tenant association (Tech Debt). [file: `backend/app/routes/compliance.py`] (Story 1.3)
+
+*   - [ ] [AI-Review][Low] **Run Playwright Tests:** Ensure `npx playwright test` is run locally or in CI to validate the authored E2E tests. (Story 1.4)
+
+*   - [ ] [AI-Review][Low] **Error Toast:** Consider adding a toast notification library (like `sonner` or `react-hot-toast`) for better user feedback on success/failure actions, replacing or augmenting the inline alerts. (Story 1.4)

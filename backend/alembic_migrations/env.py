@@ -42,11 +42,16 @@ if not database_url:
 
 parsed_db_url = urlparse(database_url)
 
-async_db_connection_url = (
-    f"postgresql+asyncpg://{parsed_db_url.username}:{parsed_db_url.password}@"
-    f"{parsed_db_url.hostname}{':' + str(parsed_db_url.port) if parsed_db_url.port else ''}"
-    f"{parsed_db_url.path}"
-)
+if parsed_db_url.scheme in ["postgresql", "postgres"]:
+    async_db_connection_url = (
+        f"postgresql+asyncpg://{parsed_db_url.username}:{parsed_db_url.password}@"
+        f"{parsed_db_url.hostname}{':' + str(parsed_db_url.port) if parsed_db_url.port else ''}"
+        f"{parsed_db_url.path}"
+    )
+elif parsed_db_url.scheme == "sqlite":
+    async_db_connection_url = database_url.replace("sqlite://", "sqlite+aiosqlite://")
+else:
+    async_db_connection_url = database_url
 
 config.set_main_option("sqlalchemy.url", async_db_connection_url)
 

@@ -1,4 +1,5 @@
 import pytest
+import uuid
 from fastapi import status
 from sqlalchemy import select, insert
 from app.models import Item
@@ -20,7 +21,7 @@ class TestItems:
 
         # Check if the item is in the database
         item = await db_session.execute(
-            select(Item).where(Item.id == created_item["id"])
+            select(Item).where(Item.id == uuid.UUID(created_item["id"]))
         )
         item = item.scalar()
 

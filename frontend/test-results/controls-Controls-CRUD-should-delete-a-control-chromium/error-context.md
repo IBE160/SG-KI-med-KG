@@ -1,0 +1,63 @@
+# Page snapshot
+
+```yaml
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - complementary [ref=e3]:
+      - generic [ref=e4]:
+        - link "Vinta" [ref=e5] [cursor=pointer]:
+          - /url: /
+          - img "Vinta" [ref=e6]
+        - link [ref=e7] [cursor=pointer]:
+          - /url: /dashboard
+          - img [ref=e8]
+        - link [ref=e9] [cursor=pointer]:
+          - /url: /dashboard/controls
+          - img [ref=e10]
+        - link [ref=e13] [cursor=pointer]:
+          - /url: /dashboard/risks
+          - img [ref=e14]
+        - link [ref=e16] [cursor=pointer]:
+          - /url: /dashboard/business-processes
+          - img [ref=e17]
+        - link [ref=e21] [cursor=pointer]:
+          - /url: /dashboard/regulatory-frameworks
+          - img [ref=e22]
+    - main [ref=e26]:
+      - generic [ref=e27]:
+        - navigation "breadcrumb" [ref=e28]:
+          - list [ref=e29]:
+            - listitem [ref=e30]:
+              - link "Home" [ref=e31] [cursor=pointer]:
+                - /url: /
+                - img [ref=e32]
+                - generic [ref=e35]: Home
+            - listitem [ref=e36]: /
+            - listitem [ref=e37]:
+              - link "Dashboard" [ref=e38] [cursor=pointer]:
+                - /url: /dashboard
+                - img [ref=e39]
+                - generic [ref=e40]: Dashboard
+        - button "U" [ref=e42]:
+          - generic [ref=e44]: U
+      - generic [ref=e46]:
+        - generic [ref=e47]:
+          - heading "Controls" [level=1] [ref=e48]
+          - link "Create New" [ref=e49] [cursor=pointer]:
+            - /url: /dashboard/controls/new
+            - img [ref=e50]
+            - text: Create New
+        - table [ref=e53]:
+          - rowgroup [ref=e54]:
+            - row "Name Description Type Actions" [ref=e55]:
+              - columnheader "Name" [ref=e56]
+              - columnheader "Description" [ref=e57]
+              - columnheader "Type" [ref=e58]
+              - columnheader "Actions" [ref=e59]
+          - rowgroup [ref=e60]:
+            - row "No controls found. Create one to get started." [ref=e61]:
+              - cell "No controls found. Create one to get started." [ref=e62]
+  - button "Open Next.js Dev Tools" [ref=e68] [cursor=pointer]:
+    - img [ref=e69]
+  - alert [ref=e72]
+```
