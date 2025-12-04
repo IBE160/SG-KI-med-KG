@@ -12,6 +12,13 @@
 
 # testing
 /coverage
+playwright-report/
+test-results/
+storageState.json
+
+# database files
+*.db
+*.db-journal
 
 # next.js
 /.next/
