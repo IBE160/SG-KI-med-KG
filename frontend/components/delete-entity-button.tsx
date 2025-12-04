@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
+import { toast } from "sonner";
 
 interface DeleteEntityButtonProps {
   id: string;
@@ -29,8 +30,10 @@ export function DeleteEntityButton({ id, onDelete }: DeleteEntityButtonProps) {
       setIsDeleting(true);
       await onDelete(id);
       setOpen(false);
+      toast.success("Record deleted successfully");
     } catch (error) {
       console.error("Delete failed:", error);
+      toast.error("Failed to delete record");
     } finally {
       setIsDeleting(false);
     }

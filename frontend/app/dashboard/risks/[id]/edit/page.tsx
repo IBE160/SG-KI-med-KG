@@ -14,9 +14,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
 import { readRisk } from "@/app/clientService";
+import { toast } from "sonner";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -53,6 +52,12 @@ export default function EditRiskPage({ params }: { params: { id: string } }) {
     fetchData();
   }, [params.id]);
 
+  useEffect(() => {
+    if (state?.message) {
+      toast.error(state.message);
+    }
+  }, [state]);
+
   if (loading) {
     return <div className="text-center py-10">Loading...</div>;
   }
@@ -71,14 +76,7 @@ export default function EditRiskPage({ params }: { params: { id: string } }) {
         <CardContent>
           <form action={action} className="space-y-4">
             <input type="hidden" name="id" value={params.id} />
-            {state?.message && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertTitle>Error</AlertTitle>
-                <AlertDescription>{state.message}</AlertDescription>
-              </Alert>
-            )}
-
+            
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input
