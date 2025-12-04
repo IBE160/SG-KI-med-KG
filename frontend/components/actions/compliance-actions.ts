@@ -49,8 +49,8 @@ export async function addControl(state: FormState, formData: FormData) {
   }
 
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -65,7 +65,6 @@ export async function addControl(state: FormState, formData: FormData) {
       body: { name, description, type },
     });
   } catch (error: any) {
-    console.error("Failed to create control:", error);
     return {
       message: error.response?.data?.detail || "Failed to create control. Please try again.",
     };
@@ -89,8 +88,8 @@ export async function editControl(state: FormState, formData: FormData) {
   }
 
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -106,7 +105,6 @@ export async function editControl(state: FormState, formData: FormData) {
       body: { name, description, type },
     });
   } catch (error: any) {
-    console.error("Failed to update control:", error);
     return {
       message: error.response?.data?.detail || "Failed to update control. Please try again.",
     };
@@ -131,8 +129,8 @@ export async function addRisk(state: FormState, formData: FormData) {
   }
 
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -147,7 +145,6 @@ export async function addRisk(state: FormState, formData: FormData) {
       body: { name, description, category },
     });
   } catch (error: any) {
-    console.error("Failed to create risk:", error);
     return {
       message: error.response?.data?.detail || "Failed to create risk. Please try again.",
     };
@@ -171,8 +168,8 @@ export async function editRisk(state: FormState, formData: FormData) {
   }
 
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -188,7 +185,6 @@ export async function editRisk(state: FormState, formData: FormData) {
       body: { name, description, category },
     });
   } catch (error: any) {
-    console.error("Failed to update risk:", error);
     return {
       message: error.response?.data?.detail || "Failed to update risk. Please try again.",
     };
@@ -212,8 +208,8 @@ export async function addBusinessProcess(state: FormState, formData: FormData) {
   }
 
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -228,7 +224,6 @@ export async function addBusinessProcess(state: FormState, formData: FormData) {
       body: { name, description },
     });
   } catch (error: any) {
-    console.error("Failed to create business process:", error);
     return {
       message: error.response?.data?.detail || "Failed to create business process. Please try again.",
     };
@@ -251,8 +246,8 @@ export async function editBusinessProcess(state: FormState, formData: FormData) 
   }
 
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -268,7 +263,6 @@ export async function editBusinessProcess(state: FormState, formData: FormData) 
       body: { name, description },
     });
   } catch (error: any) {
-    console.error("Failed to update business process:", error);
     return {
       message: error.response?.data?.detail || "Failed to update business process. Please try again.",
     };
@@ -293,8 +287,8 @@ export async function addRegulatoryFramework(state: FormState, formData: FormDat
   }
 
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -309,7 +303,6 @@ export async function addRegulatoryFramework(state: FormState, formData: FormDat
       body: { name, description, version },
     });
   } catch (error: any) {
-    console.error("Failed to create regulatory framework:", error);
     return {
       message: error.response?.data?.detail || "Failed to create regulatory framework. Please try again.",
     };
@@ -333,8 +326,8 @@ export async function editRegulatoryFramework(state: FormState, formData: FormDa
   }
 
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       return {
@@ -350,7 +343,6 @@ export async function editRegulatoryFramework(state: FormState, formData: FormDa
       body: { name, description, version },
     });
   } catch (error: any) {
-    console.error("Failed to update regulatory framework:", error);
     return {
       message: error.response?.data?.detail || "Failed to update regulatory framework. Please try again.",
     };

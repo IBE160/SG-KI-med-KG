@@ -17,8 +17,14 @@ depends_on = None
 
 
 def upgrade():
-    op.execute("CREATE EXTENSION IF NOT EXISTS vector")
+    # pgvector is PostgreSQL-only; skip for SQLite
+    bind = op.get_bind()
+    if bind.dialect.name == 'postgresql':
+        op.execute("CREATE EXTENSION IF NOT EXISTS vector")
 
 
 def downgrade():
-    op.execute("DROP EXTENSION IF EXISTS vector")
+    # pgvector is PostgreSQL-only; skip for SQLite
+    bind = op.get_bind()
+    if bind.dialect.name == 'postgresql':
+        op.execute("DROP EXTENSION IF EXISTS vector")

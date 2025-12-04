@@ -11,8 +11,8 @@ import {
 
 export async function removeControl(id: string) {
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       throw new Error("Authentication token not found");
@@ -24,15 +24,14 @@ export async function removeControl(id: string) {
     });
     revalidatePath("/dashboard/controls");
   } catch (error) {
-    console.error("Failed to delete control:", error);
     throw error;
   }
 }
 
 export async function removeRisk(id: string) {
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       throw new Error("Authentication token not found");
@@ -44,15 +43,14 @@ export async function removeRisk(id: string) {
     });
     revalidatePath("/dashboard/risks");
   } catch (error) {
-    console.error("Failed to delete risk:", error);
     throw error;
   }
 }
 
 export async function removeBusinessProcess(id: string) {
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       throw new Error("Authentication token not found");
@@ -64,15 +62,14 @@ export async function removeBusinessProcess(id: string) {
     });
     revalidatePath("/dashboard/business-processes");
   } catch (error) {
-    console.error("Failed to delete business process:", error);
     throw error;
   }
 }
 
 export async function removeRegulatoryFramework(id: string) {
   try {
-    const cookieStore = cookies();
-    const token = cookieStore.get("access_token")?.value;
+    const cookieStore = await cookies();
+    const token = cookieStore.get("accessToken")?.value;
 
     if (!token) {
       throw new Error("Authentication token not found");
@@ -84,7 +81,6 @@ export async function removeRegulatoryFramework(id: string) {
     });
     revalidatePath("/dashboard/regulatory-frameworks");
   } catch (error) {
-    console.error("Failed to delete regulatory framework:", error);
     throw error;
   }
 }

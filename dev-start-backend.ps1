@@ -1,4 +1,6 @@
 # dev-start-backend.ps1
+# Set console encoding to UTF-8 to handle emojis from FastAPI CLI
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 $env:DATABASE_URL = "sqlite+aiosqlite:///./dev.db"
 $env:SECRET_KEY = "dev-secret-key"
 $env:ACCESS_SECRET_KEY = "dev-access-secret"
@@ -20,4 +22,4 @@ uv run alembic upgrade head
 
 # Start server
 Write-Host "Starting Server..."
-uv run fastapi dev app/main.py
+uv run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
