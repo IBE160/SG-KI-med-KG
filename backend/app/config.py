@@ -9,7 +9,7 @@ class Settings(BaseSettings):
     OPENAPI_URL: str = "/openapi.json"
 
     # Database
-    DATABASE_URL: str
+    DATABASE_URL: str = "sqlite+aiosqlite:///:memory:"
     TEST_DATABASE_URL: str | None = None
     EXPIRE_ON_COMMIT: bool = False
 
