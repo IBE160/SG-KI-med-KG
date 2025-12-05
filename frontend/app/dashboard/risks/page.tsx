@@ -80,13 +80,19 @@ export default function RisksPage() {
               </TableRow>
             ) : error ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10 text-red-500">
+                <TableCell
+                  colSpan={4}
+                  className="text-center py-10 text-red-500"
+                >
                   {error}
                 </TableCell>
               </TableRow>
             ) : risks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10 text-muted-foreground">
+                <TableCell
+                  colSpan={4}
+                  className="text-center py-10 text-muted-foreground"
+                >
                   No risks found. Create one to get started.
                 </TableCell>
               </TableRow>
@@ -103,7 +109,10 @@ export default function RisksPage() {
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <DeleteEntityButton id={risk.id} onDelete={handleDelete} />
+                      <DeleteEntityButton
+                        id={risk.id}
+                        onDelete={handleDelete}
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

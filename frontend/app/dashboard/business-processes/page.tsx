@@ -11,7 +11,10 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Plus, Pencil } from "lucide-react";
-import { readBusinessProcesses, BusinessProcessRead } from "@/app/clientService";
+import {
+  readBusinessProcesses,
+  BusinessProcessRead,
+} from "@/app/clientService";
 import Link from "next/link";
 import { removeBusinessProcess } from "@/components/actions/delete-actions";
 import { DeleteEntityButton } from "@/components/delete-entity-button";
@@ -52,7 +55,9 @@ export default function BusinessProcessesPage() {
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold tracking-tight">Business Processes</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Business Processes
+        </h1>
         <Button asChild>
           <Link href="/dashboard/business-processes/new">
             <Plus className="mr-2 h-4 w-4" />
@@ -79,13 +84,19 @@ export default function BusinessProcessesPage() {
               </TableRow>
             ) : error ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-10 text-red-500">
+                <TableCell
+                  colSpan={3}
+                  className="text-center py-10 text-red-500"
+                >
                   {error}
                 </TableCell>
               </TableRow>
             ) : processes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-10 text-muted-foreground">
+                <TableCell
+                  colSpan={3}
+                  className="text-center py-10 text-muted-foreground"
+                >
                   No business processes found. Create one to get started.
                 </TableCell>
               </TableRow>
@@ -97,11 +108,16 @@ export default function BusinessProcessesPage() {
                   <TableCell>
                     <div className="flex items-center gap-2">
                       <Button variant="ghost" size="icon" asChild>
-                        <Link href={`/dashboard/business-processes/${process.id}/edit`}>
+                        <Link
+                          href={`/dashboard/business-processes/${process.id}/edit`}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Link>
                       </Button>
-                      <DeleteEntityButton id={process.id} onDelete={handleDelete} />
+                      <DeleteEntityButton
+                        id={process.id}
+                        onDelete={handleDelete}
+                      />
                     </div>
                   </TableCell>
                 </TableRow>

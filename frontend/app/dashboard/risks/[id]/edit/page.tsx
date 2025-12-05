@@ -27,7 +27,11 @@ function SubmitButton() {
   );
 }
 
-export default function EditRiskPage({ params }: { params: Promise<{ id: string }> }) {
+export default function EditRiskPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = use(params);
   const [state, action] = useFormState(editRisk, undefined);
   const [loading, setLoading] = useState(true);
@@ -77,7 +81,7 @@ export default function EditRiskPage({ params }: { params: Promise<{ id: string 
         <CardContent>
           <form action={action} className="space-y-4">
             <input type="hidden" name="id" value={id} />
-            
+
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input
@@ -100,7 +104,9 @@ export default function EditRiskPage({ params }: { params: Promise<{ id: string 
                 defaultValue={initialData?.category || ""}
               />
               {state?.errors?.category && (
-                <p className="text-sm text-red-500">{state.errors.category[0]}</p>
+                <p className="text-sm text-red-500">
+                  {state.errors.category[0]}
+                </p>
               )}
             </div>
 

@@ -60,7 +60,9 @@ export default function CreateRegulatoryFrameworkPage() {
               <Label htmlFor="version">Version</Label>
               <Input id="version" name="version" placeholder="e.g., 1.0" />
               {state?.errors?.version && (
-                <p className="text-sm text-red-500">{state.errors.version[0]}</p>
+                <p className="text-sm text-red-500">
+                  {state.errors.version[0]}
+                </p>
               )}
             </div>
 

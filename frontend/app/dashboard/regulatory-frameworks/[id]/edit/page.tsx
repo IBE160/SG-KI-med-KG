@@ -108,7 +108,9 @@ export default function EditRegulatoryFrameworkPage({
                 defaultValue={initialData?.version || ""}
               />
               {state?.errors?.version && (
-                <p className="text-sm text-red-500">{state.errors.version[0]}</p>
+                <p className="text-sm text-red-500">
+                  {state.errors.version[0]}
+                </p>
               )}
             </div>
 

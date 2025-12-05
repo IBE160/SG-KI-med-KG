@@ -1,7 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { Home, List, ShieldCheck, AlertTriangle, GitBranch, Scale, UserCog } from "lucide-react";
+import {
+  Home,
+  List,
+  ShieldCheck,
+  AlertTriangle,
+  GitBranch,
+  Scale,
+  UserCog,
+} from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -19,7 +27,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { logout } from "@/components/actions/logout-action";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { useRole } from "@/lib/role";
 
 export default function DashboardLayout({
@@ -45,7 +58,7 @@ export default function DashboardLayout({
               className="object-cover transition-transform duration-200 hover:scale-105"
             />
           </Link>
-          
+
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -104,7 +117,9 @@ export default function DashboardLayout({
                   <Scale className="h-5 w-5" />
                 </Link>
               </TooltipTrigger>
-              <TooltipContent side="right">Regulatory Frameworks</TooltipContent>
+              <TooltipContent side="right">
+                Regulatory Frameworks
+              </TooltipContent>
             </Tooltip>
 
             {isAdmin && (

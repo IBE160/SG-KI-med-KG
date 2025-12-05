@@ -66,7 +66,9 @@ export async function addControl(state: FormState, formData: FormData) {
     });
   } catch (error: any) {
     return {
-      message: error.response?.data?.detail || "Failed to create control. Please try again.",
+      message:
+        error.response?.data?.detail ||
+        "Failed to create control. Please try again.",
     };
   }
 
@@ -106,7 +108,9 @@ export async function editControl(state: FormState, formData: FormData) {
     });
   } catch (error: any) {
     return {
-      message: error.response?.data?.detail || "Failed to update control. Please try again.",
+      message:
+        error.response?.data?.detail ||
+        "Failed to update control. Please try again.",
     };
   }
 
@@ -146,7 +150,9 @@ export async function addRisk(state: FormState, formData: FormData) {
     });
   } catch (error: any) {
     return {
-      message: error.response?.data?.detail || "Failed to create risk. Please try again.",
+      message:
+        error.response?.data?.detail ||
+        "Failed to create risk. Please try again.",
     };
   }
 
@@ -186,7 +192,9 @@ export async function editRisk(state: FormState, formData: FormData) {
     });
   } catch (error: any) {
     return {
-      message: error.response?.data?.detail || "Failed to update risk. Please try again.",
+      message:
+        error.response?.data?.detail ||
+        "Failed to update risk. Please try again.",
     };
   }
 
@@ -225,14 +233,19 @@ export async function addBusinessProcess(state: FormState, formData: FormData) {
     });
   } catch (error: any) {
     return {
-      message: error.response?.data?.detail || "Failed to create business process. Please try again.",
+      message:
+        error.response?.data?.detail ||
+        "Failed to create business process. Please try again.",
     };
   }
 
   redirect("/dashboard/business-processes");
 }
 
-export async function editBusinessProcess(state: FormState, formData: FormData) {
+export async function editBusinessProcess(
+  state: FormState,
+  formData: FormData,
+) {
   const id = formData.get("id") as string;
   const validatedFields = businessProcessSchema.safeParse({
     name: formData.get("name"),
@@ -264,7 +277,9 @@ export async function editBusinessProcess(state: FormState, formData: FormData) 
     });
   } catch (error: any) {
     return {
-      message: error.response?.data?.detail || "Failed to update business process. Please try again.",
+      message:
+        error.response?.data?.detail ||
+        "Failed to update business process. Please try again.",
     };
   }
 
@@ -273,7 +288,10 @@ export async function editBusinessProcess(state: FormState, formData: FormData) 
 
 // --- Regulatory Frameworks ---
 
-export async function addRegulatoryFramework(state: FormState, formData: FormData) {
+export async function addRegulatoryFramework(
+  state: FormState,
+  formData: FormData,
+) {
   const validatedFields = regulatoryFrameworkSchema.safeParse({
     name: formData.get("name"),
     description: formData.get("description"),
@@ -304,14 +322,19 @@ export async function addRegulatoryFramework(state: FormState, formData: FormDat
     });
   } catch (error: any) {
     return {
-      message: error.response?.data?.detail || "Failed to create regulatory framework. Please try again.",
+      message:
+        error.response?.data?.detail ||
+        "Failed to create regulatory framework. Please try again.",
     };
   }
 
   redirect("/dashboard/regulatory-frameworks");
 }
 
-export async function editRegulatoryFramework(state: FormState, formData: FormData) {
+export async function editRegulatoryFramework(
+  state: FormState,
+  formData: FormData,
+) {
   const id = formData.get("id") as string;
   const validatedFields = regulatoryFrameworkSchema.safeParse({
     name: formData.get("name"),
@@ -344,7 +367,9 @@ export async function editRegulatoryFramework(state: FormState, formData: FormDa
     });
   } catch (error: any) {
     return {
-      message: error.response?.data?.detail || "Failed to update regulatory framework. Please try again.",
+      message:
+        error.response?.data?.detail ||
+        "Failed to update regulatory framework. Please try again.",
     };
   }
 

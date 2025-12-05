@@ -47,7 +47,9 @@ export default function UsersPage() {
 
   const fetchUsers = async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) {
         throw new Error("Not authenticated");
       }
@@ -60,7 +62,7 @@ export default function UsersPage() {
 
       if (!res.ok) {
         if (res.status === 403) {
-            throw new Error("Access denied: Admin privileges required.");
+          throw new Error("Access denied: Admin privileges required.");
         }
         throw new Error("Failed to fetch users");
       }
@@ -78,7 +80,9 @@ export default function UsersPage() {
     if (!selectedUser || !newRole) return;
 
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
       if (!session) return;
 
       const res = await fetch(
@@ -90,7 +94,7 @@ export default function UsersPage() {
             Authorization: `Bearer ${session.access_token}`,
           },
           body: JSON.stringify({ role: newRole }),
-        }
+        },
       );
 
       if (!res.ok) {
@@ -99,25 +103,30 @@ export default function UsersPage() {
       }
 
       // Update local state
-      setUsers(users.map(u => u.id === selectedUser.id ? { ...u, role: newRole } : u));
+      setUsers(
+        users.map((u) =>
+          u.id === selectedUser.id ? { ...u, role: newRole } : u,
+        ),
+      );
       setDialogOpen(false);
       setSelectedUser(null);
       setNewRole("");
     } catch (err: any) {
-        setError(err.message);
+      setError(err.message);
     }
   };
 
   if (loading) return <div className="p-8">Loading users...</div>;
-  if (error) return (
-    <div className="p-8">
+  if (error)
+    return (
+      <div className="p-8">
         <Alert variant="destructive">
-            <ExclamationTriangleIcon className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{error}</AlertDescription>
+          <ExclamationTriangleIcon className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
-    </div>
-  );
+      </div>
+    );
 
   return (
     <RoleGuard allowedRoles={["admin"]}>
@@ -137,30 +146,39 @@ export default function UsersPage() {
             <TableBody>
               {users.map((user) => (
                 <TableRow key={user.id}>
-                  <TableCell className="font-medium truncate max-w-[100px]" title={user.id}>
+                  <TableCell
+                    className="font-medium truncate max-w-[100px]"
+                    title={user.id}
+                  >
                     {user.id}
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
                   <TableCell className="capitalize">{user.role}</TableCell>
                   <TableCell>{user.is_active ? "Yes" : "No"}</TableCell>
                   <TableCell className="text-right">
-                    <Dialog open={dialogOpen && selectedUser?.id === user.id} onOpenChange={(open) => {
+                    <Dialog
+                      open={dialogOpen && selectedUser?.id === user.id}
+                      onOpenChange={(open) => {
                         if (open) {
-                            setSelectedUser(user);
-                            setNewRole(user.role || "general_user");
+                          setSelectedUser(user);
+                          setNewRole(user.role || "general_user");
                         } else {
-                            setSelectedUser(null);
+                          setSelectedUser(null);
                         }
                         setDialogOpen(open);
-                    }}>
+                      }}
+                    >
                       <DialogTrigger asChild>
-                        <Button variant="outline" size="sm">Edit Role</Button>
+                        <Button variant="outline" size="sm">
+                          Edit Role
+                        </Button>
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
                           <DialogTitle>Edit Role for {user.email}</DialogTitle>
                           <DialogDescription>
-                            Select a new role for this user. This will update their permissions immediately.
+                            Select a new role for this user. This will update
+                            their permissions immediately.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
@@ -169,16 +187,29 @@ export default function UsersPage() {
                               <SelectValue placeholder="Select a role" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="general_user">General User</SelectItem>
-                              <SelectItem value="bpo">Business Process Owner</SelectItem>
-                              <SelectItem value="executive">Executive</SelectItem>
+                              <SelectItem value="general_user">
+                                General User
+                              </SelectItem>
+                              <SelectItem value="bpo">
+                                Business Process Owner
+                              </SelectItem>
+                              <SelectItem value="executive">
+                                Executive
+                              </SelectItem>
                               <SelectItem value="admin">Admin</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>
                         <DialogFooter>
-                          <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
-                          <Button onClick={handleUpdateRole}>Save Changes</Button>
+                          <Button
+                            variant="outline"
+                            onClick={() => setDialogOpen(false)}
+                          >
+                            Cancel
+                          </Button>
+                          <Button onClick={handleUpdateRole}>
+                            Save Changes
+                          </Button>
                         </DialogFooter>
                       </DialogContent>
                     </Dialog>

@@ -81,7 +81,7 @@ export default function EditControlPage({
         <CardContent>
           <form action={action} className="space-y-4">
             <input type="hidden" name="id" value={id} />
-            
+
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>
               <Input

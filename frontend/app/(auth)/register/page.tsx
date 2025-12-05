@@ -26,7 +26,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { ExclamationTriangleIcon, CheckCircledIcon } from "@radix-ui/react-icons";
+import {
+  ExclamationTriangleIcon,
+  CheckCircledIcon,
+} from "@radix-ui/react-icons";
 
 export default function RegisterPage() {
   const router = useRouter();

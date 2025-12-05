@@ -56,9 +56,15 @@ export default function CreateRiskPage() {
 
             <div className="space-y-2">
               <Label htmlFor="category">Category</Label>
-              <Input id="category" name="category" placeholder="e.g., Financial" />
+              <Input
+                id="category"
+                name="category"
+                placeholder="e.g., Financial"
+              />
               {state?.errors?.category && (
-                <p className="text-sm text-red-500">{state.errors.category[0]}</p>
+                <p className="text-sm text-red-500">
+                  {state.errors.category[0]}
+                </p>
               )}
             </div>
 

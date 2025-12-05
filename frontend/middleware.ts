@@ -19,17 +19,17 @@ export async function middleware(request: NextRequest) {
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value, options }) =>
-            request.cookies.set(name, value)
+            request.cookies.set(name, value),
           );
           response = NextResponse.next({
             request,
           });
           cookiesToSet.forEach(({ name, value, options }) =>
-            response.cookies.set(name, value, options)
+            response.cookies.set(name, value, options),
           );
         },
       },
-    }
+    },
   );
 
   const {
@@ -42,7 +42,11 @@ export async function middleware(request: NextRequest) {
   }
 
   // If user exists and trying to access auth pages, redirect to dashboard
-  if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/register")) {
+  if (
+    user &&
+    (request.nextUrl.pathname === "/login" ||
+      request.nextUrl.pathname === "/register")
+  ) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
