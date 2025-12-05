@@ -1,0 +1,143 @@
+<story-context id="3-2-integrate-ai-for-document-analysis-suggestion-generation" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>2</storyId>
+    <title>Integrate AI for Document Analysis &amp; Suggestion Generation</title>
+    <status>ready-for-dev</status>
+    <generatedAt>Friday, December 5, 2025</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-2-integrate-ai-for-document-analysis-suggestion-generation.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>system</asA>
+    <iWant>to use AI (LLM) to analyze uploaded regulatory documents</iWant>
+    <soThat>I can generate suggestions for risks and controls</soThat>
+    <tasks>
+- Backend: Implement AI Service (AC: 2, 3, 5)
+  - Create `backend/app/services/ai_service.py`.
+  - Implement `analyze_document(text: str)` method.
+  - Define the system prompt for "AI Legal Specialist".
+  - Configure OpenAI client with API key.
+  - Use Pydantic to define the expected output schema (`AnalysisResult`, `Suggestion`).
+- Backend: Implement Text Extraction (AC: 1)
+  - Add `pypdf` (or similar) dependency.
+  - Implement logic to download file from Supabase Storage.
+  - Implement text extraction for PDF and text files.
+- Backend: Implement Celery Analysis Task (AC: 1, 2, 3, 4)
+  - Create `backend/tasks/analysis.py`.
+  - Define `process_document(document_id: UUID)` task.
+  - Implement the pipeline: Download -> Extract -> Analyze (AI) -> Save.
+  - Handle errors and update `document.status` (processing -> completed/failed).
+- Backend: Implement Suggestion Data Model (AC: 4)
+  - Define `AISuggestion` SQLAlchemy model in `backend/app/models/suggestion.py`.
+  - Create Alembic migration for `ai_suggestions` table.
+  - Define Pydantic schemas in `backend/app/schemas/suggestion.py`.
+- Backend: Trigger Analysis on Upload
+  - Update `POST /api/v1/documents/upload` to trigger the Celery task after successful upload.
+- Testing
+  - Unit test: Text extraction logic (with mock files).
+  - Unit test: AI Service prompt generation and schema validation (mock OpenAI).
+  - Integration test: Full Celery task execution (mocking external calls).
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. System extracts text from uploaded file.
+    - The system can process PDF and plain text files stored in Supabase Storage.
+    - Text content is accurately extracted from the document.
+    - The system handles potential extraction errors (e.g., corrupted files, encrypted PDFs) gracefully.
+2. LLM processes text and identifies Risks and Controls.
+    - The extracted text is sent to an LLM (OpenAI GPT-4) with a specific prompt to identify risks and controls.
+    - The prompt enforces the "AI Legal Specialist" persona.
+    - The processing respects token limits (e.g., by chunking large documents if necessary).
+3. Output is valid JSON matching the schema.
+    - The LLM response is structured as a JSON object containing a list of suggestions.
+    - The schema strictly adheres to the defined `Suggestion` model (type: risk/control, content, rationale, source_reference).
+    - Pydantic-AI (or similar validation) ensures the output format is correct.
+4. Suggestions are saved to DB linked to the document.
+    - Each valid suggestion is saved to the `ai_suggestions` table.
+    - Suggestions are linked to the original `document_id`.
+    - Initial status of suggestions is "pending".
+5. Rationales cite specific sections of the source text.
+    - Every suggestion includes a `rationale` explaining why it was generated.
+    - Every suggestion includes a `source_reference` (e.g., "Section 4.2", "Page 3, Paragraph 1") verbatim from the document or a clear pointer.
+</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: AI-Powered Gap Analysis &amp; Auditing</title>
+        <section>Detailed Design / Services and Modules</section>
+        <snippet>Defines `AI Service` and `Analysis Task` responsibilities. "Manages interaction with OpenAI, prompt engineering, and structured response parsing."</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>4.3. AI &amp; Vector Database</section>
+        <snippet>Decision: OpenAI GPT-4. "Backend will require a library for interacting with the OpenAI API".</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>4.6. Background Jobs</section>
+        <snippet>Decision: Celery with Redis. "Backend application will be configured as a Celery producer".</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>backend/app/models/base.py</path>
+        <kind>model</kind>
+        <symbol>Base</symbol>
+        <reason>Base class for SQLAlchemy models.</reason>
+      </file>
+    </code>
+    <dependencies>
+      <backend>
+        <dep>fastapi[standard]</dep>
+        <dep>pydantic-settings</dep>
+        <dep>alembic</dep>
+        <dep>openai</dep>
+        <dep>celery</dep>
+        <dep>redis</dep>
+        <dep>pypdf</dep>
+      </backend>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Use Celery for long-running analysis tasks.</constraint>
+    <constraint>Use Redis as the message broker.</constraint>
+    <constraint>Use `Pydantic` models for LLM response structure.</constraint>
+    <constraint>Keep AI logic in `backend/app/services/ai_service.py`.</constraint>
+    <constraint>Do NOT make real calls to OpenAI in tests. Mock strictly.</constraint>
+    <constraint>Implement error handling for OpenAI API calls (retries/timeouts).</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Analyze Document</name>
+      <kind>Function Signature</kind>
+      <signature>analyze_document(text: str) -> AnalysisResult</signature>
+      <path>backend/app/services/ai_service.py</path>
+    </interface>
+    <interface>
+      <name>Process Document Task</name>
+      <kind>Celery Task</kind>
+      <signature>process_document(document_id: UUID)</signature>
+      <path>backend/tasks/analysis.py</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Use Pytest. Mock OpenAI and Celery. Use sample files for text extraction tests.</standards>
+    <locations>backend/tests</locations>
+    <ideas>
+      <idea ac="1">Test PDF extraction with sample PDF</idea>
+      <idea ac="2">Test prompt generation ensures persona is included</idea>
+      <idea ac="3">Test JSON parsing of mock LLM response</idea>
+      <idea ac="4">Test database saving of suggestions</idea>
+    </ideas>
+  </tests>
+</story-context>
