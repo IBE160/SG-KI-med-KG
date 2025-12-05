@@ -1,5 +1,7 @@
+"use client";
+
 import Link from "next/link";
-import { Home, Users2, List, ShieldCheck, AlertTriangle, GitBranch, Scale } from "lucide-react";
+import { Home, List, ShieldCheck, AlertTriangle, GitBranch, Scale, UserCog } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -8,7 +10,6 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbSeparator,
-  BreadcrumbPage,
 } from "@/components/ui/breadcrumb";
 import {
   DropdownMenu,
@@ -19,12 +20,15 @@ import {
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { logout } from "@/components/actions/logout-action";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useRole } from "@/lib/role";
 
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const { isAdmin } = useRole();
+
   return (
     <div className="flex min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-10 w-16 flex flex-col border-r bg-background p-4">
@@ -102,6 +106,20 @@ export default function DashboardLayout({
               </TooltipTrigger>
               <TooltipContent side="right">Regulatory Frameworks</TooltipContent>
             </Tooltip>
+
+            {isAdmin && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/dashboard/admin/users"
+                    className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
+                  >
+                    <UserCog className="h-5 w-5" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">User Management</TooltipContent>
+              </Tooltip>
+            )}
           </TooltipProvider>
         </div>
       </aside>

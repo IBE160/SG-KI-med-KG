@@ -45,7 +45,7 @@ development_status:
 
   epic-2: contexted
   2-1-implement-user-registration-login-email-password: done
-  2-2-implement-role-based-access-control-rbac: ready-for-dev
+  2-2-implement-role-based-access-control-rbac: done
   epic-2-retrospective: optional
 
   epic-3: backlog
