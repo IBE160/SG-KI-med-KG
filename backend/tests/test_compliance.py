@@ -1,6 +1,5 @@
 import pytest
 from httpx import AsyncClient
-from app.main import app
 
 @pytest.mark.anyio
 async def test_create_control(test_client: AsyncClient, superuser_token_headers):

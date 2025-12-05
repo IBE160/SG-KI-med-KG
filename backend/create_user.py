@@ -1,5 +1,4 @@
 import asyncio
-import os
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from app.models import User
 from fastapi_users.password import PasswordHelper

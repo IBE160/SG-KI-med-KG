@@ -1,7 +1,7 @@
 import pytest
 from fastapi import HTTPException, status
 from jose import jwt
-from app.core.security import get_current_user, security
+from app.core.security import get_current_user
 from app.config import settings
 from unittest.mock import MagicMock
 

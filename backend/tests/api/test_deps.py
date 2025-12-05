@@ -1,6 +1,5 @@
 import pytest
 from fastapi import HTTPException, status
-from unittest.mock import MagicMock
 from app.core.deps import has_role
 from app.models.user import User
 import uuid

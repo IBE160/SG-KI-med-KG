@@ -24,7 +24,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from datetime import datetime
-from typing import Optional, Tuple
+from typing import Optional
 
 import ijson
 from watchfiles import awatch, Change

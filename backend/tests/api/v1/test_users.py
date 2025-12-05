@@ -3,8 +3,6 @@ from httpx import AsyncClient
 from httpx import ASGITransport
 from uuid import uuid4
 from app.main import app
-from app.core.security import get_current_user
-from app.models.user import User
 
 # Mock dependencies for integration tests (since we can't spin up full DB in this env)
 # We will rely on unit tests for logic correctness, and basic route availability checks here.

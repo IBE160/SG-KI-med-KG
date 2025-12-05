@@ -22,7 +22,6 @@ import re
 import webbrowser
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
-from urllib.parse import unquote, quote
 
 
 def to_kebab_case(text):

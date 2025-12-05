@@ -25,8 +25,7 @@ import argparse
 import re
 from pathlib import Path
 from datetime import datetime
-from typing import Dict, List, Optional, Any
-from collections import defaultdict
+from typing import Dict, List, Optional
 
 import ijson
 from filelock import FileLock, Timeout
@@ -168,7 +167,7 @@ def save_session_data(session_id: str, session_data: dict, first_timestamp: str,
     else:
         # Create new file
         if verbose:
-            print(f"   💾 Creating new session file")
+            print("   💾 Creating new session file")
         output_file = save_session_file(data_list, session_id, first_timestamp or "", output_dir)
 
     return output_file
@@ -208,7 +207,7 @@ def process_log_file(log_path: Path, output_dir: Path, verbose: bool = False) ->
     session_files_written = []
 
     print(f"📖 Reading log file: {log_path}")
-    print(f"⏳ Processing events...")
+    print("⏳ Processing events...")
 
     with log_path.open("rb") as f:
         try:
@@ -264,7 +263,7 @@ def process_log_file(log_path: Path, output_dir: Path, verbose: bool = False) ->
 
                     # Load existing data if session file exists
                     if session_id in existing_sessions:
-                        print(f"   ↪ Appending to existing session file")
+                        print("   ↪ Appending to existing session file")
                         existing_data = load_session_file(existing_sessions[session_id])
                         # Convert list to dict keyed by prompt_id
                         for entry in existing_data:
@@ -423,7 +422,7 @@ def print_summary(stats: dict):
     print(f"  - Updated sessions:     {stats['sessions_updated']}")
 
     if stats.get('session_files'):
-        print(f"\n✅ Session files:")
+        print("\n✅ Session files:")
         for file_path in stats['session_files']:
             size = file_path.stat().st_size
             print(f"   - {file_path.name} ({size:,} bytes)")
@@ -473,36 +472,36 @@ def main():
     # Check if log file exists
     if not LOG_FILE.exists():
         print(f"❌ Error: Log file not found: {LOG_FILE}")
-        print(f"   Make sure Gemini CLI has run with telemetry enabled.")
+        print("   Make sure Gemini CLI has run with telemetry enabled.")
         return 1
 
     # Check if log file is empty
     if LOG_FILE.stat().st_size == 0:
         print(f"⚠️  Warning: Log file is empty: {LOG_FILE}")
-        print(f"   No data to process.")
+        print("   No data to process.")
         return 0
 
     # Acquire file lock
     lock = FileLock(LOCK_FILE, timeout=10)
 
     try:
-        print(f"🔒 Acquiring file lock...")
+        print("🔒 Acquiring file lock...")
         with lock:
-            print(f"✓ Lock acquired\n")
+            print("✓ Lock acquired\n")
 
             # Process log file
             stats = process_log_file(LOG_FILE, args.output_dir, args.verbose)
 
             if stats.get('sessions_processed', 0) == 0:
-                print(f"\n⚠️  No sessions found in log file.")
+                print("\n⚠️  No sessions found in log file.")
                 return 0
 
             # Clear log file if requested
             if not args.no_clear:
                 clear_log_file(LOG_FILE, args.verbose)
-                print(f"\n✓ Log file cleared")
+                print("\n✓ Log file cleared")
             else:
-                print(f"\n⚠️  Log file NOT cleared (--no-clear specified)")
+                print("\n⚠️  Log file NOT cleared (--no-clear specified)")
 
             # Print summary
             print_summary(stats)
@@ -510,9 +509,9 @@ def main():
             return 0
 
     except Timeout:
-        print(f"\n❌ Error: Could not acquire file lock (timeout after 10s)")
-        print(f"   Another process may be using the log file.")
-        print(f"   Please try again later or check for running processes.")
+        print("\n❌ Error: Could not acquire file lock (timeout after 10s)")
+        print("   Another process may be using the log file.")
+        print("   Please try again later or check for running processes.")
         return 1
 
     except Exception as e:
@@ -525,7 +524,7 @@ def main():
     finally:
         # Release lock (happens automatically with context manager)
         if lock.is_locked:
-            print(f"\n🔓 Releasing file lock...")
+            print("\n🔓 Releasing file lock...")
 
 if __name__ == "__main__":
     import sys
