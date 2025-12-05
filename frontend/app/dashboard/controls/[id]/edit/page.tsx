@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { editControl } from "@/components/actions/compliance-actions";
 import { Button } from "@/components/ui/button";
@@ -30,8 +30,9 @@ function SubmitButton() {
 export default function EditControlPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = use(params);
   const [state, action] = useFormState(editControl, undefined);
   const [loading, setLoading] = useState(true);
   const [initialData, setInitialData] = useState<any>(null);
@@ -41,7 +42,7 @@ export default function EditControlPage({
     const fetchData = async () => {
       try {
         const response = await readControl({
-          path: { control_id: params.id },
+          path: { control_id: id },
         });
         if (response.data) {
           setInitialData(response.data);
@@ -54,7 +55,7 @@ export default function EditControlPage({
       }
     };
     fetchData();
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => {
     if (state?.message) {
@@ -79,7 +80,7 @@ export default function EditControlPage({
         </CardHeader>
         <CardContent>
           <form action={action} className="space-y-4">
-            <input type="hidden" name="id" value={params.id} />
+            <input type="hidden" name="id" value={id} />
             
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>

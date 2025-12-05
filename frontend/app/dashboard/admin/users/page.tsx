@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase";
-import { User } from "@/app/clientService";
+import { UserRead } from "@/app/clientService";
 import {
   Table,
   TableBody,
@@ -33,10 +33,10 @@ import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { RoleGuard } from "@/lib/role";
 
 export default function UsersPage() {
-  const [users, setUsers] = useState<User[]>([]);
+  const [users, setUsers] = useState<UserRead[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<UserRead | null>(null);
   const [newRole, setNewRole] = useState<string>("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const supabase = createClient();

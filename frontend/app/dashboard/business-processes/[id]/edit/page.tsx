@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { editBusinessProcess } from "@/components/actions/compliance-actions";
 import { Button } from "@/components/ui/button";
@@ -31,8 +31,9 @@ function SubmitButton() {
 export default function EditBusinessProcessPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = use(params);
   const [state, action] = useFormState(editBusinessProcess, undefined);
   const [loading, setLoading] = useState(true);
   const [initialData, setInitialData] = useState<any>(null);
@@ -42,7 +43,7 @@ export default function EditBusinessProcessPage({
     const fetchData = async () => {
       try {
         const response = await readBusinessProcess({
-          path: { process_id: params.id },
+          path: { process_id: id },
         });
         if (response.data) {
           setInitialData(response.data);
@@ -55,7 +56,7 @@ export default function EditBusinessProcessPage({
       }
     };
     fetchData();
-  }, [params.id]);
+  }, [id]);
 
   if (loading) {
     return <div className="text-center py-10">Loading...</div>;
@@ -76,7 +77,7 @@ export default function EditBusinessProcessPage({
         </CardHeader>
         <CardContent>
           <form action={action} className="space-y-4">
-            <input type="hidden" name="id" value={params.id} />
+            <input type="hidden" name="id" value={id} />
             {state?.message && (
               <Alert variant="destructive">
                 <AlertCircle className="h-4 w-4" />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import { editRisk } from "@/components/actions/compliance-actions";
 import { Button } from "@/components/ui/button";
@@ -27,7 +27,8 @@ function SubmitButton() {
   );
 }
 
-export default function EditRiskPage({ params }: { params: { id: string } }) {
+export default function EditRiskPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = use(params);
   const [state, action] = useFormState(editRisk, undefined);
   const [loading, setLoading] = useState(true);
   const [initialData, setInitialData] = useState<any>(null);
@@ -37,7 +38,7 @@ export default function EditRiskPage({ params }: { params: { id: string } }) {
     const fetchData = async () => {
       try {
         const response = await readRisk({
-          path: { risk_id: params.id },
+          path: { risk_id: id },
         });
         if (response.data) {
           setInitialData(response.data);
@@ -50,7 +51,7 @@ export default function EditRiskPage({ params }: { params: { id: string } }) {
       }
     };
     fetchData();
-  }, [params.id]);
+  }, [id]);
 
   useEffect(() => {
     if (state?.message) {
@@ -75,7 +76,7 @@ export default function EditRiskPage({ params }: { params: { id: string } }) {
         </CardHeader>
         <CardContent>
           <form action={action} className="space-y-4">
-            <input type="hidden" name="id" value={params.id} />
+            <input type="hidden" name="id" value={id} />
             
             <div className="space-y-2">
               <Label htmlFor="name">Name</Label>

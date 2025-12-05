@@ -191,6 +191,8 @@ export type UserCreate = {
   is_active?: boolean | null;
   is_superuser?: boolean | null;
   is_verified?: boolean | null;
+  role?: string;
+  tenant_id?: string | null;
 };
 
 export type UserRead = {
@@ -199,6 +201,8 @@ export type UserRead = {
   is_active?: boolean;
   is_superuser?: boolean;
   is_verified?: boolean;
+  role: string;
+  tenant_id: string;
 };
 
 export type UserUpdate = {
@@ -207,6 +211,8 @@ export type UserUpdate = {
   is_active?: boolean | null;
   is_superuser?: boolean | null;
   is_verified?: boolean | null;
+  role?: string | null;
+  tenant_id?: string | null;
 };
 
 export type ValidationError = {
