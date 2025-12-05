@@ -1,28 +1,54 @@
+import { createServerClient } from "@supabase/ssr";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { usersCurrentUser } from "@/app/clientService";
 
 export async function middleware(request: NextRequest) {
-  const token = request.cookies.get("accessToken");
-
-  if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
-  }
-
-  const options = {
-    headers: {
-      Authorization: `Bearer ${token.value}`,
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
     },
-  };
+  });
 
-  const { error } = await usersCurrentUser(options);
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return request.cookies.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            request.cookies.set(name, value)
+          );
+          response = NextResponse.next({
+            request,
+          });
+          cookiesToSet.forEach(({ name, value, options }) =>
+            response.cookies.set(name, value, options)
+          );
+        },
+      },
+    }
+  );
 
-  if (error) {
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  // If no user and trying to access dashboard, redirect to login
+  if (!user && request.nextUrl.pathname.startsWith("/dashboard")) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
-  return NextResponse.next();
+
+  // If user exists and trying to access auth pages, redirect to dashboard
+  if (user && (request.nextUrl.pathname === "/login" || request.nextUrl.pathname === "/register")) {
+    return NextResponse.redirect(new URL("/dashboard", request.url));
+  }
+
+  return response;
 }
 
 export const config = {
-  matcher: ["/dashboard/:path*"],
+  matcher: ["/dashboard/:path*", "/login", "/register"],
 };

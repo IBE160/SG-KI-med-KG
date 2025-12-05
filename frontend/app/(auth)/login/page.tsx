@@ -44,25 +44,31 @@ export default function LoginPage() {
   });
 
   async function onSubmit(data: LoginSchema) {
+    console.log("Login form submitted", data.email);
     setIsLoading(true);
     setError(null);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      console.log("Attempting Supabase login...");
+      const { data: authData, error } = await supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       });
 
+      console.log("Supabase response:", { authData, error });
+
       if (error) {
+        console.error("Login error:", error);
         setError(error.message);
         return;
       }
 
-      router.push("/dashboard");
-      router.refresh();
+      console.log("Login successful, redirecting to dashboard...");
+      // Use window.location for hard redirect to ensure session is picked up
+      window.location.href = "/dashboard";
     } catch (e) {
+      console.error("Unexpected error:", e);
       setError("An unexpected error occurred. Please try again.");
-      console.error(e);
     } finally {
       setIsLoading(false);
     }
