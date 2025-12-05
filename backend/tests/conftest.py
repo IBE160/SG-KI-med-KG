@@ -54,14 +54,14 @@ async def test_client(db_session):
         try:
             yield session
         finally:
-            pass # We want db_session to be closed by the fixture itself, not dependency
+            pass  # We want db_session to be closed by the fixture itself, not dependency
 
     # General database override (raw session access)
     async def override_get_async_session():
         try:
             yield db_session
         finally:
-            pass # We want db_session to be closed by the fixture itself, not dependency
+            pass  # We want db_session to be closed by the fixture itself, not dependency
 
     # Set up test database overrides
     app.dependency_overrides[get_user_db] = override_get_user_db
@@ -71,7 +71,7 @@ async def test_client(db_session):
         transport=ASGITransport(app=app), base_url="http://localhost:8000"
     ) as client:
         yield client
-    
+
     app.dependency_overrides.clear()
 
 
@@ -105,6 +105,7 @@ async def authenticated_user(test_client, db_session):
         "user": user,
         "user_data": {"email": user_data["email"], "password": "TestPassword123#"},
     }
+
 
 @pytest_asyncio.fixture(scope="function")
 async def superuser_token_headers(test_client, db_session):

@@ -24,7 +24,9 @@ else:
             f"{parsed_db_url.path}"
         )
     elif parsed_db_url.scheme == "sqlite":
-        async_db_connection_url = settings.DATABASE_URL.replace("sqlite://", "sqlite+aiosqlite://")
+        async_db_connection_url = settings.DATABASE_URL.replace(
+            "sqlite://", "sqlite+aiosqlite://"
+        )
     elif parsed_db_url.scheme in ["http", "https"]:
         # If DATABASE_URL is an HTTP(S) URL (like Supabase project URL), use in-memory SQLite
         # This happens when DATABASE_URL is misconfigured - it should be a PostgreSQL connection string

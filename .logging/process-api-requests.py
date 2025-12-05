@@ -41,10 +41,12 @@ EVENT_REQUEST = "gemini_cli.api_request"
 EVENT_RESPONSE = "gemini_cli.api_response"
 EVENT_ERROR = "gemini_cli.api_error"
 
+
 # ---------- Helper Functions ----------
 def timestamp_now() -> str:
     """Return current timestamp in YYYY-MM-DD_HH-mm-ss format."""
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
 
 def get_existing_sessions(output_dir: Path) -> Dict[str, Path]:
     """
@@ -55,7 +57,7 @@ def get_existing_sessions(output_dir: Path) -> Dict[str, Path]:
     sessions = {}
 
     # Pattern: YYYY-MM-DD_HH-MM-SS-{session-id}.json
-    pattern = re.compile(r'(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})-(.+)\.json')
+    pattern = re.compile(r"(\d{4})-(\d{2})-(\d{2})_(\d{2})-(\d{2})-(\d{2})-(.+)\.json")
 
     for file_path in output_dir.glob("*.json"):
         match = pattern.match(file_path.name)
@@ -64,6 +66,7 @@ def get_existing_sessions(output_dir: Path) -> Dict[str, Path]:
             sessions[session_id] = file_path
 
     return sessions
+
 
 def load_session_file(file_path: Path) -> List[dict]:
     """Load existing session data from file."""
@@ -77,17 +80,25 @@ def load_session_file(file_path: Path) -> List[dict]:
         print(f"⚠️  Warning: Could not load {file_path.name}: {e}")
         return []
 
+
 def extract_attributes(record: dict) -> dict:
     """Extract attributes from OTLP-style record."""
-    return record.get("attributes", {}) if isinstance(record.get("attributes"), dict) else {}
+    return (
+        record.get("attributes", {})
+        if isinstance(record.get("attributes"), dict)
+        else {}
+    )
+
 
 def get_prompt_id(attrs: dict) -> Optional[str]:
     """Extract prompt_id from attributes."""
     return attrs.get("prompt_id")
 
+
 def get_session_id(attrs: dict) -> Optional[str]:
     """Extract session.id from attributes."""
     return attrs.get("session.id")
+
 
 def get_event_timestamp(record: dict) -> Optional[str]:
     """Extract timestamp from record."""
@@ -97,14 +108,16 @@ def get_event_timestamp(record: dict) -> Optional[str]:
     if timestamp:
         return timestamp
     # Fallbacks for other formats
-    return (record.get("timestamp") or
-            record.get("event_timestamp") or
-            record.get("time"))
+    return (
+        record.get("timestamp") or record.get("event_timestamp") or record.get("time")
+    )
+
 
 def get_event_name(record: dict) -> Optional[str]:
     """Extract event name from record."""
     attrs = extract_attributes(record)
     return attrs.get("event.name") or record.get("event") or record.get("name")
+
 
 def parse_json_fields(attrs: dict, fields: List[str], verbose: bool = False) -> dict:
     """
@@ -135,6 +148,7 @@ def parse_json_fields(attrs: dict, fields: List[str], verbose: bool = False) -> 
 
     return result
 
+
 # Fields that commonly contain JSON strings
 JSON_STRING_FIELDS = [
     "request_text",
@@ -142,9 +156,16 @@ JSON_STRING_FIELDS = [
     "function_args",  # tool arguments might be JSON strings
 ]
 
+
 # ---------- Event Processing ----------
-def save_session_data(session_id: str, session_data: dict, first_timestamp: str,
-                     existing_sessions: dict, output_dir: Path, verbose: bool) -> Path:
+def save_session_data(
+    session_id: str,
+    session_data: dict,
+    first_timestamp: str,
+    existing_sessions: dict,
+    output_dir: Path,
+    verbose: bool,
+) -> Path:
     """
     Save session data to file.
     Handles both new and existing session files.
@@ -168,11 +189,16 @@ def save_session_data(session_id: str, session_data: dict, first_timestamp: str,
         # Create new file
         if verbose:
             print("   💾 Creating new session file")
-        output_file = save_session_file(data_list, session_id, first_timestamp or "", output_dir)
+        output_file = save_session_file(
+            data_list, session_id, first_timestamp or "", output_dir
+        )
 
     return output_file
 
-def process_log_file(log_path: Path, output_dir: Path, verbose: bool = False) -> Dict[str, any]:
+
+def process_log_file(
+    log_path: Path, output_dir: Path, verbose: bool = False
+) -> Dict[str, any]:
     """
     Parse log file and extract API events grouped by session.
     Processes records in order and creates/updates session files as needed.
@@ -197,7 +223,7 @@ def process_log_file(log_path: Path, output_dir: Path, verbose: bool = False) ->
         "skipped": 0,
         "sessions_processed": 0,
         "sessions_updated": 0,
-        "sessions_created": 0
+        "sessions_created": 0,
     }
 
     # Current session tracking
@@ -242,7 +268,7 @@ def process_log_file(log_path: Path, output_dir: Path, verbose: bool = False) ->
                             current_session_first_timestamp,
                             existing_sessions,
                             output_dir,
-                            verbose
+                            verbose,
                         )
                         session_files_written.append(file_path)
                         stats["sessions_processed"] += 1
@@ -271,7 +297,10 @@ def process_log_file(log_path: Path, output_dir: Path, verbose: bool = False) ->
                             entry_prompt_id = None
                             if entry.get("request") and "prompt_id" in entry["request"]:
                                 entry_prompt_id = entry["request"]["prompt_id"]
-                            elif entry.get("response") and "prompt_id" in entry["response"]:
+                            elif (
+                                entry.get("response")
+                                and "prompt_id" in entry["response"]
+                            ):
                                 entry_prompt_id = entry["response"]["prompt_id"]
                             elif entry.get("error") and "prompt_id" in entry["error"]:
                                 entry_prompt_id = entry["error"]["prompt_id"]
@@ -288,24 +317,30 @@ def process_log_file(log_path: Path, output_dir: Path, verbose: bool = False) ->
                     current_session_data[prompt_id] = {
                         "request": None,
                         "response": None,
-                        "error": None
+                        "error": None,
                     }
 
                 # Process based on event type (parse JSON fields before storing)
                 if event_name == EVENT_REQUEST:
-                    current_session_data[prompt_id]["request"] = parse_json_fields(attrs, JSON_STRING_FIELDS, verbose)
+                    current_session_data[prompt_id]["request"] = parse_json_fields(
+                        attrs, JSON_STRING_FIELDS, verbose
+                    )
                     stats["requests"] += 1
                     if verbose:
                         print(f"   ✓ Request: {prompt_id}")
 
                 elif event_name == EVENT_RESPONSE:
-                    current_session_data[prompt_id]["response"] = parse_json_fields(attrs, JSON_STRING_FIELDS, verbose)
+                    current_session_data[prompt_id]["response"] = parse_json_fields(
+                        attrs, JSON_STRING_FIELDS, verbose
+                    )
                     stats["responses"] += 1
                     if verbose:
                         print(f"   ✓ Response: {prompt_id}")
 
                 elif event_name == EVENT_ERROR:
-                    current_session_data[prompt_id]["error"] = parse_json_fields(attrs, JSON_STRING_FIELDS, verbose)
+                    current_session_data[prompt_id]["error"] = parse_json_fields(
+                        attrs, JSON_STRING_FIELDS, verbose
+                    )
                     stats["errors"] += 1
                     if verbose:
                         print(f"   ✓ Error: {prompt_id}")
@@ -320,7 +355,7 @@ def process_log_file(log_path: Path, output_dir: Path, verbose: bool = False) ->
                     current_session_first_timestamp,
                     existing_sessions,
                     output_dir,
-                    verbose
+                    verbose,
                 )
                 session_files_written.append(file_path)
                 stats["sessions_processed"] += 1
@@ -334,12 +369,18 @@ def process_log_file(log_path: Path, output_dir: Path, verbose: bool = False) ->
             print(f"⚠️  Warning: Error parsing log file: {e}")
             if verbose:
                 import traceback
+
                 traceback.print_exc()
 
     stats["session_files"] = session_files_written
     return stats
 
-def format_output(grouped_events: Dict[str, Dict[str, any]], parse_json: bool = True, verbose: bool = False) -> List[dict]:
+
+def format_output(
+    grouped_events: Dict[str, Dict[str, any]],
+    parse_json: bool = True,
+    verbose: bool = False,
+) -> List[dict]:
     """
     Format grouped events into output array structure.
     Each entry has request, response, and error fields (may be null).
@@ -354,24 +395,41 @@ def format_output(grouped_events: Dict[str, Dict[str, any]], parse_json: bool = 
     for prompt_id, events in grouped_events.items():
         # Parse JSON fields if requested
         if parse_json:
-            request = parse_json_fields(events.get("request") or {}, JSON_STRING_FIELDS, verbose) if events.get("request") else None
-            response = parse_json_fields(events.get("response") or {}, JSON_STRING_FIELDS, verbose) if events.get("response") else None
-            error = parse_json_fields(events.get("error") or {}, JSON_STRING_FIELDS, verbose) if events.get("error") else None
+            request = (
+                parse_json_fields(
+                    events.get("request") or {}, JSON_STRING_FIELDS, verbose
+                )
+                if events.get("request")
+                else None
+            )
+            response = (
+                parse_json_fields(
+                    events.get("response") or {}, JSON_STRING_FIELDS, verbose
+                )
+                if events.get("response")
+                else None
+            )
+            error = (
+                parse_json_fields(
+                    events.get("error") or {}, JSON_STRING_FIELDS, verbose
+                )
+                if events.get("error")
+                else None
+            )
         else:
             request = events.get("request")
             response = events.get("response")
             error = events.get("error")
 
-        entry = {
-            "request": request,
-            "response": response,
-            "error": error
-        }
+        entry = {"request": request, "response": response, "error": error}
         output.append(entry)
 
     return output
 
-def save_session_file(data: List[dict], session_id: str, first_timestamp: str, output_dir: Path) -> Path:
+
+def save_session_file(
+    data: List[dict], session_id: str, first_timestamp: str, output_dir: Path
+) -> Path:
     """
     Save session data to file.
     Filename format: {first_timestamp}-{session_id}.json
@@ -381,7 +439,7 @@ def save_session_file(data: List[dict], session_id: str, first_timestamp: str, o
     # Format timestamp for filename (YYYY-MM-DD_HH-MM-SS)
     try:
         # Parse ISO timestamp and format for filename
-        dt = datetime.fromisoformat(first_timestamp.replace('Z', '+00:00'))
+        dt = datetime.fromisoformat(first_timestamp.replace("Z", "+00:00"))
         timestamp_str = dt.strftime("%Y-%m-%d_%H-%M-%S")
     except (ValueError, AttributeError):
         # Fallback to current time if parsing fails
@@ -399,6 +457,7 @@ def save_session_file(data: List[dict], session_id: str, first_timestamp: str, o
 
     return output_file
 
+
 def clear_log_file(log_path: Path, verbose: bool = False):
     """Clear the log file content."""
     if verbose:
@@ -407,11 +466,12 @@ def clear_log_file(log_path: Path, verbose: bool = False):
     with log_path.open("w", encoding="utf-8") as f:
         f.write("")  # Truncate to empty
 
+
 def print_summary(stats: dict):
     """Print processing summary."""
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("📊 Processing Summary")
-    print("="*60)
+    print("=" * 60)
     print(f"Total records processed:  {stats['total_records']}")
     print(f"API requests found:       {stats['requests']}")
     print(f"API responses found:      {stats['responses']}")
@@ -421,53 +481,53 @@ def print_summary(stats: dict):
     print(f"  - New sessions:         {stats['sessions_created']}")
     print(f"  - Updated sessions:     {stats['sessions_updated']}")
 
-    if stats.get('session_files'):
+    if stats.get("session_files"):
         print("\n✅ Session files:")
-        for file_path in stats['session_files']:
+        for file_path in stats["session_files"]:
             size = file_path.stat().st_size
             print(f"   - {file_path.name} ({size:,} bytes)")
 
-    print("="*60)
+    print("=" * 60)
+
 
 # ---------- Main Function ----------
 def main():
     # Fix encoding for Windows console
     import sys
     import io
+
     if sys.platform == "win32":
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
-        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8')
+        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8")
+        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8")
 
     parser = argparse.ArgumentParser(
         description="Process Gemini CLI API request telemetry logs",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
     parser.add_argument(
         "--no-clear",
         action="store_true",
-        help="Don't clear the log file after processing"
+        help="Don't clear the log file after processing",
     )
     parser.add_argument(
         "--output-dir",
         type=Path,
         default=DEFAULT_OUTPUT_DIR,
-        help=f"Output directory (default: {DEFAULT_OUTPUT_DIR})"
+        help=f"Output directory (default: {DEFAULT_OUTPUT_DIR})",
     )
     parser.add_argument(
-        "--verbose", "-v",
-        action="store_true",
-        help="Enable verbose debug output"
+        "--verbose", "-v", action="store_true", help="Enable verbose debug output"
     )
     parser.add_argument(
         "--raw",
         action="store_true",
-        help="Keep JSON strings as-is (don't parse to objects)"
+        help="Keep JSON strings as-is (don't parse to objects)",
     )
 
     args = parser.parse_args()
 
     print("🚀 Gemini CLI API Request Processor")
-    print("="*60)
+    print("=" * 60)
 
     # Check if log file exists
     if not LOG_FILE.exists():
@@ -492,7 +552,7 @@ def main():
             # Process log file
             stats = process_log_file(LOG_FILE, args.output_dir, args.verbose)
 
-            if stats.get('sessions_processed', 0) == 0:
+            if stats.get("sessions_processed", 0) == 0:
                 print("\n⚠️  No sessions found in log file.")
                 return 0
 
@@ -518,6 +578,7 @@ def main():
         print(f"\n❌ Error: {e}")
         if args.verbose:
             import traceback
+
             traceback.print_exc()
         return 1
 
@@ -526,6 +587,8 @@ def main():
         if lock.is_locked:
             print("\n🔓 Releasing file lock...")
 
+
 if __name__ == "__main__":
     import sys
+
     sys.exit(main())

@@ -8,9 +8,12 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def generate_openapi_schema(output_file):
     if not output_file:
-        print("Error: No output file specified. Provide it as an argument or set OPENAPI_OUTPUT_FILE env var.")
+        print(
+            "Error: No output file specified. Provide it as an argument or set OPENAPI_OUTPUT_FILE env var."
+        )
         sys.exit(1)
 
     schema = app.openapi()
@@ -49,5 +52,5 @@ if __name__ == "__main__":
         OUTPUT_FILE = sys.argv[1]
     else:
         OUTPUT_FILE = os.getenv("OPENAPI_OUTPUT_FILE", "../frontend/openapi.json")
-    
+
     generate_openapi_schema(OUTPUT_FILE)

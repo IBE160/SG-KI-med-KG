@@ -35,11 +35,14 @@ SESS_BASE = BASE / ".logging" / "sessions"
 STATE_FILE = BASE / ".logging" / ".state.json"
 SESS_BASE.mkdir(parents=True, exist_ok=True)
 
+
 # ---------- helpers ----------
 def ts_folder(val) -> str:
     """Return 'YYYY-MM-DD_HH-mm-ss' from ISO string or epoch (ms/sec)."""
     if isinstance(val, (int, float)):
-        return datetime.fromtimestamp(val/1000 if val > 1e12 else val).strftime("%Y-%m-%d_%H-%M-%S")
+        return datetime.fromtimestamp(val / 1000 if val > 1e12 else val).strftime(
+            "%Y-%m-%d_%H-%M-%S"
+        )
     if isinstance(val, str):
         try:
             dt = datetime.fromisoformat(val.replace("Z", "+00:00"))
@@ -47,6 +50,7 @@ def ts_folder(val) -> str:
         except Exception:
             pass
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+
 
 def g(obj, *path, default=None):
     cur = obj
@@ -56,12 +60,20 @@ def g(obj, *path, default=None):
         cur = cur[k]
     return cur
 
+
 def normalize(rec: dict) -> dict:
     """Extract common fields from the OTLP-ish record."""
-    attrs = rec.get("attributes", {}) if isinstance(rec.get("attributes", {}), dict) else {}
+    attrs = (
+        rec.get("attributes", {}) if isinstance(rec.get("attributes", {}), dict) else {}
+    )
     event = attrs.get("event.name") or rec.get("event") or rec.get("name") or ""
     t = attrs.get("event.timestamp") or rec.get("time") or None
-    sid = attrs.get("session.id") or rec.get("sessionId") or rec.get("session_id") or "unknown"
+    sid = (
+        attrs.get("session.id")
+        or rec.get("sessionId")
+        or rec.get("session_id")
+        or "unknown"
+    )
     model = attrs.get("model", "")
     in_tok = attrs.get("input_token_count", "")
     out_tok = attrs.get("output_token_count", "")
@@ -86,6 +98,7 @@ def normalize(rec: dict) -> dict:
         "tool_dur": tool_dur,
     }
 
+
 def open_session_folder(first_info: dict, suffix_bump: int = 0) -> Path:
     """Create a timestamped session folder; bump suffix if same-second collision."""
     stamp = ts_folder(first_info["time"])
@@ -97,9 +110,13 @@ def open_session_folder(first_info: dict, suffix_bump: int = 0) -> Path:
     folder.mkdir(parents=True, exist_ok=True)
     return folder
 
+
 def write_prompt(folder: Path, info: dict):
     with (folder / "prompts.log").open("a", encoding="utf-8") as f:
-        f.write(f"[{ts_folder(info['time'])}] session={info['sid']}\n{info['prompt'].rstrip()}\n---\n")
+        f.write(
+            f"[{ts_folder(info['time'])}] session={info['sid']}\n{info['prompt'].rstrip()}\n---\n"
+        )
+
 
 def write_resp(folder: Path, info: dict):
     with (folder / "responses.log").open("a", encoding="utf-8") as f:
@@ -107,6 +124,7 @@ def write_resp(folder: Path, info: dict):
             f"[{ts_folder(info['time'])}] session={info['sid']} model={info['model']} "
             f"tokens(in={info['in_tok']},out={info['out_tok']})\n{info['resp'].rstrip()}\n---\n"
         )
+
 
 def write_tool(folder: Path, info: dict):
     try:
@@ -119,6 +137,7 @@ def write_tool(folder: Path, info: dict):
             f"success={info['tool_ok']} duration_ms={info['tool_dur']}\nargs={args_s}\n---\n"
         )
 
+
 # ---------- state handling ----------
 def load_state() -> dict:
     if STATE_FILE.exists():
@@ -126,10 +145,19 @@ def load_state() -> dict:
             return json.loads(STATE_FILE.read_text(encoding="utf-8"))
         except Exception:
             pass
-    return {"processed_count": 0, "last_size": 0, "current_sid": None, "session_folder": None}
+    return {
+        "processed_count": 0,
+        "last_size": 0,
+        "current_sid": None,
+        "session_folder": None,
+    }
+
 
 def save_state(state: dict):
-    STATE_FILE.write_text(json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8")
+    STATE_FILE.write_text(
+        json.dumps(state, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
+
 
 # ---------- processing ----------
 def process_all(state: dict) -> dict:
@@ -149,7 +177,9 @@ def process_all(state: dict) -> dict:
 
     processed = 0
     new_objs = 0
-    session_folder: Optional[Path] = Path(state["session_folder"]) if state.get("session_folder") else None
+    session_folder: Optional[Path] = (
+        Path(state["session_folder"]) if state.get("session_folder") else None
+    )
     current_sid = state.get("current_sid")
 
     with LOG_FILE.open("rb") as f:
@@ -195,6 +225,7 @@ def process_all(state: dict) -> dict:
         save_state(state)
     return state
 
+
 # ---------- watcher main ----------
 async def main():
     # Ensure folder exists; don’t create/clear the log (user controls it)
@@ -207,17 +238,27 @@ async def main():
     # React to changes
     async for changes in awatch(LOG_FILE.parent, debounce=150):
         # only act if our file changed
-        if not any(str(p) == str(LOG_FILE) and (chg in (Change.modified, Change.added) or Change.deleted)
-                   for chg, p in changes):
+        if not any(
+            str(p) == str(LOG_FILE)
+            and (chg in (Change.modified, Change.added) or Change.deleted)
+            for chg, p in changes
+        ):
             continue
         # if deleted, just reset counters and wait for re-creation
         if any(chg == Change.deleted and str(p) == str(LOG_FILE) for chg, p in changes):
-            state = {"processed_count": 0, "last_size": 0, "current_sid": None, "session_folder": None}
+            state = {
+                "processed_count": 0,
+                "last_size": 0,
+                "current_sid": None,
+                "session_folder": None,
+            }
             save_state(state)
             continue
         # modified/added → (re)process
         state = process_all(state)
 
+
 if __name__ == "__main__":
     import asyncio
+
     asyncio.run(main())

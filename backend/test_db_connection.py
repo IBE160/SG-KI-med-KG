@@ -6,6 +6,7 @@ from sqlalchemy import text
 # Using postgresql+asyncpg driver
 DB_URL = "postgresql+asyncpg://postgres:qsgcFcsunjkjKPLv@db.xjltxcwdbvsuxyuffzmt.supabase.co:5432/postgres"
 
+
 async def test_connection():
     print(f"Connecting to {DB_URL.split('@')[1]}...")
     try:
@@ -15,6 +16,7 @@ async def test_connection():
             print(f"Success! Result: {result.scalar()}")
     except Exception as e:
         print(f"Connection failed: {e}")
+
 
 if __name__ == "__main__":
     asyncio.run(test_connection())

@@ -4,6 +4,7 @@ from sqlalchemy.orm import relationship
 from uuid import uuid4
 from .base import Base
 
+
 class Item(Base):
     __tablename__ = "items"
 
