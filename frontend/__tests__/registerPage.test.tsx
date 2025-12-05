@@ -1,7 +1,7 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 
-import Page from "@/app/register/page";
+import Page from "@/app/(auth)/register/page";
 import { register } from "@/components/actions/register-action";
 
 jest.mock("../components/actions/register-action", () => ({

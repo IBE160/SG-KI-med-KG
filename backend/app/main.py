@@ -48,12 +48,11 @@ app.include_router(
     prefix="/users",
     tags=["users"],
 )
+from app.api.v1.endpoints.users import router as users_router
 
 # Include items routes
 app.include_router(items_router, prefix="/items")
 app.include_router(compliance_router, prefix="/api/v1")
-
-from app.api.v1.endpoints.users import router as users_router
 app.include_router(users_router, prefix="/api/v1/users", tags=["users"])
 
 add_pagination(app)

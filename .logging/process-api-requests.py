@@ -384,7 +384,7 @@ def save_session_file(data: List[dict], session_id: str, first_timestamp: str, o
         # Parse ISO timestamp and format for filename
         dt = datetime.fromisoformat(first_timestamp.replace('Z', '+00:00'))
         timestamp_str = dt.strftime("%Y-%m-%d_%H-%M-%S")
-    except:
+    except (ValueError, AttributeError):
         # Fallback to current time if parsing fails
         timestamp_str = timestamp_now()
 
