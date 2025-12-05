@@ -577,3 +577,14 @@ export type DeleteRegulatoryFrameworkData = {
 export type DeleteRegulatoryFrameworkResponse = void;
 
 export type DeleteRegulatoryFrameworkError = HTTPValidationError;
+
+export type UpdateUserRoleData = {
+  body: UserUpdate;
+  path: {
+    user_id: string;
+  };
+};
+
+export type UpdateUserRoleResponse = UserRead;
+
+export type UpdateUserRoleError = HTTPValidationError;

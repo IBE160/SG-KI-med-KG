@@ -110,6 +110,9 @@ import type {
   DeleteRegulatoryFrameworkData,
   DeleteRegulatoryFrameworkError,
   DeleteRegulatoryFrameworkResponse,
+  UpdateUserRoleData,
+  UpdateUserRoleError,
+  UpdateUserRoleResponse,
 } from "./types.gen";
 
 export const client = createClient(createConfig());
@@ -676,5 +679,21 @@ export const deleteRegulatoryFramework = <ThrowOnError extends boolean = false>(
   >({
     ...options,
     url: "/api/v1/regulatory-frameworks/{framework_id}",
+  });
+};
+
+/**
+ * Update User Role
+ */
+export const updateUserRole = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UpdateUserRoleData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).put<
+    UpdateUserRoleResponse,
+    UpdateUserRoleError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/users/{user_id}/role",
   });
 };
