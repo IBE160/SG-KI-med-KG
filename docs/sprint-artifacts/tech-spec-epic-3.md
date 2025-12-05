@@ -21,7 +21,7 @@ This epic delivers the core value proposition of the ibe160 platform: the "AI Le
 **In Scope:**
 *   Secure file upload and storage (Supabase Storage).
 *   Asynchronous document processing pipeline (Celery/Redis).
-*   AI integration using OpenAI GPT-4 via Pydantic-AI for structured output.
+*   AI integration using OpenAI GPT-4 via Pydantic-AI for structured output (Single provider PoC).
 *   Backend API endpoints for upload, analysis status, and suggestion management.
 *   Frontend UI for document upload and the two-stage "AI Review Mode" (CO Triage).
 *   Database schema for audit logs and triggers/logic to populate them.
