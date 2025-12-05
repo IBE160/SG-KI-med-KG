@@ -10,6 +10,7 @@
     "lint:fix": "eslint . --fix",
     "generate-client": "openapi-ts",
     "test": "jest",
+    "test:e2e": "playwright test",
     "coverage": "jest --coverage",
     "prettier": "prettier --write '**/*.{js,jsx,ts,tsx,json,css,html}'",
     "tsc": "tsc"
