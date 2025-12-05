@@ -12,6 +12,10 @@ class Settings(BaseSettings):
     TEST_DATABASE_URL: str | None = None
     EXPIRE_ON_COMMIT: bool = False
 
+    # Supabase
+    SUPABASE_URL: str | None = None
+    SUPABASE_JWT_SECRET: str | None = None
+
     # User
     ACCESS_SECRET_KEY: str
     RESET_PASSWORD_SECRET_KEY: str

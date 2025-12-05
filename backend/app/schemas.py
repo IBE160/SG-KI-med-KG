@@ -1,21 +1,24 @@
 import uuid
 
 from fastapi_users import schemas
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from uuid import UUID
 from datetime import datetime
 
 
 class UserRead(schemas.BaseUser[uuid.UUID]):
-    pass
+    role: str
+    tenant_id: UUID
 
 
 class UserCreate(schemas.BaseUserCreate):
-    pass
+    role: str = "general_user"
+    tenant_id: UUID | None = None
 
 
 class UserUpdate(schemas.BaseUserUpdate):
-    pass
+    role: str | None = None
+    tenant_id: UUID | None = None
 
 
 class ItemBase(BaseModel):

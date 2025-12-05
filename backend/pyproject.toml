@@ -12,7 +12,9 @@ dependencies = [
     "pydantic-settings>=2.5.2,<3",
     "fastapi-mail>=1.4.1,<2",
     "fastapi-pagination==0.13.3",
-    "aiosqlite>=0.20.0,<1"
+    "aiosqlite>=0.20.0,<1",
+    "python-jose[cryptography]>=3.5.0",
+    "supabase>=2.16.0",
 ]
 
 [dependency-groups]

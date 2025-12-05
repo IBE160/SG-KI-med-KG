@@ -1,8 +1,8 @@
-# Epic Technical Specification: {{epic_title}}
+# Epic Technical Specification: User Identity & Access Management (IAM)
 
-Date: {{date}}
-Author: {{user_name}}
-Epic ID: {{epic_id}}
+Date: 2025-12-01
+Author: BIP
+Epic ID: 2
 Status: Draft
 
 ---
@@ -136,3 +136,8 @@ CREATE TABLE users (
 *   **Integration Tests:** API integration tests for registration, login, and role update endpoints.
 *   **E2E Tests:** Playwright tests for user registration, login flows, and Admin role management UI.
 *   **Security Tests:** Manual checks for unauthorized access based on roles.
+
+## Post-Review Follow-ups
+
+*   **Code Changes Required:**
+    *   [ ] [High] Verify database migrations run successfully once DB environment is fixed (AC #5) - Ref: Story 2.1

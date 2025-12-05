@@ -1,0 +1,193 @@
+<story-context id="template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>2</storyId>
+    <title>Implement Role-Based Access Control (RBAC)</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-05</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-2-implement-role-based-access-control-rbac.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Admin</asA>
+    <iWant>to manage user roles (Admin, BPO, Executive, General User) within my tenant</iWant>
+    <soThat>I can control access to features and data according to defined permissions</soThat>
+    <tasks>
+- [ ] **Implement Backend Role Management** (AC: #4, #6)
+  - [ ] Add `PUT /api/v1/users/{user_id}/role` endpoint (Admin only)
+  - [ ] Implement service logic to update user role in `users` table
+  - [ ] (Optional) Sync role update to Supabase Auth `user_metadata` for easier frontend access
+
+- [ ] **Implement RBAC Middleware / Dependencies** (AC: #5)
+  - [ ] Create `get_current_active_user` dependency (already likely exists)
+  - [ ] Create `get_current_admin_user` dependency (checks role="admin")
+  - [ ] Create generic `has_role(roles: List[str])` dependency factory for route protection
+  - [ ] Protect user management endpoints with `has_role(["admin"])`
+
+- [ ] **Build Admin User Management UI** (AC: #2, #3, #4)
+  - [ ] Create `/admin/users` page (protected route)
+  - [ ] Fetch and display list of users (name, email, role, status)
+  - [ ] Implement "Edit Role" functionality (Modal or inline dropdown)
+  - [ ] Connect "Save" action to backend `PUT` endpoint
+  - [ ] Handle errors and success notifications (Toast/Alert)
+
+- [ ] **Enforce Frontend Permissions** (AC: #5)
+  - [ ] Create `RoleGuard` component or hook (e.g., `useRole`) to conditionally render UI
+  - [ ] Hide "Admin" navigation links for non-admin users
+  - [ ] Redirect unauthorized access to `/admin/*` routes to dashboard or 403 page
+
+- [ ] **Write Tests** (AC: #1-6)
+  - [ ] Backend: Unit tests for `has_role` dependency
+  - [ ] Backend: Integration test for role update endpoint (Admin vs Non-Admin access)
+  - [ ] Frontend: Unit test for `RoleGuard` (renders/hides correctly)
+  - [ ] E2E: Playwright test for Admin changing a user's role
+  - [ ] E2E: Playwright test verifying General User cannot access Admin page
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. **Given** I am logged in as an Admin,
+2. **When** I access the user management interface,
+3. **Then** I see a list of users in my tenant with their current roles.
+4. **And** I can change a user's role to Admin, BPO, Executive, or General User.
+5. **And** the system enforces permissions: General Users cannot access Admin features or endpoints.
+6. **And** user roles are persisted in the database and enforced effectively (e.g., via JWT claims or DB lookup).
+</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <!-- PRD Artifacts -->
+      <artifact>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>FR-1: Role-Based Access Control</section>
+        <snippet>The system must support four distinct user roles within each tenant: Admin, Business Process Owner (BPO), Executive, and General User. Permissions for each role are strictly defined.</snippet>
+      </artifact>
+
+      <!-- Tech Spec Artifacts -->
+      <artifact>
+        <path>docs/tech-spec-epic-2.md</path>
+        <title>Technical Specification - Epic 2</title>
+        <section>Detailed Design - Data Models</section>
+        <snippet>User Model (users table) has a `role` column (VARCHAR(50), default 'general_user'). APIs include `PUT /{user_id}/role` for Admin role updates.</snippet>
+      </artifact>
+
+      <!-- Architecture Artifacts -->
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>System Architecture</title>
+        <section>5.2 Authorization</section>
+        <snippet>Role-Based Access Control (RBAC) enforced at API Gateway (middleware) and Frontend (Route Guards). Roles: Admin, BPO, Executive, General User.</snippet>
+      </artifact>
+      
+      <!-- UX Design Artifacts -->
+      <artifact>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design Specification</title>
+        <section>Admin Dashboard</section>
+        <snippet>Admin dashboard must include a "User Management" section accessible only to Admins, featuring a table of users with "Edit Role" actions.</snippet>
+      </artifact>
+    </docs>
+
+    <code>
+      <!-- Security Module (likely updated in 2.1) -->
+      <artifact>
+        <path>backend/app/core/security.py</path>
+        <kind>file</kind>
+        <symbol>security</symbol>
+        <reason>Expected location for RBAC dependencies like `has_role` and `get_current_active_user`.</reason>
+      </artifact>
+
+       <!-- User API Endpoints (Placeholder) -->
+      <artifact>
+        <path>backend/app/api/v1/endpoints/users.py</path>
+        <kind>file</kind>
+        <symbol>router</symbol>
+        <reason>Likely location for user management endpoints.</reason>
+      </artifact>
+
+       <!-- Frontend Table Component -->
+      <artifact>
+        <path>frontend/components/ui/table.tsx</path>
+        <kind>component</kind>
+        <symbol>Table</symbol>
+        <reason>Shadcn UI Table component for listing users.</reason>
+      </artifact>
+      
+      <!-- Frontend Dialog Component -->
+      <artifact>
+        <path>frontend/components/ui/dialog.tsx</path>
+        <kind>component</kind>
+        <symbol>Dialog</symbol>
+        <reason>Shadcn UI Dialog component for "Edit Role" modal.</reason>
+      </artifact>
+    </code>
+
+    <dependencies>
+      <dependency ecosystem="python">
+        <package>fastapi-users</package>
+        <version>latest</version>
+      </dependency>
+      <dependency ecosystem="python">
+        <package>supabase</package>
+        <version>latest</version>
+      </dependency>
+      <dependency ecosystem="npm">
+        <package>@supabase/auth-helpers-nextjs</package>
+        <version>latest</version>
+      </dependency>
+       <dependency ecosystem="npm">
+        <package>tanstack/react-table</package>
+        <version>latest</version>
+      </dependency>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Admins can ONLY manage users within their own tenant (Tenant Isolation).</constraint>
+    <constraint>Role updates must be validated against the allowed enum list (admin, bpo, executive, general_user).</constraint>
+    <constraint>Frontend must handle 403 Forbidden errors gracefully by redirecting or showing a friendly message.</constraint>
+    <constraint>Avoid "Admin" role creep - only check for Admin role on endpoints that truly require it.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Update User Role Endpoint</name>
+      <kind>REST API</kind>
+      <signature>PUT /api/v1/users/{user_id}/role</signature>
+      <path>backend/app/api/v1/endpoints/users.py</path>
+    </interface>
+    <interface>
+      <name>Role Check Dependency</name>
+      <kind>Dependency</kind>
+      <signature>has_role(roles: List[str]) -> Callable</signature>
+      <path>backend/app/core/security.py</path>
+    </interface>
+    <interface>
+      <name>User Management Page</name>
+      <kind>Page</kind>
+      <signature>/admin/users</signature>
+      <path>frontend/app/(dashboard)/admin/users/page.tsx</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Backend: Integration tests for `PUT /role` ensuring admins can update and non-admins get 403.
+      Frontend: Component tests for UserTable and EditRoleModal.
+      E2E: Full flow of logging in as Admin, navigating to Users, and changing a role.
+    </standards>
+    <locations>
+      <location>backend/tests/api/v1/test_users.py</location>
+      <location>frontend/tests/e2e/admin-users.spec.ts</location>
+    </locations>
+    <ideas>
+      <idea ac="1">Test Admin login redirects to Admin Dashboard or shows Admin menu.</idea>
+      <idea ac="3">Test User List shows correct users for the tenant.</idea>
+      <idea ac="4">Test changing a user role updates the DB.</idea>
+      <idea ac="5">Test non-admin user accessing /admin/users gets 403/redirect.</idea>
+      <idea ac="5">Test non-admin user calling PUT /role endpoint gets 403.</idea>
+    </ideas>
+  </tests>
+</story-context>
