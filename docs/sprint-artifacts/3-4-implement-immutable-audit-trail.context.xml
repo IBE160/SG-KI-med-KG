@@ -1,0 +1,136 @@
+<story-context id="3-4-implement-immutable-audit-trail" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>4</storyId>
+    <title>Implement Immutable Audit Trail</title>
+    <status>ready-for-dev</status>
+    <generatedAt>Friday, December 5, 2025</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-4-implement-immutable-audit-trail.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>system</asA>
+    <iWant>to automatically record all critical actions (CRUD on compliance data, AI suggestion approval/rejection) in an immutable audit log</iWant>
+    <soThat>there is a comprehensive and verifiable history for compliance audits</soThat>
+    <tasks>
+- Backend: Implement Audit Log Data Model (AC: 1, 3)
+  - Define `AuditLog` SQLAlchemy model in `backend/app/models/audit_log.py`.
+  - Create Alembic migration for `audit_logs` table (with fields: id, action, entity_type, entity_id, actor_id, changes, timestamp).
+  - Define Pydantic schemas in `backend/app/schemas/audit_log.py` (Read only).
+- Backend: Implement Audit Service (AC: 1, 2, 3)
+  - Create `backend/app/services/audit_service.py`.
+  - Implement `log_action(db, actor_id, action, entity_type, entity_id, changes)` method.
+  - Implement helper to calculate JSON diff between two model states.
+- Backend: Integrate Audit Logging into Services (AC: 1, 2)
+  - Update `RiskService` / `ControlService` (or CRUD endpoints) to call `log_action` on changes.
+  - Update `SuggestionService` (from Story 3.3) to call `log_action` on approval.
+- Backend: Audit Log Retrieval Endpoint
+  - Implement `GET /api/v1/audit-logs` endpoint (filtered by tenant, entity, actor).
+  - Ensure pagination support.
+- Database: Enforce Immutability (Optional/Advanced) (AC: 4)
+  - Add a Postgres trigger or RLS policy to raise error on UPDATE/DELETE for `audit_logs`.
+- Testing
+  - Unit test: Diff calculation logic.
+  - Integration test: Create a Risk and verify `audit_logs` entry is created.
+  - Integration test: Update a Control and verify `changes` JSON diff.
+  - Integration test: Approve suggestion and verify log.
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. `audit_logs` table captures CREATE/UPDATE/DELETE on Risks/Controls.
+    - Any creation, modification, or deletion of a Risk or Control entity triggers the creation of an audit log entry.
+    - The entry includes the type of entity (Risk/Control), the entity ID, and the type of action (CREATE/UPDATE/DELETE).
+2. Captures "Approve Suggestion" actions.
+    - When an AI suggestion is approved (promoted to Risk/Control), an audit log entry is created.
+    - The action is clearly logged as "APPROVE_SUGGESTION" (or similar).
+3. Log entry includes Actor, Timestamp, Action, and Diff.
+    - Each log entry records the UUID of the user who performed the action (`actor_id`).
+    - A precise timestamp (`created_at`) is recorded.
+    - For updates, a JSON diff of the changes (old values vs. new values) is stored in the `changes` column.
+    - For creates/deletes, the full state or relevant ID is captured.
+4. Logs are immutable (enforced by DB policy or application logic).
+    - The `audit_logs` table is append-only.
+    - No API endpoints exist to update or delete audit log entries.
+    - (Optional but recommended) Row Level Security (RLS) prevents updates/deletes even by standard users.
+</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: AI-Powered Gap Analysis &amp; Auditing</title>
+        <section>Detailed Design / Data Models and Contracts</section>
+        <snippet>Defines `audit_logs` entity with id, action, entity_type, entity_id, actor_id, changes, timestamp. Mentions `Audit Service` logic.</snippet>
+      </doc>
+      <doc>
+        <path>docs/PRD.md</path>
+        <title>ibe160 - Product Requirements Document</title>
+        <section>5. Audit &amp; History</section>
+        <snippet>FR-8: Immutable Audit Trail. "All actions that create, modify, or delete critical compliance data... must be recorded in an immutable audit log."</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>backend/app/models/base.py</path>
+        <kind>model</kind>
+        <symbol>Base</symbol>
+        <reason>Base class for SQLAlchemy models.</reason>
+      </file>
+      <file>
+        <path>backend/app/models/user.py</path>
+        <kind>model</kind>
+        <symbol>User</symbol>
+        <reason>Actor for the audit log.</reason>
+      </file>
+      <file>
+        <path>backend/app/services/audit_service.py</path>
+        <kind>service</kind>
+        <symbol>AuditService</symbol>
+        <reason>Service for audit logging (ensure created).</reason>
+      </file>
+    </code>
+    <dependencies>
+      <backend>
+        <dep>fastapi</dep>
+        <dep>pydantic</dep>
+        <dep>sqlalchemy</dep>
+        <dep>alembic</dep>
+      </backend>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Centralize logging logic in `AuditService`.</constraint>
+    <constraint>Store only changed fields for updates (JSON diff).</constraint>
+    <constraint>Audit logs must be append-only (immutable).</constraint>
+    <constraint>Scrub sensitive data (e.g., passwords) from audit logs.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Log Action</name>
+      <kind>Function Signature</kind>
+      <signature>log_action(db, actor_id, action, entity_type, entity_id, changes)</signature>
+      <path>backend/app/services/audit_service.py</path>
+    </interface>
+    <interface>
+      <name>Get Audit Logs</name>
+      <kind>REST API</kind>
+      <signature>GET /api/v1/audit-logs</signature>
+      <path>backend/app/api/v1/endpoints/audit_logs.py</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Verify the content of the log entry (actor_id, diff), not just existence.</standards>
+    <locations>backend/tests</locations>
+    <ideas>
+      <idea ac="1">Create/Update Risk and check audit log entry</idea>
+      <idea ac="2">Approve suggestion and check audit log entry</idea>
+      <idea ac="3">Verify JSON diff correctness for partial updates</idea>
+      <idea ac="4">Verify no update/delete endpoints exist for audit logs</idea>
+    </ideas>
+  </tests>
+</story-context>

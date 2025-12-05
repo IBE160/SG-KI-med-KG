@@ -52,7 +52,7 @@ development_status:
   3-1-implement-document-upload-for-ai-analysis: ready-for-dev
   3-2-integrate-ai-for-document-analysis-suggestion-generation: ready-for-dev
   3-3-build-human-in-the-loop-hitl-validation-interface: ready-for-dev
-  3-4-implement-immutable-audit-trail: backlog
+  3-4-implement-immutable-audit-trail: ready-for-dev
   epic-3-retrospective: optional
 
   epic-4: backlog
