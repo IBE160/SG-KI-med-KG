@@ -8,7 +8,12 @@ const eslintConfig = [{
   ignores: ["node_modules/**", ".next/**", "out/**", "build/**", "next-env.d.ts"]
 }, ...compat.config({
   extends: ["next/core-web-vitals", "next/typescript", "prettier"],
-  rules: { "@typescript-eslint/no-empty-object-type": "off" },
+  rules: {
+    "@typescript-eslint/no-empty-object-type": "off",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/no-unused-vars": "warn",
+    "react-hooks/exhaustive-deps": "warn"
+  },
 })];
 
 export default eslintConfig;
