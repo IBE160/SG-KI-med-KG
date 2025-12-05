@@ -1,6 +1,6 @@
 # Story 3.1: Implement Document Upload for AI Analysis
 
-Status: drafted
+Status: ready-for-dev
 
 ## Story
 
@@ -96,6 +96,8 @@ so that **the AI can analyze them for potential risks and controls**.
 ## Dev Agent Record
 
 ### Context Reference
+
+- docs/sprint-artifacts/3-1-implement-document-upload-for-ai-analysis.context.xml
 
 <!-- Path(s) to story context XML will be added here by context workflow -->
 

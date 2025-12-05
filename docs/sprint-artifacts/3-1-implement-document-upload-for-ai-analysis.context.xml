@@ -1,0 +1,156 @@
+<story-context id="3-1-implement-document-upload-for-ai-analysis" v="1.0">
+  <metadata>
+    <epicId>3</epicId>
+    <storyId>1</storyId>
+    <title>Implement Document Upload for AI Analysis</title>
+    <status>ready-for-dev</status>
+    <generatedAt>Friday, December 5, 2025</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/3-1-implement-document-upload-for-ai-analysis.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Admin</asA>
+    <iWant>to upload regulatory documents (PDF/text) to the system</iWant>
+    <soThat>the AI can analyze them for potential risks and controls</soThat>
+    <tasks>
+- Backend: Configure Supabase Storage (AC: 2)
+  - Create a new storage bucket (e.g., `regulatory-docs`) via migration or script (if possible) or manual instructions.
+  - Implement RLS policies for the bucket to restrict access to Admins.
+- Backend: Implement Document Data Model (AC: 3)
+  - Define `Document` SQLAlchemy model with required fields.
+  - Create Alembic migration for the `documents` table.
+  - Define Pydantic schemas for Document (Create, Read).
+- Backend: Create Document Upload Endpoint (AC: 1, 2, 3)
+  - Implement `POST /api/v1/documents/upload` endpoint.
+  - Validate file type (PDF, text/plain) and size (&lt;20MB).
+  - Use Supabase Storage client to upload the file.
+  - Create the `Document` record in the database.
+- Frontend: Build Document Upload UI (AC: 1, 4)
+  - Create a `DocumentUpload` component using Shadcn UI (e.g., Input type='file' or a dropzone).
+  - Implement the API call to upload the file.
+  - Handle success/error states and display toast notifications.
+- Frontend: Build Document List View (AC: 4)
+  - Create a component to list uploaded documents.
+  - Fetch documents from `GET /api/v1/documents` (create this endpoint if needed for listing).
+  - Display the current status (`pending`, `processing`, etc.) for each document.
+- Backend: Document Listing Endpoint (AC: 4)
+  - Implement `GET /api/v1/documents` to list documents for the tenant.
+- Testing
+  - Unit test: Document model and schema validation.
+  - Integration test: Upload endpoint success and failure (invalid type/size).
+  - Integration test: Storage interaction (mocked).
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Admin can upload PDF/Text files via UI.
+    - An authenticated Admin user can select and upload a file (PDF or plain text) through the application interface.
+    - Files up to 20MB are supported.
+    - Non-PDF/Text files are rejected with a clear error message.
+2. File is securely stored in Supabase bucket.
+    - The uploaded file is saved to a dedicated, private Supabase Storage bucket.
+    - Row Level Security (RLS) ensures files are isolated by tenant (if applicable) or restricted to Admin access.
+3. Metadata record created in DB.
+    - A record is created in the `documents` table with fields: `id`, `filename`, `storage_path`, `uploaded_by`, `created_at`, and `status`.
+    - The initial `status` is set to "pending".
+4. User sees "Processing" status.
+    - Upon successful upload, the UI displays a success message.
+    - The uploaded document appears in a list view with a status of "Processing" (or "Pending" -> "Processing" once the background task starts).
+    - Immediate feedback confirms the system has received the file for analysis.
+</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-3.md</path>
+        <title>Epic Technical Specification: AI-Powered Gap Analysis &amp; Auditing</title>
+        <section>Detailed Design / Data Models and Contracts</section>
+        <snippet>Defines `documents` entity with id, filename, storage_path, status, uploaded_by. Defines `Document Service` responsibilities.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>4.5. File Storage</section>
+        <snippet>Decision: Supabase Storage. "Backend will need logic to generate secure upload URLs... Frontend will use Supabase client library". Note: Story implementation might use server-side upload via backend API as per tasks.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/2-2-implement-role-based-access-control-rbac.md</path>
+        <title>Story 2.2: Implement Role-Based Access Control</title>
+        <section>Dev Notes</section>
+        <snippet>Reference for `has_role` dependency usage. "Use deps.has_role(['admin']) for the upload endpoint".</snippet>
+      </doc>
+    </docs>
+    <code>
+      <file>
+        <path>backend/app/api/v1/endpoints/users.py</path>
+        <kind>endpoint</kind>
+        <symbol>update_user_role</symbol>
+        <reason>Example of RBAC protection using `has_role` dependency and tenant isolation checks.</reason>
+      </file>
+      <file>
+        <path>backend/app/models/base.py</path>
+        <kind>model</kind>
+        <symbol>Base</symbol>
+        <reason>Base class for SQLAlchemy models.</reason>
+      </file>
+      <file>
+        <path>backend/app/models/user.py</path>
+        <kind>model</kind>
+        <symbol>User</symbol>
+        <reason>User model reference for `uploaded_by` foreign key.</reason>
+      </file>
+    </code>
+    <dependencies>
+      <backend>
+        <dep>fastapi[standard]</dep>
+        <dep>supabase>=2.16.0</dep>
+        <dep>pydantic-settings</dep>
+        <dep>alembic</dep>
+      </backend>
+      <frontend>
+        <dep>@supabase/supabase-js</dep>
+        <dep>react-hook-form</dep>
+        <dep>zod</dep>
+        <dep>sonner</dep>
+        <dep>lucide-react</dep>
+      </frontend>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Follow Service/Repository pattern. Create `DocumentService` for logic.</constraint>
+    <constraint>Use `Supabase` client for storage operations.</constraint>
+    <constraint>Files must be stored in a private bucket.</constraint>
+    <constraint>Use `deps.has_role(["admin"])` to protect upload endpoint.</constraint>
+    <constraint>Place new backend components in `backend/app/` structure.</constraint>
+    <constraint>Place frontend page in `frontend/app/dashboard/admin/`.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Upload Document</name>
+      <kind>REST API</kind>
+      <signature>POST /api/v1/documents/upload</signature>
+      <path>backend/app/api/v1/endpoints/documents.py</path>
+    </interface>
+    <interface>
+      <name>List Documents</name>
+      <kind>REST API</kind>
+      <signature>GET /api/v1/documents</signature>
+      <path>backend/app/api/v1/endpoints/documents.py</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Use Pytest for backend. Integration tests should mock external services (Supabase Storage). Frontend tests should use Jest/React Testing Library (or Playwright if E2E).</standards>
+    <locations>backend/tests/api/v1</locations>
+    <ideas>
+      <idea ac="1">Test upload with non-PDF file (expect 400 error)</idea>
+      <idea ac="1">Test upload with >20MB file (expect 400 error)</idea>
+      <idea ac="2">Test RLS policies (attempt access as non-admin)</idea>
+      <idea ac="3">Verify DB record creation fields match input</idea>
+      <idea ac="4">Verify status transitions from pending to processing</idea>
+    </ideas>
+  </tests>
+</story-context>
