@@ -77,7 +77,7 @@ Story 2.1 successfully establishes the authentication foundation using Supabase.
 ### Action Items
 
 **Code Changes Required:**
-- [ ] [High] Verify database migrations run successfully once DB environment is fixed (AC #5) [file: backend/alembic_migrations/versions/664ae1128299_add_role_and_tenant_id_to_user.py]
+- [x] [High] Verify database migrations run successfully once DB environment is fixed (AC #5) [file: backend/alembic_migrations/versions/664ae1128299_add_role_and_tenant_id_to_user.py]
 
 **Advisory Notes:**
 - Note: Ensure Supabase email templates are configured in the dashboard as per `docs/setup/supabase-configuration.md`.

@@ -140,4 +140,4 @@ CREATE TABLE users (
 ## Post-Review Follow-ups
 
 *   **Code Changes Required:**
-    *   [ ] [High] Verify database migrations run successfully once DB environment is fixed (AC #5) - Ref: Story 2.1
+    *   [x] [High] Verify database migrations run successfully once DB environment is fixed (AC #5) - Ref: Story 2.1
