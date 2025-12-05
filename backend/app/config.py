@@ -1,5 +1,6 @@
 from typing import Set
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -41,6 +42,14 @@ class Settings(BaseSettings):
 
     # CORS
     CORS_ORIGINS: Set[str] = {"http://localhost:3000", "http://localhost:3001"}
+
+    @field_validator("CORS_ORIGINS", mode="before")
+    @classmethod
+    def parse_cors_origins(cls, v):
+        if isinstance(v, str):
+            # Handle comma-separated string from environment variable
+            return {origin.strip() for origin in v.split(",") if origin.strip()}
+        return v
 
     model_config = SettingsConfigDict(
         env_file=".env", env_file_encoding="utf-8", extra="ignore"
