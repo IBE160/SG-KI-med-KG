@@ -18,13 +18,17 @@ export function useRole() {
       if (session?.access_token) {
         try {
           // Fetch role from backend API for authoritative source
-          const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/v1/users/me`;
+          // IMPORTANT: Must use absolute URL to avoid Next.js routing to /app/api
+          const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+          const apiUrl = `${backendUrl}/api/v1/users/me`;
           console.log("Fetching user role from:", apiUrl);
+          console.log("Backend URL env var:", process.env.NEXT_PUBLIC_API_BASE_URL);
 
           const response = await fetch(apiUrl, {
             headers: {
               Authorization: `Bearer ${session.access_token}`,
             },
+            mode: 'cors',
           });
 
           console.log("Role fetch response status:", response.status);
@@ -58,11 +62,13 @@ export function useRole() {
       if (session?.access_token) {
         try {
           // Fetch updated role from backend
-          const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/v1/users/me`;
+          const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+          const apiUrl = `${backendUrl}/api/v1/users/me`;
           const response = await fetch(apiUrl, {
             headers: {
               Authorization: `Bearer ${session.access_token}`,
             },
+            mode: 'cors',
           });
           if (response.ok) {
             const userData = await response.json();

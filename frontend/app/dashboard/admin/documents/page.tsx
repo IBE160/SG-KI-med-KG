@@ -13,6 +13,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Upload, FileText } from "lucide-react";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase";
 
 interface Document {
   id: string;
@@ -26,12 +27,24 @@ export default function DocumentsPage() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const supabase = createClient();
 
   const fetchDocuments = async () => {
     try {
       setLoading(true);
-      const response = await fetch("/api/v1/documents", {
-        credentials: "include",
+
+      // Get auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/api/v1/documents`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
 
       if (!response.ok) {
@@ -82,13 +95,23 @@ export default function DocumentsPage() {
     try {
       setUploading(true);
 
+      // Get auth token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Not authenticated");
+        return;
+      }
+
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      const response = await fetch("/api/v1/documents/upload", {
+      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/api/v1/documents/upload`, {
         method: "POST",
         body: formData,
-        credentials: "include",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
       });
 
       if (!response.ok) {

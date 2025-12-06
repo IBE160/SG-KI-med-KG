@@ -36,9 +36,10 @@ class DocumentService:
                 detail="Storage service not configured",
             )
 
-        # Generate unique file path
-        file_extension = file.filename.split(".")[-1] if "." in file.filename else ""
-        unique_filename = f"{user_id}/{uuid.uuid4()}.{file_extension}"
+        # Generate unique file path while preserving original filename
+        # Format: {user_id}/{uuid}_{original_filename}
+        unique_id = str(uuid.uuid4())
+        unique_filename = f"{user_id}/{unique_id}_{file.filename}"
 
         try:
             # Read file content
@@ -65,7 +66,8 @@ class DocumentService:
         except Exception as e:
             if "already exists" in str(e).lower():
                 # File already exists, try with a new UUID
-                unique_filename = f"{user_id}/{uuid.uuid4()}.{file_extension}"
+                unique_id = str(uuid.uuid4())
+                unique_filename = f"{user_id}/{unique_id}_{file.filename}"
                 content = await file.read()
                 response = supabase_client.storage.from_(bucket_name).upload(
                     unique_filename, content, {"content-type": file.content_type}
