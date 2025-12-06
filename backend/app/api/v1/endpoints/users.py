@@ -6,9 +6,19 @@ from uuid import UUID
 from app.database import get_async_session
 from app.models.user import User as UserModel
 from app.schemas import UserRead, UserUpdate
-from app.core.deps import has_role
+from app.core.deps import has_role, get_current_active_user
 
 router = APIRouter()
+
+
+@router.get("/me", response_model=UserRead, tags=["users"])
+async def get_current_user(
+    current_user: UserModel = Depends(get_current_active_user),
+):
+    """
+    Get the current authenticated user's information including their role.
+    """
+    return current_user
 
 
 @router.put("/{user_id}/role", response_model=UserRead, tags=["users"])

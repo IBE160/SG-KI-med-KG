@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   Home,
   List,
@@ -9,6 +10,7 @@ import {
   GitBranch,
   Scale,
   UserCog,
+  FileText,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -26,7 +28,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { logout } from "@/components/actions/logout-action";
+import { logout } from "@/lib/logout";
 import {
   Tooltip,
   TooltipContent,
@@ -40,7 +42,19 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isAdmin } = useRole();
+  const { role, isAdmin } = useRole();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      // Force redirect anyway
+      router.push("/login");
+    }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -123,17 +137,31 @@ export default function DashboardLayout({
             </Tooltip>
 
             {isAdmin && (
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Link
-                    href="/dashboard/admin/users"
-                    className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
-                  >
-                    <UserCog className="h-5 w-5" />
-                  </Link>
-                </TooltipTrigger>
-                <TooltipContent side="right">User Management</TooltipContent>
-              </Tooltip>
+              <>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href="/dashboard/admin/documents"
+                      className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
+                    >
+                      <FileText className="h-5 w-5" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">Documents</TooltipContent>
+                </Tooltip>
+
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Link
+                      href="/dashboard/admin/users"
+                      className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
+                    >
+                      <UserCog className="h-5 w-5" />
+                    </Link>
+                  </TooltipTrigger>
+                  <TooltipContent side="right">User Management</TooltipContent>
+                </Tooltip>
+              </>
             )}
           </TooltipProvider>
         </div>
@@ -171,21 +199,22 @@ export default function DashboardLayout({
                 </button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" side="bottom">
-                <DropdownMenuItem>
-                  <Link
-                    href="/support"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
+                <div className="px-4 py-2 text-sm border-b">
+                  <div className="font-semibold">Current Role</div>
+                  <div className="text-muted-foreground capitalize">
+                    {role || "Loading..."}
+                  </div>
+                </div>
+                <DropdownMenuItem asChild>
+                  <Link href="/support">
                     Support
                   </Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <button
-                    onClick={logout}
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                  >
-                    Logout
-                  </button>
+                <DropdownMenuItem
+                  onClick={handleLogout}
+                  className="cursor-pointer"
+                >
+                  Logout
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
