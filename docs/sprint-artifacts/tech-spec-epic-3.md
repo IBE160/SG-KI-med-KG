@@ -193,3 +193,4 @@ This epic leverages the **AI & Vector Database** and **Background Jobs** archite
 *   [ ] **Story 3.1:** [Med] Wrap `DocumentsPage` with `RoleGuard` to enforce admin access on client-side (Frontend Pattern) (AC #1).
 *   [ ] **Story 3.2:** [Low] Refine AI error handling to distinguish between retryable API errors and hard failures (AC #2).
 *   [ ] **Story 3.2:** [Low] Implement robust chunking strategy for documents larger than LLM context window (AC #2).
+*   [ ] **Story 3.4:** [Med] Integrate `log_action` into Risk and Control CRUD endpoints (AC #1).

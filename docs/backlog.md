@@ -12,3 +12,4 @@
 | 2025-12-06 | 3.2 | 3 | TechDebt | Low | TBD | Open | **AI Error Handling:** Distinguish retryable API errors (429/5xx) from hard failures in `AIService`. [file: `backend/app/services/ai_service.py`] |
 | 2025-12-06 | 3.2 | 3 | Enhancement | Low | TBD | Open | **Document Chunking:** Implement robust chunking for large docs (token counting) to prevent context overflow. [file: `backend/app/services/ai_service.py`] |
 | 2025-12-06 | 3.3 | 3 | UX | Med | TBD | Done | **BPO Selection:** Implement BPO Selection dropdown in Frontend to allow manual assignment. [file: `frontend/app/dashboard/compliance/review/page.tsx`] |
+| 2025-12-06 | 3.4 | 3 | TechDebt | Med | TBD | Open | **Audit Integration:** Integrate `log_action` into Risk and Control CRUD endpoints. [file: `backend/app/routes/compliance.py`] |

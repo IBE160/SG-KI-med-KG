@@ -38,6 +38,8 @@ async def list_suggestions(
     result = await db.execute(query)
     return result.scalars().all()
 
+from app.services.audit_service import AuditService
+
 @router.patch("/{suggestion_id}/status", response_model=AISuggestionRead, tags=["suggestions"])
 async def update_suggestion_status(
     suggestion_id: UUID,
@@ -59,11 +61,24 @@ async def update_suggestion_status(
     if suggestion.status != SuggestionStatus.pending:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Cannot transition from {suggestion.status} status.")
 
+    # Prepare Audit Changes
+    old_status = suggestion.status
+    
     # Update fields
     suggestion.status = request.status
     if request.updated_content:
         suggestion.content = request.updated_content
     
+    # Audit Log
+    await AuditService.log_action(
+        db,
+        actor_id=current_user.id,
+        action=f"SUGGESTION_{request.status.name.upper()}",
+        entity_type="AISuggestion",
+        entity_id=suggestion.id,
+        changes={"status": {"old": old_status, "new": request.status}}
+    )
+
     # Mock Notification Trigger
     if request.status == SuggestionStatus.awaiting_bpo_approval:
         if request.bpo_id:
