@@ -21,6 +21,25 @@ async def get_current_user(
     return current_user
 
 
+@router.get("", response_model=list[UserRead], tags=["users"])
+async def list_users(
+    role: str | None = None,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: UserModel = Depends(has_role(["admin", "compliance_officer"])),
+):
+    """
+    List users in the current tenant, optionally filtered by role.
+    Requires admin or compliance_officer role.
+    """
+    query = select(UserModel).filter(UserModel.tenant_id == current_user.tenant_id)
+    
+    if role:
+        query = query.filter(UserModel.role == role)
+        
+    result = await db.execute(query)
+    return result.scalars().all()
+
+
 @router.put("/{user_id}/role", response_model=UserRead, tags=["users"])
 async def update_user_role(
     user_id: UUID,

@@ -13,7 +13,7 @@ class SuggestionType(str, enum.Enum):
 
 class SuggestionStatus(str, enum.Enum):
     pending = "pending"
-    accepted = "accepted"
+    awaiting_bpo_approval = "awaiting_bpo_approval"
     rejected = "rejected"
 
 class AISuggestion(Base):

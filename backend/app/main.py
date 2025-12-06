@@ -4,6 +4,7 @@ from fastapi_pagination import add_pagination
 
 from app.api.v1.endpoints.users import router as users_router
 from app.api.v1.endpoints.documents import router as documents_router
+from app.api.v1.endpoints.suggestions import router as suggestions_router
 from app.config import settings
 from app.routes.compliance import router as compliance_router
 from app.routes.items import router as items_router
@@ -58,5 +59,6 @@ app.include_router(items_router, prefix="/items")
 app.include_router(compliance_router, prefix="/api/v1")
 app.include_router(users_router, prefix="/api/v1/users", tags=["users"])
 app.include_router(documents_router, prefix="/api/v1/documents", tags=["documents"])
+app.include_router(suggestions_router, prefix="/api/v1/suggestions", tags=["suggestions"])
 
 add_pagination(app)
