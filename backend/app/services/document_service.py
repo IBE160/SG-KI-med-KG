@@ -4,6 +4,8 @@ from sqlalchemy.future import select
 from uuid import UUID
 import uuid
 from typing import List
+from datetime import datetime
+import re
 
 from app.models.document import Document, DocumentStatus
 from app.schemas import DocumentCreate, DocumentRead
@@ -48,6 +50,15 @@ class DocumentService:
                 )
 
     @staticmethod
+    def sanitize_filename(filename: str) -> str:
+        """Sanitize filename for Supabase storage (replace spaces and special chars)."""
+        # Replace spaces with underscores
+        sanitized = filename.replace(" ", "_")
+        # Remove or replace other problematic characters, keep alphanumeric, dots, dashes, underscores
+        sanitized = re.sub(r'[^a-zA-Z0-9._-]', '_', sanitized)
+        return sanitized
+
+    @staticmethod
     async def upload_to_storage(file: UploadFile, user_id: UUID) -> str:
         """Upload file to Supabase Storage and return storage path."""
         if not supabase_client:
@@ -56,10 +67,13 @@ class DocumentService:
                 detail="Storage service not configured",
             )
 
+        # Sanitize filename to remove spaces and special characters
+        sanitized_filename = DocumentService.sanitize_filename(file.filename)
+
         # Generate unique file path while preserving original filename
-        # Format: {user_id}/{uuid}_{original_filename}
+        # Format: production/{uuid}_{original_filename}
         unique_id = str(uuid.uuid4())
-        unique_filename = f"{user_id}/{unique_id}_{file.filename}"
+        unique_filename = f"production/{unique_id}_{sanitized_filename}"
 
         try:
             # Read file content
@@ -86,7 +100,7 @@ class DocumentService:
             if "already exists" in str(e).lower():
                 # File already exists, try with a new UUID
                 unique_id = str(uuid.uuid4())
-                unique_filename = f"{user_id}/{unique_id}_{file.filename}"
+                unique_filename = f"production/{unique_id}_{sanitized_filename}"
                 content = await file.read()
                 response = supabase_client.storage.from_(DocumentService.BUCKET_NAME).upload(
                     unique_filename, content, {"content-type": file.content_type}
@@ -127,7 +141,7 @@ class DocumentService:
     async def get_documents_by_user(
         db: AsyncSession, user_id: UUID, tenant_id: UUID
     ) -> List[Document]:
-        """Get all documents uploaded by users in the same tenant."""
+        """Get all non-archived documents uploaded by users in the same tenant."""
         # Join with User table to filter by tenant_id
         # Assuming Document has relationship to User (uploaded_by)
         # And User has tenant_id
@@ -137,15 +151,18 @@ class DocumentService:
             select(Document)
             .join(User, Document.uploaded_by == User.id)
             .filter(User.tenant_id == tenant_id)
+            .filter(Document.archived_at.is_(None))
             .order_by(Document.created_at.desc())
         )
         return result.scalars().all()
 
     @staticmethod
     async def get_document_by_id(
-        db: AsyncSession, document_id: UUID, user_id: UUID
+        db: AsyncSession, document_id: UUID, user_id: UUID, tenant_id: UUID = None
     ) -> Document:
         """Get a specific document by ID."""
+        from app.models.user import User
+
         result = await db.execute(
             select(Document).filter(Document.id == document_id)
         )
@@ -156,10 +173,76 @@ class DocumentService:
                 status_code=status.HTTP_404_NOT_FOUND, detail="Document not found"
             )
 
-        # Verify user has access to this document
-        if document.uploaded_by != user_id:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="Document not found"
+        # If tenant_id provided, verify user has access via tenant
+        if tenant_id is not None:
+            # Get document uploader's tenant
+            uploader_result = await db.execute(
+                select(User).filter(User.id == document.uploaded_by)
             )
+            uploader = uploader_result.scalars().first()
+
+            if not uploader or uploader.tenant_id != tenant_id:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, detail="Document not found"
+                )
+        else:
+            # Verify user has access to this document
+            if document.uploaded_by != user_id:
+                raise HTTPException(
+                    status_code=status.HTTP_404_NOT_FOUND, detail="Document not found"
+                )
 
         return document
+
+    @staticmethod
+    async def archive_document(
+        db: AsyncSession, document_id: UUID, user_id: UUID, tenant_id: UUID
+    ) -> Document:
+        """Archive a document (soft delete)."""
+        # Get document and verify access
+        document = await DocumentService.get_document_by_id(db, document_id, user_id, tenant_id)
+
+        # Check if already archived
+        if document.archived_at is not None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Document is already archived",
+            )
+
+        # Archive file in Supabase storage
+        await DocumentService.archive_in_storage(document.storage_path)
+
+        # Set archived_at timestamp
+        document.archived_at = datetime.utcnow()
+        await db.commit()
+        await db.refresh(document)
+
+        return document
+
+    @staticmethod
+    async def archive_in_storage(storage_path: str) -> None:
+        """Move file from active storage to archive folder in Supabase."""
+        if not supabase_client:
+            # Storage not configured - skip archiving in storage
+            return
+
+        try:
+            # New path in archive folder
+            archive_path = f"archive/{storage_path}"
+
+            # Download the file first
+            file_data = supabase_client.storage.from_(DocumentService.BUCKET_NAME).download(storage_path)
+
+            # Upload to archive location
+            supabase_client.storage.from_(DocumentService.BUCKET_NAME).upload(
+                archive_path, file_data, {"upsert": "true"}
+            )
+
+            # Delete from original location
+            supabase_client.storage.from_(DocumentService.BUCKET_NAME).remove([storage_path])
+
+        except Exception as e:
+            # Log error but don't fail the deletion - file is archived in DB
+            import logging
+            logging.error(f"Failed to archive file in storage: {str(e)}")
+            # Don't raise - allow soft delete to proceed even if storage archive fails

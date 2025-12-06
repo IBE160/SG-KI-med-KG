@@ -11,9 +11,26 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, FileText } from "lucide-react";
+import { Upload, FileText, MoreVertical, Trash2, Edit2, Download, Info, RefreshCw, X } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Document {
   id: string;
@@ -27,6 +44,8 @@ export default function DocumentsPage() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [documentToDelete, setDocumentToDelete] = useState<Document | null>(null);
   const supabase = createClient();
 
   const fetchDocuments = async () => {
@@ -86,6 +105,12 @@ export default function DocumentsPage() {
     }
   };
 
+  const handleClearFile = () => {
+    setSelectedFile(null);
+    const fileInput = document.getElementById("file-upload") as HTMLInputElement;
+    if (fileInput) fileInput.value = "";
+  };
+
   const handleUpload = async () => {
     if (!selectedFile) {
       toast.error("Please select a file first");
@@ -122,14 +147,21 @@ export default function DocumentsPage() {
       const result = await response.json();
       toast.success(result.message || "File uploaded successfully");
 
-      // Clear selection and refresh list
+      // Add new document to state immediately
+      const newDocument: Document = {
+        id: result.id,
+        filename: result.filename,
+        status: result.status,
+        created_at: new Date().toISOString(),
+      };
+      setDocuments(prevDocs => [newDocument, ...prevDocs]);
+
+      // Clear selection
       setSelectedFile(null);
       const fileInput = document.getElementById(
         "file-upload"
       ) as HTMLInputElement;
       if (fileInput) fileInput.value = "";
-
-      fetchDocuments();
     } catch (err) {
       console.error("Upload failed:", err);
       toast.error(
@@ -137,6 +169,120 @@ export default function DocumentsPage() {
       );
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleDeleteClick = (doc: Document) => {
+    setDocumentToDelete(doc);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!documentToDelete) return;
+
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/api/v1/documents/${documentToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error("Delete error:", response.status, errorData);
+        throw new Error(errorData.detail || "Failed to delete document");
+      }
+
+      // Remove document from state immediately
+      setDocuments(prevDocs => prevDocs.filter(doc => doc.id !== documentToDelete.id));
+
+      toast.success("Document archived successfully");
+      setDeleteDialogOpen(false);
+      setDocumentToDelete(null);
+    } catch (err) {
+      console.error("Delete failed:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to delete document");
+    }
+  };
+
+  const handleDownload = async (doc: Document) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/api/v1/documents/${doc.id}/download`, {
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to download document");
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = doc.filename;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      toast.success("Document downloaded");
+    } catch (err) {
+      console.error("Download failed:", err);
+      toast.error("Failed to download document");
+    }
+  };
+
+  const handleRename = (doc: Document) => {
+    toast.info("Rename feature coming soon");
+    // TODO: Implement rename dialog
+  };
+
+  const handleViewDetails = (doc: Document) => {
+    toast.info("Details view coming soon");
+    // TODO: Implement details dialog
+  };
+
+  const handleReprocess = async (doc: Document) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/api/v1/documents/${doc.id}/reprocess`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to reprocess document");
+      }
+
+      toast.success("Document queued for reprocessing");
+      fetchDocuments();
+    } catch (err) {
+      console.error("Reprocess failed:", err);
+      toast.error("Failed to reprocess document");
     }
   };
 
@@ -172,15 +318,28 @@ export default function DocumentsPage() {
       <div className="border rounded-lg p-6 bg-card">
         <h2 className="text-lg font-semibold mb-4">Upload Document</h2>
         <div className="space-y-4">
-          <div className="flex items-center gap-4">
-            <Input
-              id="file-upload"
-              type="file"
-              accept=".pdf,.txt"
-              onChange={handleFileSelect}
-              disabled={uploading}
-              className="flex-1"
-            />
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex items-center gap-2">
+              <Input
+                id="file-upload"
+                type="file"
+                accept=".pdf,.txt"
+                onChange={handleFileSelect}
+                disabled={uploading}
+                className="flex-1"
+              />
+              {selectedFile && !uploading && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={handleClearFile}
+                  className="h-10 w-10 shrink-0"
+                  title="Clear selected file"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
             <Button
               onClick={handleUpload}
               disabled={!selectedFile || uploading}
@@ -210,19 +369,20 @@ export default function DocumentsPage() {
               <TableHead>Filename</TableHead>
               <TableHead>Status</TableHead>
               <TableHead>Uploaded</TableHead>
+              <TableHead className="w-[50px]"></TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={3} className="text-center py-10">
+                <TableCell colSpan={4} className="text-center py-10">
                   Loading...
                 </TableCell>
               </TableRow>
             ) : documents.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={3}
+                  colSpan={4}
                   className="text-center py-10 text-muted-foreground"
                 >
                   <div className="flex flex-col items-center gap-2">
@@ -242,12 +402,71 @@ export default function DocumentsPage() {
                   <TableCell>
                     {new Date(doc.created_at).toLocaleString()}
                   </TableCell>
+                  <TableCell>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+                          <MoreVertical className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end">
+                        <DropdownMenuItem onClick={() => handleDownload(doc)}>
+                          <Download className="mr-2 h-4 w-4" />
+                          Download
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleViewDetails(doc)}>
+                          <Info className="mr-2 h-4 w-4" />
+                          View Details
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleRename(doc)}>
+                          <Edit2 className="mr-2 h-4 w-4" />
+                          Rename
+                        </DropdownMenuItem>
+                        {doc.status === "failed" && (
+                          <DropdownMenuItem onClick={() => handleReprocess(doc)}>
+                            <RefreshCw className="mr-2 h-4 w-4" />
+                            Reprocess
+                          </DropdownMenuItem>
+                        )}
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem
+                          onClick={() => handleDeleteClick(doc)}
+                          className="text-red-600 focus:text-red-600"
+                        >
+                          <Trash2 className="mr-2 h-4 w-4" />
+                          Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </TableCell>
                 </TableRow>
               ))
             )}
           </TableBody>
         </Table>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Archive Document</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to archive "{documentToDelete?.filename}"?
+              The document will be moved to archive and can be restored later.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteConfirm}
+              className="bg-red-600 hover:bg-red-700"
+            >
+              Archive
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

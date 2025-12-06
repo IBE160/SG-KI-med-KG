@@ -40,8 +40,13 @@ async def upload_document(
         user_id=current_user.id,
     )
 
-    # Trigger background analysis
-    process_document.delay(str(document.id))
+    # Trigger background analysis (non-blocking)
+    try:
+        process_document.delay(str(document.id))
+    except Exception as e:
+        # Log but don't fail - document is uploaded, task can be retried
+        import logging
+        logging.error(f"Failed to queue document processing task: {str(e)}")
 
     # Return response
     return DocumentUploadResponse(
@@ -85,3 +90,23 @@ async def get_document(
         db=db, document_id=document_id, user_id=current_user.id
     )
     return document
+
+
+@router.delete("/{document_id}", status_code=status.HTTP_200_OK, tags=["documents"])
+async def delete_document(
+    document_id: UUID,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: UserModel = Depends(has_role(["admin"])),
+):
+    """
+    Archive a document (soft delete).
+
+    - **document_id**: UUID of the document to archive
+    - Requires admin role
+    - Moves document to archive in both database and Supabase storage
+    - Returns success message
+    """
+    await DocumentService.archive_document(
+        db=db, document_id=document_id, user_id=current_user.id, tenant_id=current_user.tenant_id
+    )
+    return {"message": "Document archived successfully"}

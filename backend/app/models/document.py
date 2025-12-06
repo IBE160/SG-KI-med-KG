@@ -25,6 +25,7 @@ class Document(Base):
     status = Column(SQLEnum(DocumentStatus), default=DocumentStatus.pending, nullable=False)
     uploaded_by = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    archived_at = Column(DateTime, nullable=True)
 
     # Relationships
     user = relationship("User", back_populates="documents")
