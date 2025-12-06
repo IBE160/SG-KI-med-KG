@@ -21,16 +21,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 
 interface Document {
   id: string;
@@ -180,6 +170,12 @@ export default function DocumentsPage() {
   const handleDeleteConfirm = async () => {
     if (!documentToDelete) return;
 
+    const doc = documentToDelete;
+
+    // Close dialog immediately - no waiting for animations
+    setDeleteDialogOpen(false);
+    setDocumentToDelete(null);
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) {
@@ -188,7 +184,7 @@ export default function DocumentsPage() {
       }
 
       const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-      const response = await fetch(`${backendUrl}/api/v1/documents/${documentToDelete.id}`, {
+      const response = await fetch(`${backendUrl}/api/v1/documents/${doc.id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -202,15 +198,18 @@ export default function DocumentsPage() {
       }
 
       // Remove document from state immediately
-      setDocuments(prevDocs => prevDocs.filter(doc => doc.id !== documentToDelete.id));
+      setDocuments(prevDocs => prevDocs.filter(d => d.id !== doc.id));
 
       toast.success("Document archived successfully");
-      setDeleteDialogOpen(false);
-      setDocumentToDelete(null);
     } catch (err) {
       console.error("Delete failed:", err);
       toast.error(err instanceof Error ? err.message : "Failed to delete document");
     }
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
+    setDocumentToDelete(null);
   };
 
   const handleDownload = async (doc: Document) => {
@@ -446,27 +445,41 @@ export default function DocumentsPage() {
         </Table>
       </div>
 
-      {/* Delete Confirmation Dialog */}
-      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Archive Document</AlertDialogTitle>
-            <AlertDialogDescription>
+      {/* Custom Delete Confirmation Dialog */}
+      {deleteDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/80"
+            onClick={handleDeleteCancel}
+          />
+
+          {/* Dialog */}
+          <div className="relative bg-background border rounded-lg shadow-lg p-6 w-full max-w-lg mx-4">
+            <h2 className="text-lg font-semibold mb-2">Archive Document</h2>
+            <p className="text-sm text-muted-foreground mb-6">
               Are you sure you want to archive "{documentToDelete?.filename}"?
               The document will be moved to archive and can be restored later.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleDeleteConfirm}
-              className="bg-red-600 hover:bg-red-700"
-            >
-              Archive
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
+            </p>
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleDeleteCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleDeleteConfirm}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                Archive
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
