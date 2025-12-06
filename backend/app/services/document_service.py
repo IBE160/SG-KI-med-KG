@@ -220,6 +220,40 @@ class DocumentService:
         return document
 
     @staticmethod
+    async def rename_document(
+        db: AsyncSession, document_id: UUID, new_filename: str, user_id: UUID, tenant_id: UUID
+    ) -> Document:
+        """Rename a document (updates filename in database only, not storage path)."""
+        # Get document and verify access
+        document = await DocumentService.get_document_by_id(db, document_id, user_id, tenant_id)
+
+        # Validate new filename
+        if not new_filename or not new_filename.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Filename cannot be empty",
+            )
+
+        # Sanitize the new filename
+        sanitized_filename = DocumentService.sanitize_filename(new_filename.strip())
+
+        # Ensure file extension is preserved
+        import os
+        old_ext = os.path.splitext(document.filename)[1]
+        new_ext = os.path.splitext(sanitized_filename)[1]
+
+        # If no extension provided, use the old one
+        if not new_ext and old_ext:
+            sanitized_filename = f"{sanitized_filename}{old_ext}"
+
+        # Update filename in database (storage_path remains unchanged)
+        document.filename = sanitized_filename
+        await db.commit()
+        await db.refresh(document)
+
+        return document
+
+    @staticmethod
     async def archive_in_storage(storage_path: str) -> None:
         """Move file from active storage to archive folder in Supabase."""
         if not supabase_client:

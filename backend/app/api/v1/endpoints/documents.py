@@ -3,12 +3,18 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from typing import List
 from uuid import UUID
 
+from pydantic import BaseModel
+
 from app.database import get_async_session
 from app.models.user import User as UserModel
 from app.schemas import DocumentRead, DocumentUploadResponse
 from app.core.deps import has_role
 from app.services.document_service import DocumentService
 from tasks.analysis import process_document
+
+
+class RenameRequest(BaseModel):
+    new_filename: str
 
 router = APIRouter()
 
@@ -88,6 +94,33 @@ async def get_document(
     """
     document = await DocumentService.get_document_by_id(
         db=db, document_id=document_id, user_id=current_user.id
+    )
+    return document
+
+
+@router.patch("/{document_id}/rename", response_model=DocumentRead, tags=["documents"])
+async def rename_document(
+    document_id: UUID,
+    request: RenameRequest,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: UserModel = Depends(has_role(["admin"])),
+):
+    """
+    Rename a document.
+
+    - **document_id**: UUID of the document to rename
+    - **new_filename**: New filename for the document (in request body)
+    - Requires admin role
+    - Updates filename in database only (storage path remains unchanged)
+    - File extension is preserved automatically
+    - Returns updated document metadata
+    """
+    document = await DocumentService.rename_document(
+        db=db,
+        document_id=document_id,
+        new_filename=request.new_filename,
+        user_id=current_user.id,
+        tenant_id=current_user.tenant_id,
     )
     return document
 

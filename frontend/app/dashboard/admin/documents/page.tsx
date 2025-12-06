@@ -36,6 +36,9 @@ export default function DocumentsPage() {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [documentToDelete, setDocumentToDelete] = useState<Document | null>(null);
+  const [renameDialogOpen, setRenameDialogOpen] = useState(false);
+  const [documentToRename, setDocumentToRename] = useState<Document | null>(null);
+  const [newFilename, setNewFilename] = useState("");
   const supabase = createClient();
 
   const fetchDocuments = async () => {
@@ -212,7 +215,30 @@ export default function DocumentsPage() {
     setDocumentToDelete(null);
   };
 
-  const handleDownload = async (doc: Document) => {
+  const handleDownload = (doc: Document) => {
+    toast.info("Download feature coming soon");
+    // TODO: Implement download endpoint
+  };
+
+  const handleRenameClick = (doc: Document) => {
+    setDocumentToRename(doc);
+    // Pre-fill with current filename (without extension for easier editing)
+    const nameWithoutExt = doc.filename.replace(/\.[^/.]+$/, "");
+    setNewFilename(nameWithoutExt);
+    setRenameDialogOpen(true);
+  };
+
+  const handleRenameConfirm = async () => {
+    if (!documentToRename || !newFilename.trim()) return;
+
+    const doc = documentToRename;
+    const filename = newFilename.trim();
+
+    // Close dialog immediately
+    setRenameDialogOpen(false);
+    setDocumentToRename(null);
+    setNewFilename("");
+
     try {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) {
@@ -221,35 +247,41 @@ export default function DocumentsPage() {
       }
 
       const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
-      const response = await fetch(`${backendUrl}/api/v1/documents/${doc.id}/download`, {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
-      });
+      const response = await fetch(
+        `${backendUrl}/api/v1/documents/${doc.id}/rename`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${session.access_token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ new_filename: filename }),
+        }
+      );
 
       if (!response.ok) {
-        throw new Error("Failed to download document");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Failed to rename document");
       }
 
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = doc.filename;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success("Document downloaded");
+      const updatedDoc = await response.json();
+
+      // Update document in state immediately
+      setDocuments(prevDocs =>
+        prevDocs.map(d => (d.id === doc.id ? { ...d, filename: updatedDoc.filename } : d))
+      );
+
+      toast.success("Document renamed successfully");
     } catch (err) {
-      console.error("Download failed:", err);
-      toast.error("Failed to download document");
+      console.error("Rename failed:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to rename document");
     }
   };
 
-  const handleRename = (doc: Document) => {
-    toast.info("Rename feature coming soon");
-    // TODO: Implement rename dialog
+  const handleRenameCancel = () => {
+    setRenameDialogOpen(false);
+    setDocumentToRename(null);
+    setNewFilename("");
   };
 
   const handleViewDetails = (doc: Document) => {
@@ -283,6 +315,18 @@ export default function DocumentsPage() {
       console.error("Reprocess failed:", err);
       toast.error("Failed to reprocess document");
     }
+  };
+
+  const formatDateTime = (dateString: string) => {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const year = date.getFullYear();
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+
+    return `${day}/${month}/${year}, ${hours}:${minutes}:${seconds}`;
   };
 
   const getStatusBadge = (status: string) => {
@@ -399,7 +443,7 @@ export default function DocumentsPage() {
                   <TableCell className="font-medium">{doc.filename}</TableCell>
                   <TableCell>{getStatusBadge(doc.status)}</TableCell>
                   <TableCell>
-                    {new Date(doc.created_at).toLocaleString()}
+                    {formatDateTime(doc.created_at)}
                   </TableCell>
                   <TableCell>
                     <DropdownMenu>
@@ -417,7 +461,7 @@ export default function DocumentsPage() {
                           <Info className="mr-2 h-4 w-4" />
                           View Details
                         </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleRename(doc)}>
+                        <DropdownMenuItem onClick={() => handleRenameClick(doc)}>
                           <Edit2 className="mr-2 h-4 w-4" />
                           Rename
                         </DropdownMenuItem>
@@ -475,6 +519,56 @@ export default function DocumentsPage() {
                 className="bg-red-600 hover:bg-red-700"
               >
                 Archive
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Rename Dialog */}
+      {renameDialogOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/80"
+            onClick={handleRenameCancel}
+          />
+
+          {/* Dialog */}
+          <div className="relative bg-background border rounded-lg shadow-lg p-6 w-full max-w-lg mx-4">
+            <h2 className="text-lg font-semibold mb-2">Rename Document</h2>
+            <p className="text-sm text-muted-foreground mb-4">
+              Enter a new name for "{documentToRename?.filename}". The file extension will be preserved automatically.
+            </p>
+            <Input
+              type="text"
+              value={newFilename}
+              onChange={(e) => setNewFilename(e.target.value)}
+              placeholder="Enter new filename"
+              className="mb-6"
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  handleRenameConfirm();
+                } else if (e.key === "Escape") {
+                  handleRenameCancel();
+                }
+              }}
+            />
+            <div className="flex justify-end gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleRenameCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                onClick={handleRenameConfirm}
+                disabled={!newFilename.trim()}
+              >
+                Rename
               </Button>
             </div>
           </div>
