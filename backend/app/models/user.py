@@ -8,6 +8,7 @@ import uuid
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
     items = relationship("Item", back_populates="user", cascade="all, delete-orphan")
+    documents = relationship("Document", back_populates="user", cascade="all, delete-orphan")
 
     # New fields for Story 2.1
     role = Column(String(50), default="general_user", nullable=False)

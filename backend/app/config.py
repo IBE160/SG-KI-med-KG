@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     # Supabase
     SUPABASE_URL: str | None = None
     SUPABASE_JWT_SECRET: str | None = None
+    SUPABASE_SERVICE_KEY: str | None = None
+    SUPABASE_STORAGE_BUCKET: str = "regulatory-docs"
 
     # User
     ACCESS_SECRET_KEY: str
