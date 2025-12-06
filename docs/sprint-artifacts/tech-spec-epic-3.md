@@ -184,3 +184,10 @@ This epic leverages the **AI & Vector Database** and **Background Jobs** archite
 *   **Unit Tests:** Service methods (upload, prompt generation, audit logging).
 *   **Integration Tests:** API endpoints (upload -> queue -> status).
 *   **E2E Tests:** Full flow: Upload document -> Wait for analysis -> Review suggestion -> Check audit log.
+
+## Post-Review Follow-ups
+
+*   [ ] **Story 3.1:** [High] Implement missing integration test for successful document upload (AC #1).
+*   [ ] **Story 3.1:** [Med] Improve file validation to check magic bytes instead of just content-type header (AC #1).
+*   [ ] **Story 3.1:** [Low] Update `get_documents_by_user` to explicitly filter by `tenant_id` (AC #4).
+*   [ ] **Story 3.1:** [Med] Wrap `DocumentsPage` with `RoleGuard` to enforce admin access on client-side (Frontend Pattern) (AC #1).

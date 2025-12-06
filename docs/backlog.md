@@ -5,3 +5,7 @@
 | 2025-12-01 | 1.3 | 1 | TechDebt | Low | TBD | Open | **Refactor Tenant ID:** Refactor `tenant_id` logic when User model supports explicit organization/tenant association (Tech Debt). [file: `backend/app/routes/compliance.py`] |
 | 2025-12-03 | 1.4 | 1 | TechDebt | Low | TBD | Open | **Run Playwright Tests:** Ensure `npx playwright test` is run locally or in CI to validate the authored E2E tests. |
 | 2025-12-03 | 1.4 | 1 | Enhancement | Low | TBD | Open | **Error Toast:** Consider adding a toast notification library (like `sonner` or `react-hot-toast`) for better user feedback on success/failure actions, replacing or augmenting the inline alerts. |
+| 2025-12-06 | 3.1 | 3 | TechDebt | High | TBD | Open | **Missing Test:** Implement integration test for successful document upload. [file: `backend/tests/api/v1/test_documents.py`] |
+| 2025-12-06 | 3.1 | 3 | Security | Med | TBD | Open | **File Validation:** Check magic bytes instead of content-type header. [file: `backend/app/services/document_service.py`] |
+| 2025-12-06 | 3.1 | 3 | TechDebt | Low | TBD | Open | **Tenant Isolation:** Update `get_documents_by_user` to explicitly filter by `tenant_id`. [file: `backend/app/services/document_service.py`] |
+| 2025-12-06 | 3.1 | 3 | UX | Med | TBD | Open | **Frontend Access Control:** Wrap `DocumentsPage` with `RoleGuard` to enforce admin access on client-side. [file: `frontend/app/dashboard/admin/documents/page.tsx`] |

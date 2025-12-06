@@ -6,6 +6,8 @@ from uuid import uuid4
 
 from app.main import app
 from app.models.document import DocumentStatus
+from app.core.deps import has_role, get_current_active_user # Added get_current_active_user import
+from app.models.user import User as UserModel # Added import
 
 
 @pytest.mark.asyncio
@@ -52,27 +54,50 @@ from app.services.document_service import DocumentService
 from fastapi import UploadFile, HTTPException
 
 
-def test_validate_file_valid_pdf():
+@pytest.mark.asyncio
+async def test_validate_file_valid_pdf():
     """Test file validation with valid PDF."""
     mock_file = MagicMock(spec=UploadFile)
     mock_file.content_type = "application/pdf"
     mock_file.filename = "test.pdf"
+    
+    # Mock read to return PDF magic bytes
+    async def async_read(size=-1):
+        return b"%PDF-1.4"
+    mock_file.read = async_read
+    
+    mock_file.seek = MagicMock()
+    async def async_seek(offset):
+        return None
+    mock_file.seek = async_seek
 
     # Should not raise an exception
-    DocumentService.validate_file(mock_file)
+    await DocumentService.validate_file(mock_file)
 
 
-def test_validate_file_valid_text():
+@pytest.mark.asyncio
+async def test_validate_file_valid_text():
     """Test file validation with valid text file."""
     mock_file = MagicMock(spec=UploadFile)
     mock_file.content_type = "text/plain"
     mock_file.filename = "test.txt"
+    
+    # Mock read to return safe text (no null bytes)
+    async def async_read(size=-1):
+        return b"Hello World"
+    mock_file.read = async_read
+    
+    mock_file.seek = MagicMock()
+    async def async_seek(offset):
+        return None
+    mock_file.seek = async_seek
 
     # Should not raise an exception
-    DocumentService.validate_file(mock_file)
+    await DocumentService.validate_file(mock_file)
 
 
-def test_validate_file_invalid_type():
+@pytest.mark.asyncio
+async def test_validate_file_invalid_type():
     """Test file validation with invalid file type."""
     mock_file = MagicMock(spec=UploadFile)
     mock_file.content_type = "image/jpeg"
@@ -80,10 +105,35 @@ def test_validate_file_invalid_type():
 
     # Should raise HTTPException
     with pytest.raises(HTTPException) as exc_info:
-        DocumentService.validate_file(mock_file)
+        await DocumentService.validate_file(mock_file)
 
     assert exc_info.value.status_code == 400
     assert "not allowed" in str(exc_info.value.detail)
+
+
+@pytest.mark.asyncio
+async def test_validate_file_invalid_pdf_magic():
+    """Test file validation with invalid PDF magic bytes."""
+    mock_file = MagicMock(spec=UploadFile)
+    mock_file.content_type = "application/pdf"
+    mock_file.filename = "fake.pdf"
+    
+    # Mock read to return bad bytes
+    async def async_read(size=-1):
+        return b"NOTAPDF"
+    mock_file.read = async_read
+    
+    mock_file.seek = MagicMock()
+    async def async_seek(offset):
+        return None
+    mock_file.seek = async_seek
+
+    # Should raise HTTPException
+    with pytest.raises(HTTPException) as exc_info:
+        await DocumentService.validate_file(mock_file)
+
+    assert exc_info.value.status_code == 400
+    assert "Invalid PDF" in str(exc_info.value.detail)
 
 
 @pytest.mark.asyncio
@@ -116,3 +166,46 @@ async def test_upload_to_storage_size_limit(mock_supabase):
     assert "exceeds maximum" in str(exc_info.value.detail) or "File size" in str(
         exc_info.value.detail
     )
+
+
+@pytest.mark.asyncio
+async def test_upload_document_success(test_client):
+    """Test successful document upload."""
+    
+    # Mock the has_role dependency to return an admin user
+    mock_admin_user = UserModel(
+        id=uuid4(),
+        email="mock_admin@example.com",
+        hashed_password="mock_hash",
+        is_active=True,
+        is_superuser=True,
+        is_verified=True,
+        role="admin",
+        tenant_id=uuid4()
+    )
+    # Temporarily override the get_current_active_user dependency
+    app.dependency_overrides[get_current_active_user] = lambda: mock_admin_user
+
+    try:
+        # Mock the storage upload to return a path without hitting Supabase
+        with patch("app.services.document_service.DocumentService.upload_to_storage") as mock_upload:
+            mock_upload.return_value = "user_id/uuid_test.pdf"
+            
+            # Create valid PDF content with magic bytes
+            pdf_content = b"%PDF-1.4\n...fake content..."
+            files = {"file": ("test.pdf", BytesIO(pdf_content), "application/pdf")}
+            
+            response = await test_client.post(
+                "/api/v1/documents/upload", 
+                files=files, 
+                # No headers needed, as get_current_active_user is mocked
+            )
+            
+            assert response.status_code == 200
+            data = response.json()
+            assert data["filename"] == "test.pdf"
+            assert data["status"] == "pending"
+            assert "id" in data
+    finally:
+        # Clear the dependency override after the test
+        del app.dependency_overrides[get_current_active_user] # Remove specific override

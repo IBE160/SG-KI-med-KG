@@ -26,7 +26,7 @@ async def upload_document(
     - Returns document metadata with processing status
     """
     # Validate file
-    DocumentService.validate_file(file)
+    await DocumentService.validate_file(file)
 
     # Upload to storage
     storage_path = await DocumentService.upload_to_storage(file, current_user.id)

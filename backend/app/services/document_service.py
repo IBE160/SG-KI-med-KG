@@ -18,14 +18,33 @@ class DocumentService:
     MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB in bytes
 
     @staticmethod
-    def validate_file(file: UploadFile) -> None:
+    async def validate_file(file: UploadFile) -> None:
         """Validate file type and size."""
-        # Validate MIME type
+        # Validate MIME type via header
         if file.content_type not in DocumentService.ALLOWED_MIME_TYPES:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail=f"File type '{file.content_type}' not allowed. Only PDF and text files are supported.",
             )
+
+        # Validate Magic Bytes
+        await file.seek(0)
+        header = await file.read(1024)  # Read first 1KB
+        await file.seek(0)  # Reset pointer
+
+        if file.content_type == "application/pdf":
+            if not header.startswith(b"%PDF-"):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid PDF file (missing magic bytes).",
+                )
+        elif file.content_type == "text/plain":
+            # Check for binary content (null bytes)
+            if b"\x00" in header:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Invalid text file (binary content detected).",
+                )
 
     @staticmethod
     async def upload_to_storage(file: UploadFile, user_id: UUID) -> str:
@@ -109,10 +128,16 @@ class DocumentService:
         db: AsyncSession, user_id: UUID, tenant_id: UUID
     ) -> List[Document]:
         """Get all documents uploaded by users in the same tenant."""
-        # For now, return documents uploaded by the current user
-        # In future, admins could see all documents in their tenant
+        # Join with User table to filter by tenant_id
+        # Assuming Document has relationship to User (uploaded_by)
+        # And User has tenant_id
+        from app.models.user import User
+
         result = await db.execute(
-            select(Document).filter(Document.uploaded_by == user_id).order_by(Document.created_at.desc())
+            select(Document)
+            .join(User, Document.uploaded_by == User.id)
+            .filter(User.tenant_id == tenant_id)
+            .order_by(Document.created_at.desc())
         )
         return result.scalars().all()
 

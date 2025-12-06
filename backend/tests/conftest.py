@@ -1,23 +1,38 @@
+import uuid
+from unittest.mock import patch
+
 from httpx import AsyncClient, ASGITransport
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from fastapi_users.db import SQLAlchemyUserDatabase
 from fastapi_users.password import PasswordHelper
-import uuid
+# Removed: from fastapi_users.authentication import JWTStrategy # Import JWTStrategy
 
 from app.config import settings
 from app.models import User, Base
 
 from app.database import get_user_db, get_async_session
 from app.main import app
-from app.users import get_jwt_strategy
+from app.users import get_jwt_strategy, auth_backend # Import auth_backend here
+
+
+# Removed: @pytest_asyncio.fixture(scope="session", autouse=True)
+# Removed: def patch_jwt_strategy_globally():
+# Removed:     """Patches get_jwt_strategy globally to ensure a consistent test secret."""
+# Removed:     with patch("app.users.get_jwt_strategy") as mock_get_jwt_strategy:
+# Removed:         mock_jwt_strategy = JWTStrategy(
+# Removed:             secret="test_secret_key_for_jwt_validation_in_tests_fixed",
+# Removed:             lifetime_seconds=3600
+# Removed:         )
+# Removed:         mock_get_jwt_strategy.return_value = mock_jwt_strategy
+# Removed:         yield
 
 
 @pytest_asyncio.fixture(scope="function")
 async def engine():
     """Create a fresh test database engine for each test function."""
-    # Use TEST_DATABASE_URL if set, otherwise use in-memory SQLite for isolation
-    test_db_url = settings.TEST_DATABASE_URL or "sqlite+aiosqlite:///:memory:"
+    # Force in-memory SQLite for isolation to avoid external DB issues
+    test_db_url = "sqlite+aiosqlite:///:memory:"
     engine = create_async_engine(test_db_url, echo=True)
 
     async with engine.begin() as conn:
@@ -119,6 +134,7 @@ async def superuser_token_headers(test_client, db_session):
         "is_active": True,
         "is_superuser": True,
         "is_verified": True,
+        "role": "admin",
     }
 
     # Create user directly in database
