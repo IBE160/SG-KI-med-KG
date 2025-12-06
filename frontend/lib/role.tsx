@@ -18,19 +18,28 @@ export function useRole() {
       if (session?.access_token) {
         try {
           // Fetch role from backend API for authoritative source
-          const response = await fetch("/api/v1/users/me", {
+          const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/v1/users/me`;
+          console.log("Fetching user role from:", apiUrl);
+
+          const response = await fetch(apiUrl, {
             headers: {
               Authorization: `Bearer ${session.access_token}`,
             },
           });
 
+          console.log("Role fetch response status:", response.status);
+
           if (response.ok) {
             const userData = await response.json();
+            console.log("User data from backend:", userData);
             setRole(userData.role || "general_user");
           } else {
+            const errorText = await response.text();
+            console.error("Failed to fetch from backend:", response.status, errorText);
             // Fallback to JWT if backend fetch fails
             const decoded: any = jwtDecode(session.access_token);
             const appRole = decoded.app_metadata?.role;
+            console.log("Falling back to JWT role:", appRole);
             setRole(appRole || "general_user");
           }
         } catch (e) {
@@ -49,19 +58,23 @@ export function useRole() {
       if (session?.access_token) {
         try {
           // Fetch updated role from backend
-          const response = await fetch("/api/v1/users/me", {
+          const apiUrl = `${process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000'}/api/v1/users/me`;
+          const response = await fetch(apiUrl, {
             headers: {
               Authorization: `Bearer ${session.access_token}`,
             },
           });
           if (response.ok) {
             const userData = await response.json();
+            console.log("Auth state change - User data:", userData);
             setRole(userData.role || "general_user");
           } else {
+            console.log("Auth state change - Backend fetch failed, using JWT");
             const decoded: any = jwtDecode(session.access_token);
             setRole(decoded.app_metadata?.role || "general_user");
           }
         } catch (e) {
+          console.error("Auth state change error:", e);
           const decoded: any = jwtDecode(session.access_token);
           setRole(decoded.app_metadata?.role || "general_user");
         }

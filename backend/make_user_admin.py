@@ -24,9 +24,9 @@ async def make_admin(email: str):
             print(f"User '{email}' is already an admin!")
             return
 
-        # Update to admin
+        # Update to admin and ensure active
         await conn.execute(
-            text("UPDATE \"user\" SET role = 'admin', is_verified = true WHERE email = :email"),
+            text("UPDATE \"user\" SET role = 'admin', is_verified = true, is_active = true WHERE email = :email"),
             {"email": email}
         )
 
