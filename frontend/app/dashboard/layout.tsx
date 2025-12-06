@@ -11,6 +11,7 @@ import {
   Scale,
   UserCog,
   FileText,
+  ClipboardCheck,
 } from "lucide-react";
 import Image from "next/image";
 
@@ -44,6 +45,8 @@ export default function DashboardLayout({
 }) {
   const { role, isAdmin } = useRole();
   const router = useRouter();
+  
+  const isComplianceOfficer = role === "compliance_officer";
 
   const handleLogout = async () => {
     try {
@@ -135,6 +138,20 @@ export default function DashboardLayout({
                 Regulatory Frameworks
               </TooltipContent>
             </Tooltip>
+
+            {(isAdmin || isComplianceOfficer) && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Link
+                    href="/dashboard/compliance/review"
+                    className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
+                  >
+                    <ClipboardCheck className="h-5 w-5" />
+                  </Link>
+                </TooltipTrigger>
+                <TooltipContent side="right">AI Review</TooltipContent>
+              </Tooltip>
+            )}
 
             {isAdmin && (
               <>
