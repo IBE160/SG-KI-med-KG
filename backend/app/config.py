@@ -19,6 +19,9 @@ class Settings(BaseSettings):
     SUPABASE_SERVICE_KEY: str | None = None
     SUPABASE_STORAGE_BUCKET: str = "regulatory-docs"
 
+    # AI
+    OPENAI_API_KEY: str | None = None
+
     # User
     ACCESS_SECRET_KEY: str
     RESET_PASSWORD_SECRET_KEY: str

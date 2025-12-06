@@ -16,6 +16,7 @@ class DocumentService:
 
     ALLOWED_MIME_TYPES = {"application/pdf", "text/plain"}
     MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB in bytes
+    BUCKET_NAME = settings.SUPABASE_STORAGE_BUCKET
 
     @staticmethod
     async def validate_file(file: UploadFile) -> None:
@@ -72,8 +73,7 @@ class DocumentService:
                 )
 
             # Upload to Supabase Storage
-            bucket_name = settings.SUPABASE_STORAGE_BUCKET
-            response = supabase_client.storage.from_(bucket_name).upload(
+            response = supabase_client.storage.from_(DocumentService.BUCKET_NAME).upload(
                 unique_filename, content, {"content-type": file.content_type}
             )
 
@@ -88,7 +88,7 @@ class DocumentService:
                 unique_id = str(uuid.uuid4())
                 unique_filename = f"{user_id}/{unique_id}_{file.filename}"
                 content = await file.read()
-                response = supabase_client.storage.from_(bucket_name).upload(
+                response = supabase_client.storage.from_(DocumentService.BUCKET_NAME).upload(
                     unique_filename, content, {"content-type": file.content_type}
                 )
                 await file.seek(0)

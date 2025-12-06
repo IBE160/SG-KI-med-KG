@@ -1,6 +1,6 @@
 # Story 3.2: Integrate AI for Document Analysis & Suggestion Generation
 
-Status: ready-for-dev
+Status: done
 
 ## Story
 
@@ -32,31 +32,36 @@ so that **I can generate suggestions for risks and controls**.
 
 ## Tasks / Subtasks
 
-- [ ] **Backend: Implement AI Service** (AC: 2, 3, 5)
-  - [ ] Create `backend/app/services/ai_service.py`.
-  - [ ] Implement `analyze_document(text: str)` method.
-  - [ ] Define the system prompt for "AI Legal Specialist".
-  - [ ] Configure OpenAI client with API key.
-  - [ ] Use Pydantic to define the expected output schema (`AnalysisResult`, `Suggestion`).
-- [ ] **Backend: Implement Text Extraction** (AC: 1)
-  - [ ] Add `pypdf` (or similar) dependency.
-  - [ ] Implement logic to download file from Supabase Storage.
-  - [ ] Implement text extraction for PDF and text files.
-- [ ] **Backend: Implement Celery Analysis Task** (AC: 1, 2, 3, 4)
-  - [ ] Create `backend/tasks/analysis.py`.
-  - [ ] Define `process_document(document_id: UUID)` task.
-  - [ ] Implement the pipeline: Download -> Extract -> Analyze (AI) -> Save.
-  - [ ] Handle errors and update `document.status` (processing -> completed/failed).
-- [ ] **Backend: Implement Suggestion Data Model** (AC: 4)
-  - [ ] Define `AISuggestion` SQLAlchemy model in `backend/app/models/suggestion.py`.
-  - [ ] Create Alembic migration for `ai_suggestions` table.
-  - [ ] Define Pydantic schemas in `backend/app/schemas/suggestion.py`.
-- [ ] **Backend: Trigger Analysis on Upload**
-  - [ ] Update `POST /api/v1/documents/upload` to trigger the Celery task after successful upload.
-- [ ] **Testing**
-  - [ ] Unit test: Text extraction logic (with mock files).
-  - [ ] Unit test: AI Service prompt generation and schema validation (mock OpenAI).
-  - [ ] Integration test: Full Celery task execution (mocking external calls).
+- [x] **Backend: Implement AI Service** (AC: 2, 3, 5)
+  - [x] Create `backend/app/services/ai_service.py`.
+  - [x] Implement `analyze_document(text: str)` method.
+  - [x] Define the system prompt for "AI Legal Specialist".
+  - [x] Configure OpenAI client with API key.
+  - [x] Use Pydantic to define the expected output schema (`AnalysisResult`, `Suggestion`).
+- [x] **Backend: Implement Text Extraction** (AC: 1)
+  - [x] Add `pypdf` (or similar) dependency.
+  - [x] Implement logic to download file from Supabase Storage.
+  - [x] Implement text extraction for PDF and text files.
+- [x] **Backend: Implement Celery Analysis Task** (AC: 1, 2, 3, 4)
+  - [x] Create `backend/tasks/analysis.py`.
+  - [x] Define `process_document(document_id: UUID)` task.
+  - [x] Implement the pipeline: Download -> Extract -> Analyze (AI) -> Save.
+  - [x] Handle errors and update `document.status` (processing -> completed/failed).
+- [x] **Backend: Implement Suggestion Data Model** (AC: 4)
+  - [x] Define `AISuggestion` SQLAlchemy model in `backend/app/models/suggestion.py`.
+  - [x] Create Alembic migration for `ai_suggestions` table.
+  - [x] Define Pydantic schemas in `backend/app/schemas/suggestion.py`.
+- [x] **Backend: Trigger Analysis on Upload**
+  - [x] Update `POST /api/v1/documents/upload` to trigger the Celery task after successful upload.
+- [x] **Testing**
+  - [x] Unit test: Text extraction logic (with mock files).
+  - [x] Unit test: AI Service prompt generation and schema validation (mock OpenAI).
+  - [x] Integration test: Full Celery task execution (mocking external calls).
+
+### Review Follow-ups (AI)
+
+- [ ] [AI-Review][Low] Refine AI error handling to distinguish between retryable API errors and hard failures (AC #2)
+- [ ] [AI-Review][Low] Implement robust chunking strategy for documents larger than LLM context window (AC #2)
 
 ## Dev Notes
 
@@ -108,10 +113,89 @@ so that **I can generate suggestions for risks and controls**.
 
 ### Agent Model Used
 
-{{agent_model_name_version}}
+claude-sonnet-4-5-20250929
 
 ### Debug Log References
 
+- Fixed `alembic` migration issues with async connection parameters.
+- Fixed `openai.AuthenticationError` in tests by refactoring `AIService` to accept client injection.
+- Fixed `pypdf.errors.PdfStreamError` in tests by creating valid in-memory PDF buffer.
+- Refactored `schemas.py` into a package to handle circular imports or clean structure.
+
 ### Completion Notes List
 
+- **Dependencies**: Added `openai`, `celery`, `redis`, `pypdf` to project.
+- **AI Service**: Implemented `AIService` with `analyze_document` using GPT-4o-mini and Pydantic validation.
+- **Celery Task**: Implemented `process_document` task for async background processing.
+- **Models**: Added `AISuggestion` model and migration.
+- **Integration**: Connected upload endpoint to Celery task.
+- **Testing**: Added comprehensive unit and mock integration tests for AI service, PDF extraction, and Celery task.
+- **Configuration**: Added `OPENAI_API_KEY` support in settings.
+
 ### File List
+- backend/app/services/ai_service.py
+- backend/tasks/analysis.py
+- backend/app/models/suggestion.py
+- backend/app/schemas/suggestion.py
+- backend/app/core/celery_app.py
+- backend/app/worker.py
+- backend/app/api/v1/endpoints/documents.py
+- backend/app/services/document_service.py
+- backend/app/config.py
+- backend/tests/services/test_ai_service.py
+- backend/tests/unit/test_pdf_extraction.py
+- backend/tests/tasks/test_analysis_task.py
+
+## Senior Developer Review (AI)
+
+### Reviewer: BIP
+### Date: Saturday, December 6, 2025
+### Outcome: Approve
+
+**Summary**
+The implementation successfully integrates the AI analysis pipeline using Celery, Redis, and OpenAI. The code structure is clean, following the service pattern. The critical requirements (text extraction, AI analysis, structured JSON output, database persistence) are met. The testing strategy using mocks for external services (OpenAI, Supabase) is solid and execution confirms correctness.
+
+### Key Findings
+
+**Low Severity**
+- **Error Handling Granularity**: `AIService` catches all exceptions and logs them. It might be beneficial to distinguish between retryable API errors (e.g., 429, 503 from OpenAI) and hard failures to leverage Celery's retry mechanism more effectively.
+- **Chunking Strategy**: The implementation acknowledges chunking is simplified ("Let's assume the text fits for MVP"). For production with large regulatory PDFs, a robust chunking strategy (e.g., LangChain's recursive splitter) will be needed to stay within token limits reliably.
+
+### Acceptance Criteria Coverage
+
+| AC# | Description | Status | Evidence |
+| :--- | :--- | :--- | :--- |
+| 1 | System extracts text from uploaded file | **IMPLEMENTED** | `backend/tasks/analysis.py:44` (pypdf usage) |
+| 2 | LLM processes text and identifies Risks and Controls | **IMPLEMENTED** | `backend/app/services/ai_service.py:65` (GPT-4o-mini call) |
+| 3 | Output is valid JSON matching the schema | **IMPLEMENTED** | `backend/app/services/ai_service.py:79` (Pydantic validation) |
+| 4 | Suggestions are saved to DB linked to the document | **IMPLEMENTED** | `backend/tasks/analysis.py:88` (DB persistence) |
+| 5 | Rationales cite specific sections of the source text | **IMPLEMENTED** | Enforced via System Prompt (`ai_service.py:27`) |
+
+**Summary:** 5 of 5 acceptance criteria fully implemented.
+
+### Task Completion Validation
+
+| Task | Marked As | Verified As | Evidence |
+| :--- | :--- | :--- | :--- |
+| Backend: Implement AI Service | [x] | **VERIFIED** | `backend/app/services/ai_service.py` |
+| Backend: Implement Text Extraction | [x] | **VERIFIED** | `backend/tasks/analysis.py` |
+| Backend: Implement Celery Analysis Task | [x] | **VERIFIED** | `backend/tasks/analysis.py` |
+| Backend: Implement Suggestion Data Model | [x] | **VERIFIED** | `backend/app/models/suggestion.py` |
+| Backend: Trigger Analysis on Upload | [x] | **VERIFIED** | `backend/app/api/v1/endpoints/documents.py` |
+| Testing: Unit/Integration tests | [x] | **VERIFIED** | `backend/tests/` (All 6 tests passed) |
+
+**Summary:** All tasks verified.
+
+### Test Coverage and Gaps
+- **Coverage**: Strong coverage of success paths and basic failure handling.
+- **Quality**: Mocks are well-constructed, isolating unit tests effectively.
+
+### Architectural Alignment
+- **Alignment**: Adheres to the decision to use Celery/Redis for background jobs and Pydantic for data validation.
+- **Scalability**: Async task execution ensures the API remains responsive.
+
+### Action Items
+
+**Advisory Notes:**
+- Note: Refine AI error handling to distinguish between retryable API errors and hard failures (AC #2)
+- Note: Implement robust chunking strategy for documents larger than LLM context window (AC #2)

@@ -9,3 +9,5 @@
 | 2025-12-06 | 3.1 | 3 | Security | Med | TBD | Open | **File Validation:** Check magic bytes instead of content-type header. [file: `backend/app/services/document_service.py`] |
 | 2025-12-06 | 3.1 | 3 | TechDebt | Low | TBD | Open | **Tenant Isolation:** Update `get_documents_by_user` to explicitly filter by `tenant_id`. [file: `backend/app/services/document_service.py`] |
 | 2025-12-06 | 3.1 | 3 | UX | Med | TBD | Open | **Frontend Access Control:** Wrap `DocumentsPage` with `RoleGuard` to enforce admin access on client-side. [file: `frontend/app/dashboard/admin/documents/page.tsx`] |
+| 2025-12-06 | 3.2 | 3 | TechDebt | Low | TBD | Open | **AI Error Handling:** Distinguish retryable API errors (429/5xx) from hard failures in `AIService`. [file: `backend/app/services/ai_service.py`] |
+| 2025-12-06 | 3.2 | 3 | Enhancement | Low | TBD | Open | **Document Chunking:** Implement robust chunking for large docs (token counting) to prevent context overflow. [file: `backend/app/services/ai_service.py`] |

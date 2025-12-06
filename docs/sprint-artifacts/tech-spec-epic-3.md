@@ -191,3 +191,5 @@ This epic leverages the **AI & Vector Database** and **Background Jobs** archite
 *   [ ] **Story 3.1:** [Med] Improve file validation to check magic bytes instead of just content-type header (AC #1).
 *   [ ] **Story 3.1:** [Low] Update `get_documents_by_user` to explicitly filter by `tenant_id` (AC #4).
 *   [ ] **Story 3.1:** [Med] Wrap `DocumentsPage` with `RoleGuard` to enforce admin access on client-side (Frontend Pattern) (AC #1).
+*   [ ] **Story 3.2:** [Low] Refine AI error handling to distinguish between retryable API errors and hard failures (AC #2).
+*   [ ] **Story 3.2:** [Low] Implement robust chunking strategy for documents larger than LLM context window (AC #2).

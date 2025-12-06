@@ -8,6 +8,7 @@ from app.models.user import User as UserModel
 from app.schemas import DocumentRead, DocumentUploadResponse
 from app.core.deps import has_role
 from app.services.document_service import DocumentService
+from tasks.analysis import process_document
 
 router = APIRouter()
 
@@ -38,6 +39,9 @@ async def upload_document(
         storage_path=storage_path,
         user_id=current_user.id,
     )
+
+    # Trigger background analysis
+    process_document.delay(str(document.id))
 
     # Return response
     return DocumentUploadResponse(
