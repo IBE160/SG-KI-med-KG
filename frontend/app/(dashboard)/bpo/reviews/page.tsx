@@ -5,22 +5,7 @@ import { useRouter } from "next/navigation";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-
-interface PendingReviewItem {
-  suggestion_id: number;
-  business_process_name: string;
-  risk_name: string;
-  control_name: string;
-  source_reference: string;
-  created_at: string;
-}
-
-interface PendingReviewsResponse {
-  items: PendingReviewItem[];
-  total: number;
-  page: number;
-  size: number;
-}
+import { assessmentsGetPendingReviews, PendingReviewsResponse } from "@/app/clientService";
 
 export default function BPOPendingReviewsPage() {
   const router = useRouter();
@@ -29,18 +14,16 @@ export default function BPOPendingReviewsPage() {
   const { data, isLoading, error } = useQuery<PendingReviewsResponse>({
     queryKey: ["/api/v1/assessments/pending"],
     queryFn: async () => {
-      const response = await fetch("/api/v1/assessments/pending?page=1&size=20", {
-        headers: {
-          "Authorization": `Bearer ${localStorage.getItem("authToken")}`, // TODO: Use proper auth context
+      const response = await assessmentsGetPendingReviews({
+        query: {
+          page: 1,
+          size: 20,
         },
       });
-      if (!response.ok) {
-        if (response.status === 403) {
-          throw new Error("Access denied. BPO role required.");
-        }
+      if (response.error) {
         throw new Error("Failed to fetch pending reviews");
       }
-      return response.json();
+      return response.data;
     },
   });
 

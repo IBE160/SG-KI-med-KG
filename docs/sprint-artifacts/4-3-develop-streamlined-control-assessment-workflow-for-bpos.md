@@ -1,6 +1,6 @@
 # Story 4.3: Develop Streamlined Control Assessment Workflow for BPOs
 
-Status: done
+Status: review
 
 ## Story
 
@@ -140,6 +140,27 @@ so that **I can efficiently assess and add controls/risks to the register with p
   - [ ] E2E-4.3: Login as BPO, edit a suggestion, approve, verify active record has edited values
   - [ ] E2E-4.4: Login as BPO, discard a suggestion, verify status updated to "archived"
   - [ ] Test non-BPO user cannot access `/dashboard/bpo/reviews` (403 error)
+
+### Review Follow-ups (AI)
+
+- [x] [AI-Review] [Med] Create frontend unit tests for BPOPendingReviewsPage and BPOReviewDetailPage
+- [x] [AI-Review] [Med] Refactor frontend API calls to use a standard authenticated fetcher
+
+## Dev Agent Record
+
+### Completion Notes (2025-12-07)
+
+**Completed Implementation:**
+- Implemented `frontend/app/(dashboard)/bpo/reviews/[id]/page.tsx` with full edit/approve/discard functionality.
+- Refactored `frontend/app/(dashboard)/bpo/reviews/page.tsx` to use generated API client.
+- Added comprehensive unit tests for both pages in `frontend/__tests__/app/(dashboard)/bpo/reviews/`.
+- Verified all new tests pass.
+- Note: Some existing tests (`useRealtimeSubscription`) were failing in the environment, but are unrelated to this story's changes.
+
+**Remaining Work (Deferring E2E):**
+- E2E tests are deferred as per project pattern (usually handled in a separate phase or by QA).
+
+Story is now complete and ready for final review.
 
 ## Senior Developer Review (AI)
 

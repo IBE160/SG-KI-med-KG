@@ -11,7 +11,7 @@
           "auth"
         ],
         "summary": "Auth:Jwt.Login",
-        "operationId": "auth:jwt.login",
+        "operationId": "auth-auth:jwt.login",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
@@ -80,7 +80,7 @@
           "auth"
         ],
         "summary": "Auth:Jwt.Logout",
-        "operationId": "auth:jwt.logout",
+        "operationId": "auth-auth:jwt.logout",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -107,7 +107,7 @@
           "auth"
         ],
         "summary": "Register:Register",
-        "operationId": "register:register",
+        "operationId": "auth-register:register",
         "requestBody": {
           "content": {
             "application/json": {
@@ -175,7 +175,7 @@
           "auth"
         ],
         "summary": "Reset:Forgot Password",
-        "operationId": "reset:forgot_password",
+        "operationId": "auth-reset:forgot_password",
         "requestBody": {
           "content": {
             "application/json": {
@@ -214,7 +214,7 @@
           "auth"
         ],
         "summary": "Reset:Reset Password",
-        "operationId": "reset:reset_password",
+        "operationId": "auth-reset:reset_password",
         "requestBody": {
           "content": {
             "application/json": {
@@ -280,7 +280,7 @@
           "auth"
         ],
         "summary": "Verify:Request-Token",
-        "operationId": "verify:request-token",
+        "operationId": "auth-verify:request-token",
         "requestBody": {
           "content": {
             "application/json": {
@@ -319,7 +319,7 @@
           "auth"
         ],
         "summary": "Verify:Verify",
-        "operationId": "verify:verify",
+        "operationId": "auth-verify:verify",
         "requestBody": {
           "content": {
             "application/json": {
@@ -384,7 +384,7 @@
           "users"
         ],
         "summary": "Users:Current User",
-        "operationId": "users:current_user",
+        "operationId": "users-users:current_user",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -411,7 +411,7 @@
           "users"
         ],
         "summary": "Users:Patch Current User",
-        "operationId": "users:patch_current_user",
+        "operationId": "users-users:patch_current_user",
         "requestBody": {
           "content": {
             "application/json": {
@@ -487,7 +487,7 @@
           "users"
         ],
         "summary": "Users:User",
-        "operationId": "users:user",
+        "operationId": "users-users:user",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -541,7 +541,7 @@
           "users"
         ],
         "summary": "Users:Patch User",
-        "operationId": "users:patch_user",
+        "operationId": "users-users:patch_user",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -632,7 +632,7 @@
           "users"
         ],
         "summary": "Users:Delete User",
-        "operationId": "users:delete_user",
+        "operationId": "users-users:delete_user",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -681,7 +681,7 @@
           "item"
         ],
         "summary": "Read Item",
-        "operationId": "read_item",
+        "operationId": "item-read_item",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -744,7 +744,7 @@
           "item"
         ],
         "summary": "Create Item",
-        "operationId": "create_item",
+        "operationId": "item-create_item",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -790,7 +790,7 @@
           "item"
         ],
         "summary": "Delete Item",
-        "operationId": "delete_item",
+        "operationId": "item-delete_item",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -836,7 +836,7 @@
           "controls"
         ],
         "summary": "Create Control",
-        "operationId": "create_control",
+        "operationId": "controls-create_control",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -880,7 +880,7 @@
           "controls"
         ],
         "summary": "Read Controls",
-        "operationId": "read_controls",
+        "operationId": "controls-read_controls",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -945,7 +945,7 @@
           "controls"
         ],
         "summary": "Read Control",
-        "operationId": "read_control",
+        "operationId": "controls-read_control",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -991,7 +991,7 @@
           "controls"
         ],
         "summary": "Update Control",
-        "operationId": "update_control",
+        "operationId": "controls-update_control",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1047,7 +1047,7 @@
           "controls"
         ],
         "summary": "Delete Control",
-        "operationId": "delete_control",
+        "operationId": "controls-delete_control",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1088,7 +1088,7 @@
           "risks"
         ],
         "summary": "Create Risk",
-        "operationId": "create_risk",
+        "operationId": "risks-create_risk",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1132,7 +1132,7 @@
           "risks"
         ],
         "summary": "Read Risks",
-        "operationId": "read_risks",
+        "operationId": "risks-read_risks",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1197,7 +1197,7 @@
           "risks"
         ],
         "summary": "Read Risk",
-        "operationId": "read_risk",
+        "operationId": "risks-read_risk",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1243,7 +1243,7 @@
           "risks"
         ],
         "summary": "Update Risk",
-        "operationId": "update_risk",
+        "operationId": "risks-update_risk",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1299,7 +1299,7 @@
           "risks"
         ],
         "summary": "Delete Risk",
-        "operationId": "delete_risk",
+        "operationId": "risks-delete_risk",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1340,7 +1340,7 @@
           "business-processes"
         ],
         "summary": "Create Business Process",
-        "operationId": "create_business_process",
+        "operationId": "business-processes-create_business_process",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1384,7 +1384,7 @@
           "business-processes"
         ],
         "summary": "Read Business Processes",
-        "operationId": "read_business_processes",
+        "operationId": "business-processes-read_business_processes",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1449,7 +1449,7 @@
           "business-processes"
         ],
         "summary": "Read Business Process",
-        "operationId": "read_business_process",
+        "operationId": "business-processes-read_business_process",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1495,7 +1495,7 @@
           "business-processes"
         ],
         "summary": "Update Business Process",
-        "operationId": "update_business_process",
+        "operationId": "business-processes-update_business_process",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1551,7 +1551,7 @@
           "business-processes"
         ],
         "summary": "Delete Business Process",
-        "operationId": "delete_business_process",
+        "operationId": "business-processes-delete_business_process",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1592,7 +1592,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Create Regulatory Framework",
-        "operationId": "create_regulatory_framework",
+        "operationId": "regulatory-frameworks-create_regulatory_framework",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1636,7 +1636,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Read Regulatory Frameworks",
-        "operationId": "read_regulatory_frameworks",
+        "operationId": "regulatory-frameworks-read_regulatory_frameworks",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1701,7 +1701,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Read Regulatory Framework",
-        "operationId": "read_regulatory_framework",
+        "operationId": "regulatory-frameworks-read_regulatory_framework",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1747,7 +1747,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Update Regulatory Framework",
-        "operationId": "update_regulatory_framework",
+        "operationId": "regulatory-frameworks-update_regulatory_framework",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1803,7 +1803,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Delete Regulatory Framework",
-        "operationId": "delete_regulatory_framework",
+        "operationId": "regulatory-frameworks-delete_regulatory_framework",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1838,6 +1838,94 @@
         }
       }
     },
+    "/api/v1/users/me": {
+      "get": {
+        "tags": [
+          "users",
+          "users"
+        ],
+        "summary": "Get Current User",
+        "description": "Get the current authenticated user's information including their role.",
+        "operationId": "users-get_current_user",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRead"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/users": {
+      "get": {
+        "tags": [
+          "users",
+          "users"
+        ],
+        "summary": "List Users",
+        "description": "List users in the current tenant, optionally filtered by role.\nRequires admin or compliance_officer role.",
+        "operationId": "users-list_users",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "role",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Role"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserRead"
+                  },
+                  "title": "Response Users-List Users"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users/{user_id}/role": {
       "put": {
         "tags": [
@@ -1845,7 +1933,7 @@
           "users"
         ],
         "summary": "Update User Role",
-        "operationId": "update_user_role",
+        "operationId": "users-update_user_role",
         "security": [
           {
             "HTTPBearer": []
@@ -1896,10 +1984,958 @@
           }
         }
       }
+    },
+    "/api/v1/documents/upload": {
+      "post": {
+        "tags": [
+          "documents",
+          "documents"
+        ],
+        "summary": "Upload Document",
+        "description": "Upload a regulatory document for AI analysis.\n\n- **file**: PDF or text file (max 20MB)\n- Requires admin role\n- Returns document metadata with processing status",
+        "operationId": "documents-upload_document",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_documents-upload_document"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentUploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/documents": {
+      "get": {
+        "tags": [
+          "documents",
+          "documents"
+        ],
+        "summary": "List Documents",
+        "description": "List all documents for the current user's tenant.\n\n- Requires admin, bpo, or executive role\n- Returns documents ordered by creation date (newest first)",
+        "operationId": "documents-list_documents",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DocumentRead"
+                  },
+                  "type": "array",
+                  "title": "Response Documents-List Documents"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/documents/{document_id}": {
+      "get": {
+        "tags": [
+          "documents",
+          "documents"
+        ],
+        "summary": "Get Document",
+        "description": "Get a specific document by ID.\n\n- Requires admin, bpo, or executive role\n- Returns document metadata",
+        "operationId": "documents-get_document",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "documents",
+          "documents"
+        ],
+        "summary": "Delete Document",
+        "description": "Archive a document (soft delete).\n\n- **document_id**: UUID of the document to archive\n- Requires admin role\n- Moves document to archive in both database and Supabase storage\n- Returns success message",
+        "operationId": "documents-delete_document",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/{document_id}/rename": {
+      "patch": {
+        "tags": [
+          "documents",
+          "documents"
+        ],
+        "summary": "Rename Document",
+        "description": "Rename a document.\n\n- **document_id**: UUID of the document to rename\n- **new_filename**: New filename for the document (in request body)\n- Requires admin role\n- Updates filename in database only (storage path remains unchanged)\n- File extension is preserved automatically\n- Returns updated document metadata",
+        "operationId": "documents-rename_document",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RenameRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DocumentRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/documents/{document_id}/process": {
+      "post": {
+        "tags": [
+          "documents",
+          "documents"
+        ],
+        "summary": "Manually Process Document",
+        "description": "Manually trigger document processing (for testing/debugging).\n\n- **document_id**: UUID of the document to process\n- Requires admin role\n- Processes document synchronously and returns detailed status\n- Useful for debugging when automatic processing fails",
+        "operationId": "documents-manually_process_document",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "document_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Document Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/suggestions": {
+      "get": {
+        "tags": [
+          "suggestions",
+          "suggestions"
+        ],
+        "summary": "List Suggestions",
+        "description": "List AI suggestions with optional status filtering.\nFiltered by tenant - only shows suggestions from documents uploaded by users in the same tenant.",
+        "operationId": "suggestions-list_suggestions",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/SuggestionStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by status",
+              "title": "Status"
+            },
+            "description": "Filter by status"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AISuggestionRead"
+                  },
+                  "title": "Response Suggestions-List Suggestions"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/suggestions/{suggestion_id}/status": {
+      "patch": {
+        "tags": [
+          "suggestions",
+          "suggestions"
+        ],
+        "summary": "Update Suggestion Status",
+        "description": "Update the status of an AI suggestion.\nTransitions:\n- pending -> awaiting_bpo_approval (Accept)\n- pending -> rejected (Reject)",
+        "operationId": "suggestions-update_suggestion_status",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "suggestion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Suggestion Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSuggestionStatusRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AISuggestionRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/audit-logs": {
+      "get": {
+        "tags": [
+          "audit-logs",
+          "audit-logs"
+        ],
+        "summary": "List Audit Logs",
+        "description": "Retrieve audit logs.\nRequires admin or compliance_officer role.",
+        "operationId": "audit-logs-list_audit_logs",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "entity_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by entity type",
+              "title": "Entity Type"
+            },
+            "description": "Filter by entity type"
+          },
+          {
+            "name": "entity_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by entity ID",
+              "title": "Entity Id"
+            },
+            "description": "Filter by entity ID"
+          },
+          {
+            "name": "actor_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by actor ID",
+              "title": "Actor Id"
+            },
+            "description": "Filter by actor ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AuditLogRead"
+                  },
+                  "title": "Response Audit-Logs-List Audit Logs"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/dashboard/metrics": {
+      "get": {
+        "tags": [
+          "dashboard",
+          "dashboard"
+        ],
+        "summary": "Get Dashboard Metrics",
+        "description": "Retrieve role-specific dashboard metrics for the authenticated user.\n\nReturns:\n    DashboardMetrics: Role-specific dashboard cards and data\n\nRaises:\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (user inactive or invalid tenant)\n    500: Internal server error (database/service failure)",
+        "operationId": "dashboard-get_dashboard_metrics",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DashboardMetrics"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/assessments/pending": {
+      "get": {
+        "tags": [
+          "assessments",
+          "assessments"
+        ],
+        "summary": "Get Pending Reviews",
+        "description": "Retrieve paginated list of suggestions with status 'pending_review' assigned to the logged-in BPO.\n\nOnly accessible to users with BPO role. Returns suggestions filtered by:\n- status = \"pending_review\"\n- assigned_bpo_id = current_user.id\n- tenant_id = current_user.tenant_id (enforced by RLS)\n\nArgs:\n    page: Page number (1-indexed)\n    size: Number of items per page (max 100)\n    db: Database session\n    current_user: Authenticated user from JWT\n\nReturns:\n    PendingReviewsResponse: Paginated list of pending review items\n\nRaises:\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (non-BPO user or user has no tenant)\n    500: Internal server error",
+        "operationId": "assessments-get_pending_reviews",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number (1-indexed)",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number (1-indexed)"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Page size (max 100)",
+              "default": 20,
+              "title": "Size"
+            },
+            "description": "Page size (max 100)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PendingReviewsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assessments/{suggestion_id}": {
+      "get": {
+        "tags": [
+          "assessments",
+          "assessments"
+        ],
+        "summary": "Get Suggestion Detail",
+        "description": "Retrieve detailed information for a specific AI suggestion.\n\nOnly accessible to BPO assigned to the suggestion.\n\nArgs:\n    suggestion_id: ID of the suggestion\n    db: Database session\n    current_user: Authenticated user from JWT\n\nReturns:\n    SuggestionDetailResponse: Detailed suggestion data\n\nRaises:\n    403: Forbidden (not BPO or not assigned)\n    404: Not Found",
+        "operationId": "assessments-get_suggestion_detail",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "suggestion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the suggestion to retrieve",
+              "title": "Suggestion Id"
+            },
+            "description": "ID of the suggestion to retrieve"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuggestionDetailResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/assessments/{suggestion_id}/assess": {
+      "post": {
+        "tags": [
+          "assessments",
+          "assessments"
+        ],
+        "summary": "Submit Assessment",
+        "description": "Submit BPO assessment action (approve or discard) for an AI suggestion.\n\nAuthorization checks:\n- User must have BPO role\n- Suggestion.assigned_bpo_id must match current_user.id\n- Suggestion.tenant_id must match current_user.tenant_id (enforced by service layer)\n\nValidation:\n- For approve action: residual_risk is REQUIRED (400 Bad Request if missing)\n- Suggestion must exist and have status \"pending_review\" (404 if not found, 409 if wrong status)\n\nSide effects:\n- Approve: Creates active records (business_process, risk, control), updates status to \"active\"\n- Discard: Updates status to \"archived\"\n- Both actions: Creates immutable audit log entry\n\nArgs:\n    suggestion_id: ID of the suggestion to assess\n    request: AssessmentRequest with action, residual_risk (if approve), and optional edits\n    db: Database session\n    current_user: Authenticated user from JWT\n\nReturns:\n    AssessmentResponse: Success status, message, updated status, audit_log_id, and active_record_ids (if approved)\n\nRaises:\n    400: Bad Request (residual_risk missing for approve action)\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (non-BPO user, not assigned to this suggestion, or no tenant)\n    404: Not Found (suggestion doesn't exist or belongs to different tenant)\n    409: Conflict (suggestion status is not \"pending_review\")\n    500: Internal server error",
+        "operationId": "assessments-submit_assessment",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "suggestion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the suggestion to assess",
+              "title": "Suggestion Id"
+            },
+            "description": "ID of the suggestion to assess"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssessmentRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssessmentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AISuggestionRead": {
+        "properties": {
+          "type": {
+            "$ref": "#/components/schemas/SuggestionType"
+          },
+          "content": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Content"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale"
+          },
+          "source_reference": {
+            "type": "string",
+            "title": "Source Reference"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "status": {
+            "$ref": "#/components/schemas/SuggestionStatus"
+          },
+          "document_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Document Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "content",
+          "rationale",
+          "source_reference",
+          "id",
+          "status",
+          "document_id"
+        ],
+        "title": "AISuggestionRead"
+      },
+      "AssessmentAction": {
+        "type": "string",
+        "enum": [
+          "approve",
+          "discard"
+        ],
+        "title": "AssessmentAction",
+        "description": "Actions available to BPO when assessing AI suggestions."
+      },
+      "AssessmentRequest": {
+        "properties": {
+          "action": {
+            "$ref": "#/components/schemas/AssessmentAction",
+            "description": "Assessment action: approve or discard"
+          },
+          "residual_risk": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ResidualRisk"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Required for 'approve' action. Categorizes residual risk level."
+          },
+          "edited_risk_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited Risk Description",
+            "description": "Edited risk description (overrides AI suggestion if provided)"
+          },
+          "edited_control_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited Control Description",
+            "description": "Edited control description (overrides AI suggestion if provided)"
+          },
+          "edited_business_process": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Edited Business Process",
+            "description": "Edited business process name (overrides AI suggestion if provided)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action"
+        ],
+        "title": "AssessmentRequest",
+        "description": "Request payload for BPO assessment action.\n\nWhen approving, residual_risk is mandatory. When editing before approval,\nedited field values override the original AI-suggested values.",
+        "example": {
+          "action": "approve",
+          "residual_risk": "medium"
+        }
+      },
+      "AssessmentResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "description": "Whether the assessment action succeeded"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Human-readable success or error message"
+          },
+          "updated_status": {
+            "type": "string",
+            "title": "Updated Status",
+            "description": "Updated suggestion status: 'active' (approved) or 'archived' (discarded)"
+          },
+          "audit_log_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Audit Log Id",
+            "description": "Reference to audit log entry for this action"
+          },
+          "active_record_ids": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active Record Ids",
+            "description": "IDs of created active records (business_process_id, risk_id, control_id) if approved"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message",
+          "updated_status",
+          "audit_log_id"
+        ],
+        "title": "AssessmentResponse",
+        "description": "Response after BPO assessment action.\n\nReturns success status, updated suggestion status, and audit log reference\nfor traceability.",
+        "example": {
+          "active_record_ids": {
+            "business_process_id": "550e8400-e29b-41d4-a716-446655440000",
+            "control_id": "550e8400-e29b-41d4-a716-446655440002",
+            "risk_id": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "audit_log_id": "123e4567-e89b-12d3-a456-426614174000",
+          "message": "Successfully added to register",
+          "success": true,
+          "updated_status": "active"
+        }
+      },
+      "AuditLogRead": {
+        "properties": {
+          "action": {
+            "type": "string",
+            "title": "Action"
+          },
+          "entity_type": {
+            "type": "string",
+            "title": "Entity Type"
+          },
+          "entity_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Entity Id"
+          },
+          "changes": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Changes"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "actor_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Actor Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "action",
+          "entity_type",
+          "entity_id",
+          "id",
+          "actor_id",
+          "created_at"
+        ],
+        "title": "AuditLogRead"
+      },
       "BearerResponse": {
         "properties": {
           "access_token": {
@@ -1976,6 +3012,20 @@
           "token"
         ],
         "title": "Body_auth-verify:verify"
+      },
+      "Body_documents-upload_document": {
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "title": "File"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file"
+        ],
+        "title": "Body_documents-upload_document"
       },
       "BusinessProcessCreate": {
         "properties": {
@@ -2225,6 +3275,199 @@
           "name"
         ],
         "title": "ControlUpdate"
+      },
+      "DashboardCard": {
+        "properties": {
+          "card_id": {
+            "type": "string",
+            "title": "Card Id",
+            "description": "Unique identifier for the card type"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title",
+            "description": "Display title for the card"
+          },
+          "metric": {
+            "type": "integer",
+            "title": "Metric",
+            "description": "Primary numeric metric to display"
+          },
+          "metric_label": {
+            "type": "string",
+            "title": "Metric Label",
+            "description": "Label for the metric (e.g., 'items', 'risks')"
+          },
+          "icon": {
+            "type": "string",
+            "title": "Icon",
+            "description": "Icon identifier for frontend rendering"
+          },
+          "action_link": {
+            "type": "string",
+            "title": "Action Link",
+            "description": "URL for the card's CTA button"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status",
+            "description": "Optional status indicator (e.g., 'urgent', 'normal')"
+          }
+        },
+        "type": "object",
+        "required": [
+          "card_id",
+          "title",
+          "metric",
+          "metric_label",
+          "icon",
+          "action_link"
+        ],
+        "title": "DashboardCard",
+        "description": "Single card data for Action-Oriented Hub dashboard.\n\nRepresents a modular dashboard card displaying a key metric\nwith an actionable link for the user to drill down.",
+        "example": {
+          "action_link": "/dashboard/bpo/reviews",
+          "card_id": "pending_reviews",
+          "icon": "clipboard-check",
+          "metric": 5,
+          "metric_label": "items",
+          "status": "urgent",
+          "title": "Pending Reviews"
+        }
+      },
+      "DashboardMetrics": {
+        "properties": {
+          "user_role": {
+            "type": "string",
+            "title": "User Role",
+            "description": "User's role (admin, bpo, executive, general)"
+          },
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/DashboardCard"
+            },
+            "type": "array",
+            "title": "Cards",
+            "description": "List of dashboard cards for this role"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_role",
+          "cards"
+        ],
+        "title": "DashboardMetrics",
+        "description": "Complete dashboard data feed for a specific user role.\n\nContains all cards that should be displayed on the user's\npersonalized Action-Oriented Hub dashboard.",
+        "example": {
+          "cards": [
+            {
+              "action_link": "/dashboard/bpo/reviews",
+              "card_id": "pending_reviews",
+              "icon": "clipboard-check",
+              "metric": 5,
+              "metric_label": "items",
+              "title": "Pending Reviews"
+            },
+            {
+              "action_link": "/dashboard/controls",
+              "card_id": "my_controls",
+              "icon": "shield",
+              "metric": 12,
+              "metric_label": "controls",
+              "title": "My Controls"
+            }
+          ],
+          "user_role": "bpo"
+        }
+      },
+      "DocumentRead": {
+        "properties": {
+          "filename": {
+            "type": "string",
+            "maxLength": 255,
+            "title": "Filename"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "storage_path": {
+            "type": "string",
+            "title": "Storage Path"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DocumentStatus"
+          },
+          "uploaded_by": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Uploaded By"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "filename",
+          "id",
+          "storage_path",
+          "status",
+          "uploaded_by",
+          "created_at"
+        ],
+        "title": "DocumentRead",
+        "description": "Schema for reading a document."
+      },
+      "DocumentStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "processing",
+          "completed",
+          "failed"
+        ],
+        "title": "DocumentStatus",
+        "description": "Status of document processing."
+      },
+      "DocumentUploadResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "filename": {
+            "type": "string",
+            "title": "Filename"
+          },
+          "status": {
+            "$ref": "#/components/schemas/DocumentStatus"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "default": "File uploaded successfully and is being processed"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "filename",
+          "status"
+        ],
+        "title": "DocumentUploadResponse",
+        "description": "Response after successful upload."
       },
       "ErrorModel": {
         "properties": {
@@ -2674,6 +3917,111 @@
         ],
         "title": "Page[RiskRead]"
       },
+      "PendingReviewItem": {
+        "properties": {
+          "suggestion_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Suggestion Id",
+            "description": "Unique identifier for the suggestion"
+          },
+          "business_process_name": {
+            "type": "string",
+            "title": "Business Process Name",
+            "description": "AI-suggested business process name"
+          },
+          "risk_name": {
+            "type": "string",
+            "title": "Risk Name",
+            "description": "AI-suggested risk name"
+          },
+          "control_name": {
+            "type": "string",
+            "title": "Control Name",
+            "description": "AI-suggested control name"
+          },
+          "source_reference": {
+            "type": "string",
+            "title": "Source Reference",
+            "description": "Link to original document clause"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "description": "ISO 8601 timestamp when suggestion was created"
+          }
+        },
+        "type": "object",
+        "required": [
+          "suggestion_id",
+          "business_process_name",
+          "risk_name",
+          "control_name",
+          "source_reference",
+          "created_at"
+        ],
+        "title": "PendingReviewItem",
+        "description": "Single pending review item for BPO pending reviews list.\n\nDisplays key information about an AI suggestion awaiting BPO approval.",
+        "example": {
+          "business_process_name": "Customer Data Processing",
+          "control_name": "Multi-Factor Authentication",
+          "created_at": "2025-12-07T10:30:00Z",
+          "risk_name": "Unauthorized Access to PII",
+          "source_reference": "https://example.com/document#clause-3.1.2",
+          "suggestion_id": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      },
+      "PendingReviewsResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/PendingReviewItem"
+            },
+            "type": "array",
+            "title": "Items",
+            "description": "List of pending review items for current page"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "Total number of pending reviews for this BPO"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page",
+            "description": "Current page number (1-indexed)"
+          },
+          "size": {
+            "type": "integer",
+            "title": "Size",
+            "description": "Page size"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "total",
+          "page",
+          "size"
+        ],
+        "title": "PendingReviewsResponse",
+        "description": "Paginated response for BPO pending reviews list.",
+        "example": {
+          "items": [
+            {
+              "business_process_name": "Customer Data Processing",
+              "control_name": "Multi-Factor Authentication",
+              "created_at": "2025-12-07T10:30:00Z",
+              "risk_name": "Unauthorized Access to PII",
+              "source_reference": "https://example.com/document#clause-3.1.2",
+              "suggestion_id": 456
+            }
+          ],
+          "page": 1,
+          "size": 20,
+          "total": 5
+        }
+      },
       "RegulatoryFrameworkCreate": {
         "properties": {
           "name": {
@@ -2802,6 +4150,29 @@
           "name"
         ],
         "title": "RegulatoryFrameworkUpdate"
+      },
+      "RenameRequest": {
+        "properties": {
+          "new_filename": {
+            "type": "string",
+            "title": "New Filename"
+          }
+        },
+        "type": "object",
+        "required": [
+          "new_filename"
+        ],
+        "title": "RenameRequest"
+      },
+      "ResidualRisk": {
+        "type": "string",
+        "enum": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "title": "ResidualRisk",
+        "description": "Residual risk categorization levels for approved controls."
       },
       "RiskCreate": {
         "properties": {
@@ -2943,6 +4314,136 @@
           "name"
         ],
         "title": "RiskUpdate"
+      },
+      "SuggestionDetailResponse": {
+        "properties": {
+          "suggestion_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Suggestion Id",
+            "description": "Unique identifier for the suggestion"
+          },
+          "business_process_name": {
+            "type": "string",
+            "title": "Business Process Name",
+            "description": "AI-suggested business process name"
+          },
+          "risk_name": {
+            "type": "string",
+            "title": "Risk Name",
+            "description": "AI-suggested risk name"
+          },
+          "risk_description": {
+            "type": "string",
+            "title": "Risk Description",
+            "description": "AI-suggested risk description"
+          },
+          "control_name": {
+            "type": "string",
+            "title": "Control Name",
+            "description": "AI-suggested control name"
+          },
+          "control_description": {
+            "type": "string",
+            "title": "Control Description",
+            "description": "AI-suggested control description"
+          },
+          "rationale": {
+            "type": "string",
+            "title": "Rationale",
+            "description": "AI's reasoning for this suggestion"
+          },
+          "source_reference": {
+            "type": "string",
+            "title": "Source Reference",
+            "description": "Link to original document clause"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "description": "ISO 8601 timestamp when suggestion was created"
+          }
+        },
+        "type": "object",
+        "required": [
+          "suggestion_id",
+          "business_process_name",
+          "risk_name",
+          "risk_description",
+          "control_name",
+          "control_description",
+          "rationale",
+          "source_reference",
+          "created_at"
+        ],
+        "title": "SuggestionDetailResponse",
+        "description": "Detailed view of an AI suggestion for BPO assessment.\n\nIncludes full descriptions and rationale needed for decision making.",
+        "example": {
+          "business_process_name": "Customer Data Processing",
+          "control_description": "Implement MFA for all user accounts.",
+          "control_name": "Multi-Factor Authentication",
+          "created_at": "2025-12-07T10:30:00Z",
+          "rationale": "MFA is a standard control for protecting PII.",
+          "risk_description": "Risk of unauthorized access to PII due to weak auth.",
+          "risk_name": "Unauthorized Access to PII",
+          "source_reference": "https://example.com/document#clause-3.1.2",
+          "suggestion_id": "550e8400-e29b-41d4-a716-446655440000"
+        }
+      },
+      "SuggestionStatus": {
+        "type": "string",
+        "enum": [
+          "pending",
+          "pending_review",
+          "active",
+          "archived",
+          "rejected"
+        ],
+        "title": "SuggestionStatus"
+      },
+      "SuggestionType": {
+        "type": "string",
+        "enum": [
+          "risk",
+          "control"
+        ],
+        "title": "SuggestionType"
+      },
+      "UpdateSuggestionStatusRequest": {
+        "properties": {
+          "status": {
+            "$ref": "#/components/schemas/SuggestionStatus"
+          },
+          "updated_content": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated Content"
+          },
+          "bpo_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bpo Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status"
+        ],
+        "title": "UpdateSuggestionStatusRequest"
       },
       "UserCreate": {
         "properties": {
