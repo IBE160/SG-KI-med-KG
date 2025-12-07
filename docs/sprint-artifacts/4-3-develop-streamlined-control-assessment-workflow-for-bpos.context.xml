@@ -1,0 +1,392 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="4-3-develop-streamlined-control-assessment-workflow-for-bpos" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.3</storyId>
+    <title>Develop Streamlined Control Assessment Workflow for BPOs</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-07</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-3-develop-streamlined-control-assessment-workflow-for-bpos.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Business Process Owner (BPO)</asA>
+    <iWant>a dedicated interface to review and act on AI-promoted suggestions with approve, edit, or discard options</iWant>
+    <soThat>I can efficiently assess and add controls/risks to the register with proper residual risk categorization</soThat>
+    <tasks>
+      <task ac="4.5,4.6,4.7">Backend: Implement Assessment Data Model
+        <subtask>Create Pydantic schemas in backend/app/schemas/assessment.py (ResidualRisk enum, AssessmentAction enum, AssessmentRequest, AssessmentResponse)</subtask>
+        <subtask>Define request/response contracts for assessment endpoint</subtask>
+      </task>
+      <task ac="4.5,4.6,4.7,4.9">Backend: Implement Assessment Service
+        <subtask>Create backend/app/services/assessment_service.py</subtask>
+        <subtask>Implement approve_suggestion(db, suggestion_id, residual_risk, edits, actor_id) method</subtask>
+        <subtask>Implement discard_suggestion(db, suggestion_id, actor_id) method</subtask>
+        <subtask>Create active records (business_process, risk, control) with approved/edited data</subtask>
+        <subtask>Update suggestion status to "active" or "archived"</subtask>
+        <subtask>Integrate with AuditService to log all assessment actions</subtask>
+        <subtask>Ensure atomic transactions (rollback if audit logging fails)</subtask>
+      </task>
+      <task ac="4.4,4.5,4.6,4.7,4.8">Backend: Implement Assessment API Endpoints
+        <subtask>Create GET /api/v1/assessments/pending in backend/app/api/v1/endpoints/assessments.py</subtask>
+        <subtask>Return paginated list of suggestions with status "pending_review" filtered by assigned_bpo_id</subtask>
+        <subtask>Create POST /api/v1/assessments/{suggestion_id}/assess endpoint</subtask>
+        <subtask>Validate request payload (AssessmentRequest)</subtask>
+        <subtask>Extract user info from JWT, verify user is BPO</subtask>
+        <subtask>Verify suggestion.assigned_bpo_id matches user_id (return 403 if mismatch)</subtask>
+        <subtask>Call AssessmentService methods based on action (approve/discard)</subtask>
+        <subtask>Return AssessmentResponse with success/failure and audit_log_id</subtask>
+      </task>
+      <task ac="4.4">Frontend: Implement BPO Pending Reviews List Page
+        <subtask>Create frontend/app/(dashboard)/bpo/reviews/page.tsx</subtask>
+        <subtask>Fetch pending reviews via GET /api/v1/assessments/pending using React Query</subtask>
+        <subtask>Display paginated table with Business Process, Risk, Control columns</subtask>
+        <subtask>Implement pagination controls</subtask>
+        <subtask>Make each row clickable to navigate to detail screen</subtask>
+      </task>
+      <task ac="4.4,4.5,4.6,4.7">Frontend: Implement BPO Review Detail Page
+        <subtask>Create frontend/app/(dashboard)/bpo/reviews/[id]/page.tsx</subtask>
+        <subtask>Fetch suggestion details by ID</subtask>
+        <subtask>Display all AI-suggested data in form fields (initially read-only)</subtask>
+        <subtask>Display source_reference link to original document clause</subtask>
+        <subtask>Implement residual risk dropdown (low/medium/high)</subtask>
+        <subtask>Implement "Edit" button to enable inline editing</subtask>
+        <subtask>Implement "Approve" button (enabled only when residual risk selected)</subtask>
+        <subtask>Implement "Discard" button with confirmation modal</subtask>
+      </task>
+      <task ac="4.5,4.6">Frontend: Implement Approve Flow
+        <subtask>When "Approve" clicked, send POST /api/v1/assessments/{id}/assess with action: approve, residual_risk, and any edits</subtask>
+        <subtask>Display success toast with link to active item</subtask>
+        <subtask>Navigate back to pending reviews list</subtask>
+        <subtask>Remove approved item from list (optimistic update or refetch)</subtask>
+      </task>
+      <task ac="4.7">Frontend: Implement Discard Flow
+        <subtask>When "Discard" clicked, show confirmation modal</subtask>
+        <subtask>On confirm, send POST /api/v1/assessments/{id}/assess with action: discard</subtask>
+        <subtask>Display discard toast</subtask>
+        <subtask>Navigate back to pending reviews list</subtask>
+      </task>
+      <task ac="4.8">Backend: Implement Authorization Checks
+        <subtask>Verify JWT authentication for all assessment endpoints</subtask>
+        <subtask>Verify user has BPO role (return 403 if not)</subtask>
+        <subtask>Verify suggestion.assigned_bpo_id matches user_id (return 403 if mismatch)</subtask>
+        <subtask>Enforce tenant isolation via RLS</subtask>
+      </task>
+      <task ac="4.5,4.6,4.7,4.9">Testing: Unit Tests (Backend)
+        <subtask>Test AssessmentService.approve_suggestion() creates active records</subtask>
+        <subtask>Test AssessmentService.approve_suggestion() with edits</subtask>
+        <subtask>Test AssessmentService.discard_suggestion() updates status to "archived"</subtask>
+        <subtask>Test audit logging integration (all actions logged)</subtask>
+        <subtask>Test transaction rollback if audit logging fails</subtask>
+      </task>
+      <task ac="4.4,4.5,4.6,4.7,4.8">Testing: Integration Tests (Backend)
+        <subtask>Test GET /api/v1/assessments/pending returns correct suggestions for BPO</subtask>
+        <subtask>Test POST /api/v1/assessments/{id}/assess (approve) end-to-end</subtask>
+        <subtask>Test POST /api/v1/assessments/{id}/assess (discard) end-to-end</subtask>
+        <subtask>Test authorization: non-BPO user returns 403</subtask>
+        <subtask>Test authorization: BPO accessing another BPO's suggestion returns 403</subtask>
+        <subtask>Test tenant isolation</subtask>
+      </task>
+      <task ac="4.4,4.5,4.6,4.7">Testing: Unit Tests (Frontend)
+        <subtask>Test pending reviews list renders correctly</subtask>
+        <subtask>Test review detail page displays suggestion data</subtask>
+        <subtask>Test "Approve" button disabled until residual risk selected</subtask>
+        <subtask>Test discard confirmation modal appears</subtask>
+      </task>
+      <task ac="4.4,4.5,4.6,4.7">Testing: E2E Tests
+        <subtask>E2E-4.2: Login as BPO, navigate to pending reviews, approve a suggestion, verify active record created</subtask>
+        <subtask>E2E-4.3: Login as BPO, edit a suggestion, approve, verify active record has edited values</subtask>
+        <subtask>E2E-4.4: Login as BPO, discard a suggestion, verify status updated to "archived"</subtask>
+        <subtask>Test non-BPO user cannot access /dashboard/bpo/reviews (403 error)</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="AC-4.4">BPO Pending Reviews Interface
+      <criterion>BPO user can click "Pending Reviews" card and navigate to /dashboard/bpo/reviews</criterion>
+      <criterion>Pending reviews page displays paginated list of all suggestions with status "pending_review" assigned to the logged-in BPO</criterion>
+      <criterion>List prominently displays Business Process, Risk, and Control names for each suggestion</criterion>
+      <criterion>BPO can click on a suggestion to open detailed review screen</criterion>
+      <criterion>Detail screen displays all AI-suggested data (risk description, control description, business process, owner) in editable form fields</criterion>
+      <criterion>Detail screen displays persistent source_reference link to original document clause</criterion>
+      <criterion>Non-BPO users attempting to access /dashboard/bpo/reviews receive 403 Forbidden error</criterion>
+    </ac>
+    <ac id="AC-4.5">BPO Assessment - Approve Action
+      <criterion>BPO can select residual risk (low/medium/high) from dropdown on review detail screen</criterion>
+      <criterion>Residual risk selection is mandatory before "Approve" button is enabled</criterion>
+      <criterion>When BPO clicks "Approve", frontend sends POST /api/v1/assessments/{id}/assess with action: approve and residual_risk</criterion>
+      <criterion>Backend validates residual_risk is present; returns 400 Bad Request if missing</criterion>
+      <criterion>Backend creates active records in business_processes, risks, and controls tables with approved data</criterion>
+      <criterion>Backend updates suggestion status to "active"</criterion>
+      <criterion>Backend creates audit log entry with action="approve", user_id, suggestion_id, residual_risk, timestamp</criterion>
+      <criterion>Frontend displays success toast: "✅ Successfully added to register" with link to view active item</criterion>
+      <criterion>Suggestion is removed from pending reviews list</criterion>
+    </ac>
+    <ac id="AC-4.6">BPO Assessment - Edit Action
+      <criterion>BPO can click "Edit" button to enable inline editing of form fields</criterion>
+      <criterion>BPO can modify risk description, control description, and business process fields</criterion>
+      <criterion>Frontend tracks all edits in local state</criterion>
+      <criterion>When BPO approves after editing, frontend sends edited values in AssessmentRequest payload</criterion>
+      <criterion>Backend creates active records with edited values (not original AI-suggested values)</criterion>
+      <criterion>Audit log records both approval action AND field-level changes (original vs. edited values)</criterion>
+      <criterion>Change log is visible when viewing the active item</criterion>
+    </ac>
+    <ac id="AC-4.7">BPO Assessment - Discard Action
+      <criterion>BPO can click "Discard" button on review detail screen</criterion>
+      <criterion>Frontend displays confirmation modal: "Are you sure? This will archive the suggestion."</criterion>
+      <criterion>When BPO confirms, frontend sends POST /api/v1/assessments/{id}/assess with action: discard</criterion>
+      <criterion>Backend updates suggestion status to "archived"</criterion>
+      <criterion>Backend creates audit log entry with action="discard"</criterion>
+      <criterion>Frontend displays toast: "🗑️ Item discarded"</criterion>
+      <criterion>BPO returns to pending reviews list, discarded item removed</criterion>
+    </ac>
+    <ac id="AC-4.8">Authorization and Tenant Isolation
+      <criterion>All dashboard and assessment endpoints require valid JWT in Authorization header; return 401 if missing/invalid</criterion>
+      <criterion>BPO can only assess suggestions where assigned_bpo_id matches their user ID; return 403 otherwise</criterion>
+      <criterion>All database queries enforce Row-Level Security filtering by tenant_id</criterion>
+      <criterion>BPO from Tenant A cannot view or assess suggestions from Tenant B (404 returned)</criterion>
+    </ac>
+    <ac id="AC-4.9">Audit Trail Integration
+      <criterion>All BPO assessment actions (approve, edit, discard) create immutable audit log entry</criterion>
+      <criterion>Audit log includes: user_id, action, suggestion_id, timestamp, details (residual_risk, edits if any)</criterion>
+      <criterion>If audit logging fails, entire assessment transaction rolls back (data consistency)</criterion>
+    </ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Services and Modules">
+        AssessmentService specification: Location: backend/app/services/assessment_service.py. Responsibilities: Handles BPO assessment actions (approve/edit/discard), triggers audit logging. Inputs: suggestion_id, action (approve/edit/discard), residual_risk, edits. Outputs: Updated suggestion status, audit log entry.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Services and Modules">
+        BPOReviewInterface specification: Location: frontend/app/(dashboard)/bpo/reviews/page.tsx. Responsibilities: Dedicated page for BPO pending reviews list and detail view. Inputs: bpo_id, pending_suggestions. Outputs: Interactive review interface.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Data Models and Contracts">
+        AssessmentRequest schema (Python): class AssessmentRequest(BaseModel): suggestion_id: int, action: AssessmentAction, residual_risk: Optional[ResidualRisk], edited_risk_description: Optional[str], edited_control_description: Optional[str], edited_business_process: Optional[str]. ResidualRisk enum: low, medium, high. AssessmentAction enum: approve, edit, discard.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Data Models and Contracts">
+        AssessmentResponse schema (Python): class AssessmentResponse(BaseModel): success: bool, message: str, updated_status: str, audit_log_id: int.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="APIs and Interfaces">
+        GET /api/v1/assessments/pending - Returns paginated list of suggestions with status "pending_review" (200 OK). Auth: Required (BPO role). Query Params: ?page=1&amp;size=20. Error: 401 Unauthorized, 403 Forbidden (non-BPO users).
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="APIs and Interfaces">
+        POST /api/v1/assessments/{suggestion_id}/assess - Submit BPO assessment. Request Body: AssessmentRequest. Response: AssessmentResponse (200 OK). Errors: 400 Bad Request (missing residual_risk for approve), 404 Not Found (suggestion doesn't exist or not assigned to this BPO), 403 Forbidden (user not BPO or not assigned to this suggestion). Side Effects: Updates suggestion status, creates audit log entry, if approved creates active risk/control records.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Workflows and Sequencing">
+        Workflow 2 (Approve): BPO clicks "Pending Reviews" card → navigates to /dashboard/bpo/reviews → BPO selects a suggestion from list → detail view loads → BPO reviews AI-suggested data, source reference, and editable fields → BPO selects residual risk (low/medium/high) from dropdown → BPO clicks "Approve" → Frontend sends POST /api/v1/assessments/{id}/assess with action: approve, residual_risk: medium → Backend validates residual_risk present → Backend creates active risk/control/business_process records → Backend updates suggestion status to "active" → Backend creates audit log entry (who approved, when, residual risk value) → Backend returns success response with audit_log_id → Frontend displays toast: "✅ Successfully added to register" with link to view active item → Frontend returns BPO to pending reviews list (item removed).
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Workflows and Sequencing">
+        Workflow 3 (Edit then Approve): BPO opens suggestion detail view → BPO clicks "Edit" button → Form fields become editable inline → BPO modifies risk description, control description, or business process → Frontend tracks all edits in local state → BPO selects residual risk and clicks "Approve" → Frontend sends POST /api/v1/assessments/{id}/assess with action: approve, residual_risk: high, edited_risk_description: "Updated text..." → Backend creates active records with edited values → Backend logs both approval AND edits to audit trail (change log shows original vs. edited) → Frontend confirms success.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Workflows and Sequencing">
+        Workflow 4 (Discard): BPO opens suggestion detail view → BPO clicks "Discard" → Frontend shows confirmation modal: "Are you sure? This will archive the suggestion." → BPO confirms → Frontend sends POST /api/v1/assessments/{id}/assess with action: discard → Backend updates suggestion status to "archived" → Backend creates audit log entry (discard action) → Backend returns success → Frontend displays toast: "🗑️ Item discarded" → BPO returns to pending reviews list.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="NFR Security">
+        Authorization requirements: All assessment endpoints require valid JWT token in Authorization: Bearer &lt;token&gt; header. BPO assessment endpoints enforce BPO role check; return 403 if non-BPO attempts access. BPOs can only assess suggestions assigned to them (verified via assigned_bpo_id field). All database queries enforce Row-Level Security (RLS) on tenant_id. Input validation: All assessment request payloads validated via Pydantic schemas; reject malformed requests with 400 Bad Request.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="NFR Reliability">
+        Data Consistency: BPO assessment actions (approve/discard) are atomic transactions; if audit logging fails, the entire transaction rolls back. Idempotency: Assessment endpoint supports idempotent retries (duplicate approve requests return success without creating duplicate records).
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Dependencies and Integrations">
+        Audit Logging Service (Epic 3): AssessmentService.approve() calls AuditLogService.log_action(action="approve", user_id=..., suggestion_id=..., details={...}). Ensures all BPO assessment actions are permanently recorded.
+      </doc>
+      <doc path="docs/architecture.md" title="System Architecture" section="Service Layer Pattern">
+        Service layer pattern: Centralize business logic in service classes (e.g., AssessmentService) to keep endpoints thin and testable. Services handle database operations, business rules, and integration with other services (e.g., AuditService).
+      </doc>
+      <doc path="docs/architecture.md" title="System Architecture" section="State Management (Frontend)">
+        React Query manages server state (API calls, caching, mutations). Use useMutation for POST requests (approve, discard actions). Use optimistic updates or cache invalidation to reflect changes immediately.
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Journey 2: Control Assessment Journey (for BPOs)">
+        BPO workflow: Access Pending Reviews from dashboard → Initial Overview displays suggested Business Process, Risk, Control → Detailed Review View shows all AI-suggested information in editable form, source_reference link, Residual Risk Categorization dropdown (mandatory for approval) → Action Buttons: Approve, Edit, Discard → Edit enables inline editing with Change Log window → Approve: "✅ Successfully added to register" with link to active item, status changes to "Active" → Discard: "🗑️ Item disregarded", item moves to Temporary Archive.
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Novel UX Patterns - Stage 2: Business Process Owner (BPO) Final Approval">
+        Two-stage approval workflow: CO promotes suggestions to "Pending Review", BPO gives final approval. BPO Actions: Approve (formally accepts item, status→"Active"), Edit (modify before approving), Discard (reject and remove from workflow, logged for audit). Data Persistence: source_reference link saved when CO promotes, visible to BPO during approval, permanently attached to active record.
+      </doc>
+      <doc path="docs/sprint-artifacts/3-4-implement-audit-trail-table.md" title="Story 3.4 - Audit Trail" section="Dev Notes">
+        AuditService integration pattern: Use backend/app/services/audit_service.py - call log_action(db, actor_id, action, entity_type, entity_id, changes) method. JSON Diff for Edits: AuditService calculates JSON diff between old and new values for UPDATE actions. Atomic transactions: if log_action() fails, rollback assessment.
+      </doc>
+      <doc path="docs/sprint-artifacts/4-1-build-business-process-owner-dashboard.md" title="Story 4.1 - BPO Dashboard" section="Dev Notes">
+        Dashboard components: frontend/app/(dashboard)/page.tsx (main dashboard page with Action-Oriented Hub), ActionCard component for modular cards. "Pending Reviews" card for BPO role provides entry point to /dashboard/bpo/reviews.
+      </doc>
+    </docs>
+
+    <code>
+      <file path="backend/app/services/audit_service.py" kind="service" symbol="AuditService">
+        <lines>all</lines>
+        <reason>Existing AuditService implementation - use log_action() method for all assessment actions (approve, edit, discard). Follow atomic transaction pattern: if audit logging fails, rollback assessment.</reason>
+      </file>
+      <file path="backend/app/schemas/suggestion.py" kind="schema" symbol="AISuggestionBase,AISuggestionCreate,AISuggestionRead">
+        <lines>all</lines>
+        <reason>Existing suggestion schemas - understand structure of suggestion data (type, content, rationale, source_reference, status). AssessmentService will operate on these suggestion records.</reason>
+      </file>
+      <file path="backend/app/schemas/dashboard.py" kind="schema" symbol="DashboardCard,DashboardMetrics">
+        <lines>all</lines>
+        <reason>Existing Pydantic schema pattern - follow same structure for AssessmentRequest/Response schemas (Field descriptions, Config with json_schema_extra examples).</reason>
+      </file>
+      <file path="frontend/app/(dashboard)/page.tsx" kind="page" symbol="DashboardPage">
+        <lines>all</lines>
+        <reason>Dashboard page created in Story 4.1 - "Pending Reviews" card for BPO role links to /dashboard/bpo/reviews route (to be created in this story).</reason>
+      </file>
+      <file path="frontend/hooks/useRealtimeSubscription.ts" kind="hook" symbol="useRealtimeSubscription">
+        <lines>all</lines>
+        <reason>Realtime subscription hook from Story 4.2 - assessment actions (approve, discard) will trigger Realtime updates when they modify database records, invalidating dashboard cache.</reason>
+      </file>
+      <file path="frontend/components/ui/button.tsx" kind="component" symbol="Button">
+        <lines>all</lines>
+        <reason>Shadcn/UI Button component to use for "Approve", "Edit", "Discard" action buttons on review detail page.</reason>
+      </file>
+      <file path="frontend/components/ui/dialog.tsx" kind="component" symbol="Dialog">
+        <lines>all</lines>
+        <reason>Shadcn/UI Dialog (modal) component to use for discard confirmation: "Are you sure? This will archive the suggestion."</reason>
+      </file>
+      <file path="frontend/components/ui/toast.tsx" kind="component" symbol="Toast,useToast">
+        <lines>all</lines>
+        <reason>Shadcn/UI Toast component to use for success/error feedback: "✅ Successfully added to register", "🗑️ Item discarded".</reason>
+      </file>
+      <file path="frontend/components/ui/select.tsx" kind="component" symbol="Select">
+        <lines>all</lines>
+        <reason>Shadcn/UI Select (dropdown) component to use for residual risk selection (low/medium/high).</reason>
+      </file>
+      <file path="frontend/components/ui/table.tsx" kind="component" symbol="Table">
+        <lines>all</lines>
+        <reason>Shadcn/UI Table component to use for pending reviews list page displaying Business Process, Risk, Control columns.</reason>
+      </file>
+    </code>
+
+    <dependencies>
+      <python>
+        <package name="fastapi" version="^0.115.0">FastAPI framework for assessment API endpoints</package>
+        <package name="pydantic" version="^2.5.2">Pydantic for AssessmentRequest/Response schema validation</package>
+        <package name="sqlalchemy" version="^2.0.0">SQLAlchemy ORM for database operations (create active records, update suggestion status)</package>
+        <package name="asyncpg" version="latest">PostgreSQL async driver for database access</package>
+      </python>
+      <javascript>
+        <package name="@tanstack/react-query" version="^5.90.12">Server state management - useMutation for approve/discard actions, cache invalidation</package>
+        <package name="react-hook-form" version="latest">Form state management for review detail page with inline editing</package>
+        <package name="next" version="15.5.0">Next.js framework for BPO review pages</package>
+        <package name="react" version="19.1.1">React for UI components</package>
+        <package name="@radix-ui/react-dialog" version="latest">Dialog primitive for confirmation modal</package>
+        <package name="@radix-ui/react-select" version="latest">Select primitive for residual risk dropdown</package>
+        <package name="@radix-ui/react-toast" version="latest">Toast primitive for success/error feedback</package>
+      </javascript>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Service Layer Pattern: Centralize assessment logic in AssessmentService to keep endpoints thin and testable (following AuditService pattern from Story 3.4)</constraint>
+    <constraint>Audit Integration: Use AuditService.log_action() from Story 3.4 for all assessment actions (approve, edit, discard)</constraint>
+    <constraint>Atomic Transactions: Use database transactions to ensure consistency - if audit logging fails, rollback entire assessment action</constraint>
+    <constraint>Authorization Strategy: Multi-layer checks - JWT validation, BPO role check, assigned_bpo_id match, tenant isolation via RLS</constraint>
+    <constraint>Optimistic Locking: Validate suggestion status is still "pending_review" before processing to prevent race conditions</constraint>
+    <constraint>Form State Management: Use React Hook Form for review detail form with inline editing toggle</constraint>
+    <constraint>Residual Risk Mandatory: "Approve" button disabled until residual risk selected (frontend validation). Backend validates residual_risk present for approve action, returns 400 Bad Request if missing.</constraint>
+    <constraint>Source Reference Persistence: source_reference link from AI suggestion must be preserved and displayed to BPO, attached to active record permanently</constraint>
+    <constraint>Frontend Structure: Follow Next.js App Router structure - frontend/app/(dashboard)/bpo/reviews/ for BPO-specific routes</constraint>
+    <constraint>Backend Structure: Follow standard structure - backend/app/services/, backend/app/schemas/, backend/app/api/v1/endpoints/</constraint>
+    <constraint>Pydantic Schema Pattern: Follow existing pattern from dashboard.py (Field descriptions, Config with json_schema_extra examples)</constraint>
+    <constraint>Testing Coverage Target: 80% code coverage for new services and components</constraint>
+    <constraint>Tenant Isolation: All database queries enforce RLS filtering by tenant_id to prevent cross-tenant data access</constraint>
+    <constraint>Idempotency: Assessment endpoint supports idempotent retries - duplicate approve requests return success without creating duplicate records</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="AssessmentRequest" kind="Pydantic schema">
+      <signature>class AssessmentRequest(BaseModel): suggestion_id: int, action: AssessmentAction, residual_risk: Optional[ResidualRisk] = Field(None, description="Required for 'approve' action"), edited_risk_description: Optional[str] = None, edited_control_description: Optional[str] = None, edited_business_process: Optional[str] = None</signature>
+      <path>backend/app/schemas/assessment.py (new file to create)</path>
+      <description>Request payload for BPO assessment action. AssessmentAction enum: approve, edit, discard. ResidualRisk enum: low, medium, high.</description>
+    </interface>
+    <interface name="AssessmentResponse" kind="Pydantic schema">
+      <signature>class AssessmentResponse(BaseModel): success: bool, message: str, updated_status: str, audit_log_id: int</signature>
+      <path>backend/app/schemas/assessment.py (new file to create)</path>
+      <description>Response after assessment action indicating success, updated suggestion status, and audit log reference.</description>
+    </interface>
+    <interface name="AssessmentService.approve_suggestion" kind="Service method">
+      <signature>async def approve_suggestion(db: AsyncSession, suggestion_id: int, residual_risk: ResidualRisk, edits: Optional[Dict[str, str]], actor_id: UUID) -&gt; AssessmentResponse</signature>
+      <path>backend/app/services/assessment_service.py (new file to create)</path>
+      <description>Approves suggestion: validates residual_risk present, creates active records (business_process, risk, control) with approved/edited data, updates suggestion status to "active", logs action to audit trail. Returns AssessmentResponse. Uses atomic transaction - rollback if audit logging fails.</description>
+    </interface>
+    <interface name="AssessmentService.discard_suggestion" kind="Service method">
+      <signature>async def discard_suggestion(db: AsyncSession, suggestion_id: int, actor_id: UUID) -&gt; AssessmentResponse</signature>
+      <path>backend/app/services/assessment_service.py (new file to create)</path>
+      <description>Discards suggestion: updates suggestion status to "archived", logs action to audit trail. Returns AssessmentResponse. Uses atomic transaction - rollback if audit logging fails.</description>
+    </interface>
+    <interface name="GET /api/v1/assessments/pending" kind="API endpoint">
+      <signature>GET /api/v1/assessments/pending?page=1&amp;size=20</signature>
+      <path>backend/app/api/v1/endpoints/assessments.py (new file to create)</path>
+      <description>Returns paginated list of suggestions with status "pending_review" filtered by logged-in BPO's assigned_bpo_id. Auth: Required (BPO role). Response: 200 OK with list of suggestions. Errors: 401 Unauthorized, 403 Forbidden (non-BPO users).</description>
+    </interface>
+    <interface name="POST /api/v1/assessments/{suggestion_id}/assess" kind="API endpoint">
+      <signature>POST /api/v1/assessments/{suggestion_id}/assess</signature>
+      <path>backend/app/api/v1/endpoints/assessments.py (new file to create)</path>
+      <description>Submit BPO assessment. Request Body: AssessmentRequest. Validates JWT, verifies BPO role, verifies assigned_bpo_id matches user_id, calls AssessmentService based on action. Response: 200 OK with AssessmentResponse. Errors: 400 Bad Request (missing residual_risk for approve), 403 Forbidden (not BPO or not assigned to suggestion), 404 Not Found (suggestion doesn't exist or wrong tenant).</description>
+    </interface>
+    <interface name="BPOPendingReviewsPage" kind="React component">
+      <signature>&lt;BPOPendingReviewsPage /&gt;</signature>
+      <path>frontend/app/(dashboard)/bpo/reviews/page.tsx (new file to create)</path>
+      <description>Pending reviews list page for BPO. Fetches pending reviews via GET /api/v1/assessments/pending using React Query. Displays paginated table with Business Process, Risk, Control columns. Each row clickable to navigate to /dashboard/bpo/reviews/[id] detail screen.</description>
+    </interface>
+    <interface name="BPOReviewDetailPage" kind="React component">
+      <signature>&lt;BPOReviewDetailPage params={{ id: string }} /&gt;</signature>
+      <path>frontend/app/(dashboard)/bpo/reviews/[id]/page.tsx (new file to create)</path>
+      <description>Review detail page for BPO. Fetches suggestion by ID. Displays all AI-suggested data in editable form fields (using React Hook Form), source_reference link, residual risk dropdown (low/medium/high), action buttons: "Approve" (enabled only when residual risk selected), "Edit" (toggles inline editing), "Discard" (shows confirmation modal). Handles approve/discard mutations via React Query.</description>
+    </interface>
+    <interface name="AuditService.log_action" kind="Service method (existing)">
+      <signature>async def log_action(db: AsyncSession, actor_id: UUID, action: str, entity_type: str, entity_id: UUID, changes: Optional[Dict[str, Any]] = None) -&gt; AuditLog</signature>
+      <path>backend/app/services/audit_service.py (existing from Story 3.4)</path>
+      <description>Logs action to audit_logs table. AssessmentService calls this for approve, edit, discard actions. For edit actions, use changes parameter to store JSON diff (original vs. edited values).</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Backend Unit Tests: Follow pattern from backend/tests/services/test_audit_service.py (Story 3.4). Test services with mocked database sessions. Backend Integration Tests: Test with real database, verify tenant isolation, authorization checks, and audit logging. Use pytest fixtures for database setup. Frontend Unit Tests: Test components with React Testing Library, mock API calls with Mock Service Worker (MSW). Test form validation, button states, conditional rendering. E2E Tests: Use Playwright for end-to-end BPO assessment workflow. Test full user journey: login as BPO → navigate to pending reviews → approve/edit/discard suggestion → verify database changes. Coverage Target: 80% code coverage for new services and components.
+    </standards>
+    <locations>
+      backend/tests/services/ (unit tests for AssessmentService)
+      backend/tests/api/v1/ (integration tests for assessment endpoints)
+      frontend/__tests__/app/(dashboard)/bpo/reviews/ (unit tests for BPO review pages)
+      frontend/e2e/ or tests/e2e/ (E2E tests with Playwright)
+    </locations>
+    <ideas>
+      <idea ac="AC-4.4">Unit test (Backend): GET /api/v1/assessments/pending returns only suggestions with status="pending_review" and assigned_bpo_id matching logged-in BPO</idea>
+      <idea ac="AC-4.4">Unit test (Backend): GET /api/v1/assessments/pending with pagination params (page=2, size=10) returns correct page of results</idea>
+      <idea ac="AC-4.4">Unit test (Backend): GET /api/v1/assessments/pending returns 403 when non-BPO user attempts access</idea>
+      <idea ac="AC-4.4">Unit test (Frontend): BPOPendingReviewsPage renders table with Business Process, Risk, Control columns</idea>
+      <idea ac="AC-4.4">Unit test (Frontend): Clicking a row in pending reviews list navigates to /dashboard/bpo/reviews/[id]</idea>
+      <idea ac="AC-4.4">Unit test (Frontend): Non-BPO user attempting to access /dashboard/bpo/reviews receives 403 error</idea>
+      <idea ac="AC-4.5">Unit test (Backend): AssessmentService.approve_suggestion() creates active records in business_processes, risks, controls tables</idea>
+      <idea ac="AC-4.5">Unit test (Backend): AssessmentService.approve_suggestion() updates suggestion status to "active"</idea>
+      <idea ac="AC-4.5">Unit test (Backend): AssessmentService.approve_suggestion() calls AuditService.log_action() with action="approve"</idea>
+      <idea ac="AC-4.5">Unit test (Backend): AssessmentService.approve_suggestion() returns 400 if residual_risk missing</idea>
+      <idea ac="AC-4.5">Unit test (Backend): POST /api/v1/assessments/{id}/assess (approve) returns AssessmentResponse with audit_log_id</idea>
+      <idea ac="AC-4.5">Unit test (Frontend): BPOReviewDetailPage "Approve" button disabled until residual risk selected</idea>
+      <idea ac="AC-4.5">Unit test (Frontend): BPOReviewDetailPage displays success toast "✅ Successfully added to register" on approve</idea>
+      <idea ac="AC-4.5">Unit test (Frontend): Approved suggestion removed from pending reviews list (optimistic update or refetch)</idea>
+      <idea ac="AC-4.6">Unit test (Backend): AssessmentService.approve_suggestion() with edits creates active records with edited values (not original)</idea>
+      <idea ac="AC-4.6">Unit test (Backend): AssessmentService.approve_suggestion() with edits logs JSON diff to audit trail (original vs. edited)</idea>
+      <idea ac="AC-4.6">Unit test (Frontend): BPOReviewDetailPage "Edit" button enables inline editing of form fields</idea>
+      <idea ac="AC-4.6">Unit test (Frontend): Frontend tracks all edits in local state (React Hook Form)</idea>
+      <idea ac="AC-4.6">Unit test (Frontend): Approving after editing sends edited values in AssessmentRequest payload</idea>
+      <idea ac="AC-4.7">Unit test (Backend): AssessmentService.discard_suggestion() updates suggestion status to "archived"</idea>
+      <idea ac="AC-4.7">Unit test (Backend): AssessmentService.discard_suggestion() calls AuditService.log_action() with action="discard"</idea>
+      <idea ac="AC-4.7">Unit test (Frontend): BPOReviewDetailPage "Discard" button shows confirmation modal</idea>
+      <idea ac="AC-4.7">Unit test (Frontend): Confirming discard sends POST /api/v1/assessments/{id}/assess with action=discard</idea>
+      <idea ac="AC-4.7">Unit test (Frontend): BPOReviewDetailPage displays toast "🗑️ Item discarded" on discard</idea>
+      <idea ac="AC-4.8">Integration test (Backend): POST /api/v1/assessments/{id}/assess returns 401 if JWT missing/invalid</idea>
+      <idea ac="AC-4.8">Integration test (Backend): POST /api/v1/assessments/{id}/assess returns 403 if user not BPO role</idea>
+      <idea ac="AC-4.8">Integration test (Backend): POST /api/v1/assessments/{id}/assess returns 403 if assigned_bpo_id doesn't match user_id</idea>
+      <idea ac="AC-4.8">Integration test (Backend): BPO from Tenant A cannot access suggestions from Tenant B (RLS enforced, 404 returned)</idea>
+      <idea ac="AC-4.9">Unit test (Backend): AssessmentService.approve_suggestion() rollback transaction if AuditService.log_action() fails</idea>
+      <idea ac="AC-4.9">Unit test (Backend): AssessmentService.discard_suggestion() rollback transaction if AuditService.log_action() fails</idea>
+      <idea ac="AC-4.9">Integration test (Backend): Audit log includes all required fields: user_id, action, suggestion_id, timestamp, details (residual_risk, edits)</idea>
+      <idea ac="AC-4.4,4.5,4.6,4.7">E2E test (E2E-4.2): Login as BPO, navigate to pending reviews, approve a suggestion, verify active record created in database, audit log entry exists</idea>
+      <idea ac="AC-4.4,4.5,4.6,4.7">E2E test (E2E-4.3): Login as BPO, edit a suggestion (modify description), approve, verify active record has edited values, change log shows original vs. edited</idea>
+      <idea ac="AC-4.4,4.5,4.6,4.7">E2E test (E2E-4.4): Login as BPO, discard a suggestion, verify status updated to "archived" in database, audit log entry exists</idea>
+      <idea ac="AC-4.4">E2E test: Login as non-BPO user, attempt to access /dashboard/bpo/reviews, verify 403 error displayed</idea>
+      <idea ac="AC-4.8">E2E test: Login as BPO from Tenant A, attempt to access suggestion from Tenant B, verify 404 error (tenant isolation)</idea>
+    </ideas>
+  </tests>
+</story-context>

@@ -13,19 +13,23 @@ class SuggestionType(str, enum.Enum):
 
 class SuggestionStatus(str, enum.Enum):
     pending = "pending"
-    awaiting_bpo_approval = "awaiting_bpo_approval"
-    rejected = "rejected"
+    pending_review = "pending_review"  # CO promoted, awaiting BPO approval
+    active = "active"  # BPO approved
+    archived = "archived"  # BPO discarded
+    rejected = "rejected"  # CO rejected
 
 class AISuggestion(Base):
     __tablename__ = "ai_suggestions"
 
     id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+    tenant_id = Column(UUID(as_uuid=True), nullable=False)  # Multi-tenancy
     document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id"), nullable=False)
     type = Column(SQLAlchemyEnum(SuggestionType), nullable=False)
     content = Column(JSON, nullable=False)
     rationale = Column(Text, nullable=False)
     source_reference = Column(Text, nullable=False)
     status = Column(SQLAlchemyEnum(SuggestionStatus), default=SuggestionStatus.pending, nullable=False)
+    assigned_bpo_id = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=True)  # BPO assigned to review
     
     # Timestamps are handled by Base model if configured, but Base usually only has id/uuid.
     # Adding created_at manually if Base doesn't provide it or if it is not a TimestampMixin

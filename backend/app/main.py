@@ -7,6 +7,7 @@ from app.api.v1.endpoints.documents import router as documents_router
 from app.api.v1.endpoints.suggestions import router as suggestions_router
 from app.api.v1.endpoints.audit_logs import router as audit_logs_router
 from app.api.v1.endpoints.dashboard import router as dashboard_router
+from app.api.v1.endpoints.assessments import router as assessments_router
 from app.config import settings
 from app.routes.compliance import router as compliance_router
 from app.routes.items import router as items_router
@@ -64,5 +65,6 @@ app.include_router(documents_router, prefix="/api/v1/documents", tags=["document
 app.include_router(suggestions_router, prefix="/api/v1/suggestions", tags=["suggestions"])
 app.include_router(audit_logs_router, prefix="/api/v1/audit-logs", tags=["audit-logs"])
 app.include_router(dashboard_router, prefix="/api/v1/dashboard", tags=["dashboard"])
+app.include_router(assessments_router, prefix="/api/v1/assessments", tags=["assessments"])
 
 add_pagination(app)
