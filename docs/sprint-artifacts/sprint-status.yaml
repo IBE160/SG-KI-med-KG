@@ -57,7 +57,7 @@ development_status:
 
   epic-4: contexted
   4-1-develop-role-specific-dashboards: review
-  4-2-implement-real-time-status-updates: ready-for-dev
+  4-2-implement-real-time-status-updates: review
   4-3-develop-streamlined-control-assessment-workflow-for-bpos: drafted
   epic-4-retrospective: optional
 
