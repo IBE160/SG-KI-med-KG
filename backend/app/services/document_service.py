@@ -6,6 +6,7 @@ import uuid
 from typing import List
 from datetime import datetime
 import re
+import os
 
 from app.models.document import Document, DocumentStatus
 from app.schemas import DocumentCreate, DocumentRead
@@ -238,7 +239,6 @@ class DocumentService:
         sanitized_filename = DocumentService.sanitize_filename(new_filename.strip())
 
         # Ensure file extension is preserved
-        import os
         old_ext = os.path.splitext(document.filename)[1]
         new_ext = os.path.splitext(sanitized_filename)[1]
 

@@ -1,11 +1,15 @@
 {
   "permissions": {
     "allow": [
-      "Bash(wc:*)",
-      "Bash(cat:*)",
-      "Bash(git restore:*)",
-      "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(wmic process where \"name like ''%python%''\" get commandline)",
+      "Bash(dir:*)",
+      "Bash(.venv/Scripts/python:*)",
+      "Bash(.venv/Scripts/alembic history)",
+      "Bash(.venv/Scripts/alembic revision -m \"add ai_suggestions table\")",
+      "Bash(.venv/Scripts/alembic:*)",
+      "Bash(git push)"
     ],
     "deny": [],
     "ask": []
