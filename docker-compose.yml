@@ -1,3 +1,29 @@
+# ============================================================================
+# DOCKER SETUP - OPTIONAL FOR LOCAL POSTGRESQL TESTING
+# ============================================================================
+# This Docker configuration is OPTIONAL and primarily used for local database testing.
+#
+# CURRENT SETUP:
+# - The application uses cloud-hosted Supabase for:
+#   * PostgreSQL database
+#   * Storage (regulatory-docs bucket)
+#   * Authentication & authorization
+#   * Real-time subscriptions
+#
+# WHEN TO USE DOCKER:
+# - Local PostgreSQL testing (alternative to Supabase PostgreSQL)
+# - Email testing with MailHog
+# - Isolated development environments
+#
+# DECISION CONTEXT:
+# - Docker infrastructure deferred until commercialization phase
+# - See docs/decision-docker-deferred.md for full rationale
+#
+# TO RUN WITH DOCKER:
+# - Update DATABASE_URL in .env to point to Docker PostgreSQL
+# - Run: docker compose up
+# ============================================================================
+
 services:
   backend:
     build:

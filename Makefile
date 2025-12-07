@@ -1,4 +1,9 @@
 # Makefile
+# ============================================================================
+# NOTE: Docker commands are OPTIONAL for local PostgreSQL testing.
+# The application primarily uses cloud-hosted Supabase.
+# See docs/decision-docker-deferred.md for details.
+# ============================================================================
 
 # Variables
 BACKEND_DIR=backend
