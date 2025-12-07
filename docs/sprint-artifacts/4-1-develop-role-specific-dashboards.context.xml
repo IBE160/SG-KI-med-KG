@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="4-1-develop-role-specific-dashboards" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.1</storyId>
+    <title>Develop Role-Specific Dashboards</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-07</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-1-develop-role-specific-dashboards.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>an "Action-Oriented Hub" dashboard tailored to my role upon login</iWant>
+    <soThat>I immediately see the most critical information and actions, and can easily initiate core workflows</soThat>
+    <tasks>
+      <task ac="4.1, 4.2">Backend: Implement Dashboard Data Model
+        <subtask>Create Pydantic schemas in backend/app/schemas/dashboard.py (DashboardCard, DashboardMetrics)</subtask>
+        <subtask>Define role-specific card configurations (which cards each role sees)</subtask>
+      </task>
+      <task ac="4.1, 4.2">Backend: Implement Dashboard Service
+        <subtask>Create backend/app/services/dashboard_service.py</subtask>
+        <subtask>Implement get_metrics(db, user_id, tenant_id, role) method</subtask>
+        <subtask>Aggregate metrics for each role: count pending reviews (BPO), high-priority risks (Executive), etc.</subtask>
+        <subtask>Add database indexes on tenant_id, status, assigned_bpo_id for query performance</subtask>
+      </task>
+      <task ac="4.1, 4.2">Backend: Implement Dashboard API Endpoint
+        <subtask>Create GET /api/v1/dashboard/metrics in backend/app/api/v1/endpoints/dashboard.py</subtask>
+        <subtask>Extract user info (user_id, tenant_id, role) from JWT token</subtask>
+        <subtask>Call DashboardService.get_metrics() and return DashboardMetrics response</subtask>
+        <subtask>Enforce authentication (JWT required, return 401 if missing)</subtask>
+        <subtask>Optimize for <500ms response time (query optimization, caching)</subtask>
+      </task>
+      <task ac="4.1">Frontend: Implement Dashboard Layout
+        <subtask>Create frontend/app/(dashboard)/layout.tsx with collapsible sidebar, header, theme toggle</subtask>
+        <subtask>Implement role-based navigation items in sidebar</subtask>
+        <subtask>Use Shadcn/UI components for consistent styling</subtask>
+      </task>
+      <task ac="4.1, 4.2">Frontend: Implement Dashboard Page
+        <subtask>Create frontend/app/(dashboard)/page.tsx for main dashboard view</subtask>
+        <subtask>Fetch dashboard metrics via GET /api/v1/dashboard/metrics using React Query</subtask>
+        <subtask>Implement skeleton loading states for cards while data loads</subtask>
+        <subtask>Render role-specific cards in grid layout (responsive, mobile stacks to single column)</subtask>
+      </task>
+      <task ac="4.1, 4.2">Frontend: Implement ActionCard Component
+        <subtask>Create frontend/components/custom/ActionCard.tsx reusable card component</subtask>
+        <subtask>Props: title, metric, metric_label, icon, action_link, status</subtask>
+        <subtask>Display metric prominently with label and icon</subtask>
+        <subtask>Render CTA button linking to action_link</subtask>
+        <subtask>Support skeleton loading state variant</subtask>
+      </task>
+      <task ac="4.1">Frontend: Implement Role-Based Conditional Rendering
+        <subtask>Use user role from Zustand store to conditionally render dashboard cards</subtask>
+        <subtask>Admin: "System Health", "User Management", "Analyze New Document" cards</subtask>
+        <subtask>BPO: "Pending Reviews", "My Controls", "Overdue Assessments" cards</subtask>
+        <subtask>Executive: "Risk Overview", "Compliance Status", "Recent Activity" cards</subtask>
+        <subtask>General User: Read-only informational cards</subtask>
+      </task>
+      <task ac="4.1, 4.2">Testing: Unit Tests (Backend)
+        <subtask>Test DashboardService.get_metrics() for each role (Admin, BPO, Executive, General)</subtask>
+        <subtask>Verify role-based filtering and metric calculation accuracy</subtask>
+        <subtask>Test tenant isolation (user from Tenant A cannot see Tenant B metrics)</subtask>
+      </task>
+      <task ac="4.1, 4.2">Testing: Integration Tests (Backend)
+        <subtask>Test GET /api/v1/dashboard/metrics with real database</subtask>
+        <subtask>Verify correct metrics returned for each role</subtask>
+        <subtask>Test authentication (401 when JWT missing, 403 when invalid)</subtask>
+        <subtask>Measure response time (should be <500ms)</subtask>
+      </task>
+      <task ac="4.1, 4.2">Testing: Unit Tests (Frontend)
+        <subtask>Test ActionCard component rendering with different props</subtask>
+        <subtask>Test dashboard layout role-based conditional rendering</subtask>
+        <subtask>Test skeleton loading states</subtask>
+      </task>
+      <task ac="4.1, 4.2">Testing: E2E Tests
+        <subtask>E2E-4.1: Login as Admin, verify admin dashboard cards displayed</subtask>
+        <subtask>Login as BPO, verify BPO dashboard cards displayed</subtask>
+        <subtask>Login as Executive, verify executive dashboard cards displayed</subtask>
+        <subtask>Verify dashboard LCP < 2.5s (Lighthouse audit)</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="AC-4.1">Role-Specific Dashboard Layout
+      <criterion>When an authenticated user navigates to /dashboard, the dashboard renders with content customized to their role (Admin, BPO, Executive, General User)</criterion>
+      <criterion>Admin dashboard displays admin-specific cards (e.g., "System Health", "User Management", "Analyze New Document")</criterion>
+      <criterion>BPO dashboard displays BPO-specific cards (e.g., "Pending Reviews", "My Controls", "Overdue Assessments")</criterion>
+      <criterion>Executive dashboard displays executive-specific cards (e.g., "Risk Overview", "Compliance Status", "Recent Activity")</criterion>
+      <criterion>General User dashboard displays read-only informational cards appropriate to their limited permissions</criterion>
+      <criterion>All dashboards use the modular card layout defined in UX specification with grid responsiveness</criterion>
+    </ac>
+    <ac id="AC-4.2">Dashboard Performance
+      <criterion>Dashboard page achieves Largest Contentful Paint (LCP) < 2.5 seconds on standard broadband</criterion>
+      <criterion>Dashboard cards render immediately with skeleton loading states while data loads asynchronously</criterion>
+      <criterion>GET /api/v1/dashboard/metrics endpoint responds within 500ms under normal load</criterion>
+      <criterion>Dashboard supports at least 50 concurrent users per tenant without performance degradation</criterion>
+    </ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Services and Modules">
+        DashboardService specification: Aggregates role-specific metrics and data feeds for dashboard cards. Inputs: user_id, tenant_id, role. Outputs: JSON payload with metrics (pending reviews count, high-priority risks, etc.).
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Data Models and Contracts">
+        Pydantic schemas for DashboardCard (card_id, title, metric, metric_label, icon, action_link, status) and DashboardMetrics (user_role, cards: List[DashboardCard]).
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="APIs and Interfaces">
+        Dashboard Data Endpoint: GET /api/v1/dashboard/metrics, returns DashboardMetrics (200 OK), requires JWT auth, user derived from JWT.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="NFR Performance">
+        Performance requirements: Dashboard LCP < 2.5s, API response time < 500ms, React Query cache TTL 30 seconds, skeleton loading states, database indexes on tenant_id/status/assigned_bpo_id.
+      </doc>
+      <doc path="docs/architecture.md" title="System Architecture" section="State Management (Frontend)">
+        React Query manages server state (API calls, caching, mutations). Zustand stores minimal global state (user profile with role, theme preference).
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Design Direction">
+        Action-Oriented Hub design: modular card-based dashboard with primary metric, icon, and "View" CTA. Clarity Green (light) and Focused Slate (dark) themes.
+      </doc>
+      <doc path="docs/ux-design-specification.md" title="UX Design Specification" section="Custom Component Focus: Dashboard Action Cards">
+        Dashboard Action Cards anatomy: Card container (Shadcn/UI Card), Icon (Lucide), Metric (large font), Label (muted text), CTA Button (Shadcn/UI Button variant "outline" or "default").
+      </doc>
+      <doc path="docs/epics.md" title="Epics Breakdown" section="Epic 4, Story 4.1">
+        Story 4.1: Develop Role-Specific Dashboards. User wants Action-Oriented Hub dashboard tailored to role upon login to immediately see critical information and initiate core workflows.
+      </doc>
+    </docs>
+
+    <code>
+      <file path="backend/app/services/audit_service.py" kind="service" symbol="AuditService">
+        <lines>all</lines>
+        <reason>Example of service layer pattern to follow for DashboardService: centralized business logic, thin endpoints, log_action method pattern</reason>
+      </file>
+      <file path="backend/app/schemas/audit_log.py" kind="schema" symbol="AuditLogRead">
+        <lines>all</lines>
+        <reason>Example of Pydantic schemas pattern to follow for dashboard.py: BaseModel with field definitions, read-only response schemas</reason>
+      </file>
+      <file path="backend/app/api/v1/endpoints/audit_logs.py" kind="endpoint" symbol="get_audit_logs">
+        <lines>all</lines>
+        <reason>Example of API endpoint pattern: extract user from JWT, call service method, return Pydantic schema, enforce authentication</reason>
+      </file>
+      <file path="frontend/app/dashboard/layout.tsx" kind="layout" symbol="DashboardLayout">
+        <lines>all</lines>
+        <reason>Existing dashboard layout (Epic 1) - may need modification or replacement for Epic 4's role-specific layout with sidebar and header</reason>
+      </file>
+      <file path="frontend/app/dashboard/page.tsx" kind="page" symbol="DashboardPage">
+        <lines>all</lines>
+        <reason>Existing dashboard page (Epic 1) - needs replacement with new role-specific Action-Oriented Hub dashboard</reason>
+      </file>
+      <file path="frontend/components/ui/card.tsx" kind="component" symbol="Card">
+        <lines>all</lines>
+        <reason>Shadcn/UI Card component to use as base for ActionCard custom component</reason>
+      </file>
+      <file path="frontend/components/ui/button.tsx" kind="component" symbol="Button">
+        <lines>all</lines>
+        <reason>Shadcn/UI Button component for CTA buttons in ActionCard</reason>
+      </file>
+      <file path="frontend/components/ReactQueryProvider.tsx" kind="provider" symbol="ReactQueryProvider">
+        <lines>all</lines>
+        <reason>React Query provider setup - understand caching and query configuration</reason>
+      </file>
+    </code>
+
+    <dependencies>
+      <python>
+        <package name="fastapi" version=">=0.115.0,<0.116">Backend API framework</package>
+        <package name="pydantic-settings" version=">=2.5.2,<3">Request/response validation, schemas</package>
+        <package name="fastapi-users[sqlalchemy]" version=">=13.0.0,<14">User auth, JWT extraction</package>
+        <package name="asyncpg" version=">=0.29.0,<0.30">PostgreSQL async driver</package>
+        <package name="supabase" version=">=2.16.0">Supabase client (for future Realtime in Story 4.2)</package>
+      </python>
+      <javascript>
+        <package name="next" version="15.5.0">Next.js framework</package>
+        <package name="@tanstack/react-query" version="^5.90.12">Server state management for dashboard metrics API</package>
+        <package name="@supabase/supabase-js" version="^2.86.2">Supabase client (for future Realtime in Story 4.2)</package>
+        <package name="react-hook-form" version="^7.54.0">Form state management</package>
+        <package name="zod" version="^3.23.8">Schema validation</package>
+        <package name="next-themes" version="^0.4.6">Theme management (light/dark mode)</package>
+        <package name="lucide-react" version="^0.452.0">Icons for dashboard cards</package>
+        <package name="@radix-ui/react-*" version="various">Shadcn/UI primitives</package>
+        <package name="tailwindcss" version="^4.1.17">Styling</package>
+      </javascript>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Service Layer Pattern: Centralize dashboard metrics aggregation in DashboardService to keep endpoints thin and testable (from architecture.md)</constraint>
+    <constraint>Role-Based Access Control: Leverage existing RBAC from Epic 2 - user role extracted from JWT claims via fastapi-users middleware</constraint>
+    <constraint>Performance Optimization: Use database indexes on tenant_id, status, assigned_bpo_id, created_at for query performance; implement React Query caching with 30-second TTL; optimize SQL queries to use COUNT(*) instead of fetching full result sets</constraint>
+    <constraint>State Management: React Query for server state (dashboard metrics API, caching, mutations); Zustand for minimal global state (user profile with role, theme preference)</constraint>
+    <constraint>Component Strategy: Use Shadcn/UI for standard components (Button, Card, Skeleton); create custom ActionCard for dashboard-specific needs</constraint>
+    <constraint>Backend Structure: Follow standard structure - backend/app/services/, backend/app/schemas/, backend/app/api/v1/endpoints/</constraint>
+    <constraint>Frontend Structure: Follow Next.js App Router structure - frontend/app/(dashboard)/, frontend/components/custom/</constraint>
+    <constraint>Testing Coverage Target: 80% code coverage for new services and components</constraint>
+    <constraint>Tenant Isolation: All database queries enforce Row-Level Security filtering by tenant_id</constraint>
+    <constraint>Authentication: All dashboard and assessment endpoints require valid JWT token in Authorization: Bearer header</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="GET /api/v1/dashboard/metrics" kind="REST endpoint">
+      <signature>GET /api/v1/dashboard/metrics → 200 OK: DashboardMetrics | 401 Unauthorized | 403 Forbidden</signature>
+      <path>backend/app/api/v1/endpoints/dashboard.py (new file to create)</path>
+      <description>Returns role-specific dashboard card data based on authenticated user (user derived from JWT)</description>
+    </interface>
+    <interface name="DashboardService.get_metrics" kind="function signature">
+      <signature>async def get_metrics(db: Session, user_id: UUID, tenant_id: UUID, role: str) -> DashboardMetrics</signature>
+      <path>backend/app/services/dashboard_service.py (new file to create)</path>
+      <description>Aggregates role-specific metrics: count pending reviews (BPO), high-priority risks (Executive), etc.</description>
+    </interface>
+    <interface name="DashboardCard" kind="Pydantic schema">
+      <signature>class DashboardCard(BaseModel): card_id: str; title: str; metric: int; metric_label: str; icon: str; action_link: str; status: Optional[str]</signature>
+      <path>backend/app/schemas/dashboard.py (new file to create)</path>
+      <description>Single card data for Action-Oriented Hub</description>
+    </interface>
+    <interface name="DashboardMetrics" kind="Pydantic schema">
+      <signature>class DashboardMetrics(BaseModel): user_role: str; cards: List[DashboardCard]</signature>
+      <path>backend/app/schemas/dashboard.py (new file to create)</path>
+      <description>Complete dashboard data feed for a user</description>
+    </interface>
+    <interface name="ActionCard" kind="React component">
+      <signature>&lt;ActionCard title={string} metric={number} metric_label={string} icon={string} action_link={string} status?={string} /&gt;</signature>
+      <path>frontend/components/custom/ActionCard.tsx (new file to create)</path>
+      <description>Reusable modular card component for dashboard Action-Oriented Hub with CTA button</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Backend: Follow pattern from backend/tests/services/test_audit_service.py (Story 3.4) - unit tests for services with mocked db, integration tests for endpoints with real database. Use pytest, pytest-asyncio, pytest-mock. Frontend: Test components with React Testing Library, mock API calls. E2E: Use Playwright for end-to-end tests (already configured in frontend/package.json).
+    </standards>
+    <locations>
+      backend/tests/services/ (unit tests for DashboardService)
+      backend/tests/api/v1/ (integration tests for dashboard endpoint)
+      frontend/__tests__/ (frontend unit tests)
+      frontend/e2e/ or tests/e2e/ (E2E tests with Playwright)
+    </locations>
+    <ideas>
+      <idea ac="AC-4.1">Unit test: DashboardService.get_metrics() returns correct cards for Admin role</idea>
+      <idea ac="AC-4.1">Unit test: DashboardService.get_metrics() returns correct cards for BPO role</idea>
+      <idea ac="AC-4.1">Unit test: DashboardService.get_metrics() returns correct cards for Executive role</idea>
+      <idea ac="AC-4.1">Unit test: DashboardService.get_metrics() returns correct cards for General User role</idea>
+      <idea ac="AC-4.1">Unit test: Tenant isolation - user from Tenant A cannot see Tenant B metrics</idea>
+      <idea ac="AC-4.1">Integration test: GET /api/v1/dashboard/metrics with Admin JWT returns admin cards</idea>
+      <idea ac="AC-4.1">Integration test: GET /api/v1/dashboard/metrics with BPO JWT returns BPO cards</idea>
+      <idea ac="AC-4.1">Integration test: GET /api/v1/dashboard/metrics returns 401 when JWT missing</idea>
+      <idea ac="AC-4.2">Integration test: Measure API response time < 500ms</idea>
+      <idea ac="AC-4.2">Frontend unit test: ActionCard component renders metric, title, icon, CTA button</idea>
+      <idea ac="AC-4.2">Frontend unit test: ActionCard skeleton loading state renders correctly</idea>
+      <idea ac="AC-4.1">E2E test: Login as Admin, navigate to /dashboard, verify admin cards displayed</idea>
+      <idea ac="AC-4.1">E2E test: Login as BPO, navigate to /dashboard, verify BPO cards displayed</idea>
+      <idea ac="AC-4.2">E2E test: Lighthouse audit verifies LCP < 2.5s</idea>
+    </ideas>
+  </tests>
+</story-context>

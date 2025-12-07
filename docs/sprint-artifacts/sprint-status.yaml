@@ -56,9 +56,9 @@ development_status:
   epic-3-retrospective: optional
 
   epic-4: contexted
-  4-1-develop-role-specific-dashboards: backlog
-  4-2-implement-real-time-status-updates: backlog
-  4-3-develop-streamlined-control-assessment-workflow-for-bpos: backlog
+  4-1-develop-role-specific-dashboards: review
+  4-2-implement-real-time-status-updates: ready-for-dev
+  4-3-develop-streamlined-control-assessment-workflow-for-bpos: drafted
   epic-4-retrospective: optional
 
   epic-5: backlog

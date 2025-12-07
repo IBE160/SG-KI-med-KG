@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<story-context id="4-2-implement-real-time-status-updates" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4.2</storyId>
+    <title>Implement Real-Time Status Updates</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-07</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-2-implement-real-time-status-updates.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>my dashboard to reflect live data changes without manual refresh</iWant>
+    <soThat>I always see the current state of risks, controls, and compliance tasks</soThat>
+    <tasks>
+      <task ac="4.3">Frontend: Implement Supabase Realtime Subscription Hook
+        <subtask>Create frontend/hooks/useRealtimeSubscription.ts custom React hook</subtask>
+        <subtask>Accept params: table_name, filter_criteria (e.g., tenant_id), onEvent callback</subtask>
+        <subtask>Establish Supabase Realtime channel subscription to specified table</subtask>
+        <subtask>Filter events by tenant_id using Realtime filters</subtask>
+        <subtask>Handle INSERT, UPDATE, DELETE events</subtask>
+        <subtask>Return connection status (connected, connecting, disconnected)</subtask>
+        <subtask>Clean up subscription on unmount</subtask>
+      </task>
+      <task ac="4.3">Frontend: Integrate Realtime into Dashboard Page
+        <subtask>Update frontend/app/(dashboard)/page.tsx to use useRealtimeSubscription hook</subtask>
+        <subtask>Subscribe to controls, risks, and business_processes tables</subtask>
+        <subtask>On Realtime event, invalidate React Query cache for /api/v1/dashboard/metrics</subtask>
+        <subtask>Trigger automatic refetch of dashboard metrics</subtask>
+      </task>
+      <task ac="4.3">Frontend: Implement Fallback Polling
+        <subtask>Detect Realtime connection failure (status = disconnected)</subtask>
+        <subtask>Implement 60-second interval polling as fallback using React Query's refetchInterval</subtask>
+        <subtask>Disable polling when Realtime reconnects successfully</subtask>
+      </task>
+      <task ac="4.3">Frontend: Implement Connection Status Indicator
+        <subtask>Create frontend/components/custom/RealtimeStatusIndicator.tsx component</subtask>
+        <subtask>Display connection status: connected (green), reconnecting (yellow), disconnected (red)</subtask>
+        <subtask>Use badge or icon in dashboard header</subtask>
+        <subtask>Show tooltip with connection details on hover</subtask>
+      </task>
+      <task ac="4.3">Backend: Configure Supabase RLS for Realtime
+        <subtask>Verify Row-Level Security (RLS) policies enforce tenant isolation for controls, risks, business_processes tables</subtask>
+        <subtask>Test Realtime subscriptions respect RLS (user from Tenant A cannot receive Tenant B events)</subtask>
+        <subtask>Document RLS policy configuration for Realtime</subtask>
+      </task>
+      <task ac="4.3">Testing: Unit Tests (Frontend)
+        <subtask>Test useRealtimeSubscription hook establishes connection</subtask>
+        <subtask>Test hook calls onEvent callback when event received</subtask>
+        <subtask>Test hook cleans up subscription on unmount</subtask>
+        <subtask>Test RealtimeStatusIndicator displays correct status</subtask>
+      </task>
+      <task ac="4.3">Testing: Integration Tests (Frontend)
+        <subtask>Test dashboard page establishes Realtime subscriptions to all 3 tables</subtask>
+        <subtask>Test React Query cache invalidation on Realtime event</subtask>
+        <subtask>Test fallback polling activates when Realtime disconnected</subtask>
+        <subtask>Test polling disables when Realtime reconnects</subtask>
+      </task>
+      <task ac="4.3">Testing: E2E Tests
+        <subtask>E2E-4.3: Update control status in database, verify dashboard updates within 1 minute</subtask>
+        <subtask>Simulate Realtime connection failure, verify fallback polling activates</subtask>
+        <subtask>Verify connection status indicator changes (connected → disconnected → reconnecting)</subtask>
+        <subtask>Test tenant isolation: Tenant A user does not receive Tenant B Realtime events</subtask>
+      </task>
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    <ac id="AC-4.3">Real-Time Status Updates
+      <criterion>When a control or risk status is updated in the database, all connected dashboards reflect the change within 1 minute</criterion>
+      <criterion>Frontend successfully establishes Supabase Realtime subscription to controls, risks, and business_processes tables filtered by user's tenant_id</criterion>
+      <criterion>When a Realtime event is received, React Query cache is invalidated and dashboard metrics are refetched automatically</criterion>
+      <criterion>If Realtime connection fails, dashboard gracefully falls back to 60-second polling</criterion>
+      <criterion>Realtime connection status is visible in dashboard (connected/reconnecting indicator)</criterion>
+    </ac>
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Services and Modules">
+        RealtimeSubscriptionHook specification: Custom React hook to subscribe to Supabase Realtime channels for live updates. Inputs: table_name, filter_criteria. Outputs: Real-time data stream from Supabase. Location: frontend/hooks/useRealtimeSubscription.ts.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Data Models and Contracts">
+        Realtime Subscription Payload (TypeScript): interface RealtimeChange { table: string; eventType: 'INSERT' | 'UPDATE' | 'DELETE'; new: Record&lt;string, any&gt;; old: Record&lt;string, any&gt; }.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="Workflows and Sequencing">
+        Workflow 1 (steps 7-10): Frontend establishes Supabase Realtime subscription to controls and risks tables (filtered by tenant). When database changes occur, Supabase pushes event to frontend. Frontend React Query cache invalidates and refetches metrics. Dashboard cards update without page refresh.
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="NFR Performance">
+        Real-Time Latency: Supabase Realtime updates must reflect database changes on client dashboards within 1 minute (as specified in FR-7).
+      </doc>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-4.md" title="Epic 4 Technical Specification" section="NFR Reliability">
+        Graceful Degradation: If Supabase Realtime is unavailable, dashboard falls back to periodic polling (every 60 seconds) to maintain some level of live updates.
+      </doc>
+      <doc path="docs/architecture.md" title="System Architecture" section="State Management (Frontend)">
+        React Query manages server state (API calls, caching, mutations). Use queryClient.invalidateQueries() to trigger cache invalidation and refetch.
+      </doc>
+      <doc path="docs/epics.md" title="Epics Breakdown" section="Epic 4, Story 4.2">
+        Story 4.2: Implement Real-Time Status Updates. User wants dashboard to reflect live data changes without manual refresh to always see current state of risks, controls, and compliance tasks.
+      </doc>
+      <doc path="docs/sprint-artifacts/4-1-develop-role-specific-dashboards.md" title="Story 4.1" section="Dev Notes">
+        Story 4.1 creates dashboard components that Story 4.2 will enhance with Realtime: frontend/app/(dashboard)/page.tsx (main dashboard page), frontend/app/(dashboard)/layout.tsx (dashboard shell), ActionCard component. React Query cache has 30-second TTL - Realtime will invalidate on events for immediate updates.
+      </doc>
+    </docs>
+
+    <code>
+      <file path="frontend/lib/supabase.ts" kind="client" symbol="createClient">
+        <lines>all</lines>
+        <reason>Existing Supabase client setup - use this to create Realtime channels in useRealtimeSubscription hook</reason>
+      </file>
+      <file path="frontend/components/ReactQueryProvider.tsx" kind="provider" symbol="ReactQueryProvider">
+        <lines>all</lines>
+        <reason>React Query provider setup - understand queryClient access for cache invalidation (queryClient.invalidateQueries)</reason>
+      </file>
+      <file path="frontend/app/(dashboard)/page.tsx" kind="page" symbol="DashboardPage">
+        <lines>all</lines>
+        <reason>Dashboard page created in Story 4.1 - this is where Realtime subscriptions will be integrated</reason>
+      </file>
+      <file path="frontend/app/(dashboard)/layout.tsx" kind="layout" symbol="DashboardLayout">
+        <lines>all</lines>
+        <reason>Dashboard layout created in Story 4.1 - this is where RealtimeStatusIndicator will be added to header</reason>
+      </file>
+      <file path="frontend/components/ui/badge.tsx" kind="component" symbol="Badge">
+        <lines>all</lines>
+        <reason>Shadcn/UI Badge component to use for connection status indicator (green/yellow/red)</reason>
+      </file>
+      <file path="frontend/components/ui/tooltip.tsx" kind="component" symbol="Tooltip">
+        <lines>all</lines>
+        <reason>Shadcn/UI Tooltip component to show connection details on hover over status indicator</reason>
+      </file>
+    </code>
+
+    <dependencies>
+      <javascript>
+        <package name="@supabase/supabase-js" version="^2.86.2">Supabase client for Realtime subscriptions</package>
+        <package name="@tanstack/react-query" version="^5.90.12">Server state management - cache invalidation via queryClient.invalidateQueries()</package>
+        <package name="react" version="19.1.1">React hooks (useState, useEffect, useCallback for custom hook)</package>
+        <package name="next" version="15.5.0">Next.js framework</package>
+        <package name="@radix-ui/react-tooltip" version="^1.2.8">Tooltip primitive for status indicator</package>
+      </javascript>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Custom Hook Pattern: Encapsulate Supabase Realtime subscription logic in useRealtimeSubscription hook for reusability across components</constraint>
+    <constraint>Cache Invalidation Strategy: Use React Query's queryClient.invalidateQueries() to trigger refetch on Realtime events (from architecture.md)</constraint>
+    <constraint>Graceful Degradation: Fallback to 60-second polling if Realtime unavailable to maintain some level of live updates (from tech spec NFR Reliability)</constraint>
+    <constraint>Connection Resilience: Supabase client handles automatic reconnection attempts; monitor status and provide user feedback via status indicator</constraint>
+    <constraint>Tenant Isolation: Realtime filters ensure users only receive events for their tenant_id (enforced by RLS policies on controls, risks, business_processes tables)</constraint>
+    <constraint>Frontend Structure: Follow Next.js App Router structure - frontend/app/(dashboard)/, frontend/components/custom/, frontend/hooks/</constraint>
+    <constraint>Testing Coverage Target: 80% code coverage for new hooks and components</constraint>
+    <constraint>Performance Target: Real-time updates must reflect within 1 minute (as specified in tech spec NFR Performance)</constraint>
+    <constraint>Subscription Cleanup: Always clean up Realtime subscriptions on component unmount to prevent memory leaks</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="useRealtimeSubscription" kind="React custom hook">
+      <signature>function useRealtimeSubscription(tableName: string, filterCriteria: { tenant_id: string }, onEvent: (change: RealtimeChange) =&gt; void): { status: 'connected' | 'connecting' | 'disconnected' }</signature>
+      <path>frontend/hooks/useRealtimeSubscription.ts (new file to create)</path>
+      <description>Custom hook that establishes Supabase Realtime channel subscription to specified table, filters by tenant_id, calls onEvent callback on INSERT/UPDATE/DELETE, returns connection status, cleans up on unmount</description>
+    </interface>
+    <interface name="RealtimeChange" kind="TypeScript interface">
+      <signature>interface RealtimeChange { table: string; eventType: 'INSERT' | 'UPDATE' | 'DELETE'; new: Record&lt;string, any&gt;; old: Record&lt;string, any&gt; }</signature>
+      <path>frontend/types/realtime.ts (new file to create) or inline in useRealtimeSubscription.ts</path>
+      <description>Type definition for Realtime event payload from Supabase</description>
+    </interface>
+    <interface name="RealtimeStatusIndicator" kind="React component">
+      <signature>&lt;RealtimeStatusIndicator status={'connected' | 'connecting' | 'disconnected'} /&gt;</signature>
+      <path>frontend/components/custom/RealtimeStatusIndicator.tsx (new file to create)</path>
+      <description>Badge or icon component displaying Realtime connection status with color coding (green/yellow/red) and tooltip with connection details</description>
+    </interface>
+    <interface name="queryClient.invalidateQueries" kind="React Query method">
+      <signature>queryClient.invalidateQueries({ queryKey: ['/api/v1/dashboard/metrics'] })</signature>
+      <path>frontend/app/(dashboard)/page.tsx (to be modified)</path>
+      <description>React Query method to invalidate cache and trigger automatic refetch when Realtime event received</description>
+    </interface>
+    <interface name="Supabase Realtime Channel" kind="Supabase API">
+      <signature>supabase.channel('channel_name').on('postgres_changes', { event: '*', schema: 'public', table: 'table_name', filter: 'tenant_id=eq.{tenant_id}' }, callback).subscribe()</signature>
+      <path>frontend/hooks/useRealtimeSubscription.ts (implementation)</path>
+      <description>Supabase Realtime subscription API for listening to postgres_changes events with filters</description>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Frontend: Test custom hook with React Testing Library (@testing-library/react), mock Supabase client. Test components with React Testing Library, mock API calls. E2E: Use Playwright to simulate database changes and verify dashboard updates. RLS Testing: Verify tenant isolation by attempting cross-tenant Realtime subscriptions (should fail/filter). Coverage Target: 80% code coverage for new hooks and components.
+    </standards>
+    <locations>
+      frontend/__tests__/hooks/ (unit tests for useRealtimeSubscription hook)
+      frontend/__tests__/components/ (unit tests for RealtimeStatusIndicator)
+      frontend/__tests__/integration/ (integration tests for dashboard Realtime integration)
+      frontend/e2e/ or tests/e2e/ (E2E tests with Playwright)
+    </locations>
+    <ideas>
+      <idea ac="AC-4.3">Unit test: useRealtimeSubscription establishes Supabase channel subscription</idea>
+      <idea ac="AC-4.3">Unit test: useRealtimeSubscription calls onEvent callback when INSERT event received</idea>
+      <idea ac="AC-4.3">Unit test: useRealtimeSubscription calls onEvent callback when UPDATE event received</idea>
+      <idea ac="AC-4.3">Unit test: useRealtimeSubscription calls onEvent callback when DELETE event received</idea>
+      <idea ac="AC-4.3">Unit test: useRealtimeSubscription cleans up subscription on unmount</idea>
+      <idea ac="AC-4.3">Unit test: useRealtimeSubscription returns status 'connected' when subscription succeeds</idea>
+      <idea ac="AC-4.3">Unit test: useRealtimeSubscription returns status 'disconnected' when subscription fails</idea>
+      <idea ac="AC-4.3">Unit test: RealtimeStatusIndicator displays green badge when status='connected'</idea>
+      <idea ac="AC-4.3">Unit test: RealtimeStatusIndicator displays yellow badge when status='connecting'</idea>
+      <idea ac="AC-4.3">Unit test: RealtimeStatusIndicator displays red badge when status='disconnected'</idea>
+      <idea ac="AC-4.3">Integration test: Dashboard page establishes subscriptions to controls, risks, business_processes tables</idea>
+      <idea ac="AC-4.3">Integration test: React Query cache invalidated when Realtime event received</idea>
+      <idea ac="AC-4.3">Integration test: Dashboard metrics refetched automatically after cache invalidation</idea>
+      <idea ac="AC-4.3">Integration test: Fallback polling (refetchInterval=60s) activates when Realtime status='disconnected'</idea>
+      <idea ac="AC-4.3">Integration test: Polling disabled when Realtime reconnects (status='connected')</idea>
+      <idea ac="AC-4.3">E2E test: Update control status in database, verify dashboard updates within 1 minute</idea>
+      <idea ac="AC-4.3">E2E test: Simulate Realtime connection failure, verify fallback polling activates</idea>
+      <idea ac="AC-4.3">E2E test: Verify connection status indicator changes (connected → disconnected → reconnecting)</idea>
+      <idea ac="AC-4.3">E2E test: Tenant isolation - Tenant A user does not receive Tenant B Realtime events (RLS enforced)</idea>
+    </ideas>
+  </tests>
+</story-context>

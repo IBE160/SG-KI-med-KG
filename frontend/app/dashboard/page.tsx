@@ -1,113 +1,149 @@
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableHeader,
-} from "@/components/ui/table";
-import {
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem,
-} from "@/components/ui/dropdown-menu";
-import { fetchItems } from "@/components/actions/items-action";
-import { DeleteButton } from "./deleteButton";
-import { ReadItemResponse } from "@/app/openapi-client";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import { PageSizeSelector } from "@/components/page-size-selector";
-import { PagePagination } from "@/components/page-pagination";
+"use client";
 
-interface DashboardPageProps {
-  searchParams: Promise<{
-    page?: string;
-    size?: string;
-  }>;
+import { useQuery } from "@tanstack/react-query";
+import { ActionCard } from "@/components/custom/ActionCard";
+import { useRole } from "@/lib/role";
+import { createClient } from "@/lib/supabase";
+
+interface DashboardCard {
+  card_id: string;
+  title: string;
+  metric: number;
+  metric_label: string;
+  icon: string;
+  action_link: string;
+  status?: string | null;
 }
 
-export default async function DashboardPage({
-  searchParams,
-}: DashboardPageProps) {
-  const params = await searchParams;
-  const page = Number(params.page) || 1;
-  const size = Number(params.size) || 10;
+interface DashboardMetrics {
+  user_role: string;
+  cards: DashboardCard[];
+}
 
-  const items = (await fetchItems(page, size)) as ReadItemResponse;
-  const totalPages = Math.ceil((items.total || 0) / size);
+async function fetchDashboardMetrics(accessToken: string): Promise<DashboardMetrics> {
+  const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:8000";
+  const response = await fetch(`${backendUrl}/api/v1/dashboard/metrics`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    mode: "cors",
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch dashboard metrics: ${response.statusText}`);
+  }
+
+  return response.json();
+}
+
+export default function DashboardPage() {
+  const { role, loading: roleLoading } = useRole();
+  const supabase = createClient();
+
+  const { data: metricsData, isLoading: metricsLoading, error } = useQuery({
+    queryKey: ["dashboardMetrics"],
+    queryFn: async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.access_token) {
+        throw new Error("No access token available");
+      }
+
+      return fetchDashboardMetrics(session.access_token);
+    },
+    // Refetch every 30 seconds for real-time data
+    refetchInterval: 30000,
+    enabled: !!role && !roleLoading,
+  });
+
+  if (roleLoading || metricsLoading) {
+    return (
+      <div>
+        <h2 className="text-2xl font-semibold mb-6">Dashboard</h2>
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <ActionCard
+            title="Loading..."
+            metric={0}
+            metricLabel=""
+            icon="Activity"
+            actionLink="#"
+            loading={true}
+          />
+          <ActionCard
+            title="Loading..."
+            metric={0}
+            metricLabel=""
+            icon="Activity"
+            actionLink="#"
+            loading={true}
+          />
+          <ActionCard
+            title="Loading..."
+            metric={0}
+            metricLabel=""
+            icon="Activity"
+            actionLink="#"
+            loading={true}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <h2 className="text-2xl font-semibold mb-6">Dashboard</h2>
+        <div className="p-6 bg-red-50 border border-red-200 rounded-lg">
+          <p className="text-red-800">
+            Failed to load dashboard metrics. Please try refreshing the page.
+          </p>
+          <p className="text-sm text-red-600 mt-2">{(error as Error).message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const roleLabels: Record<string, string> = {
+    admin: "Administrator",
+    bpo: "Business Process Owner",
+    compliance_officer: "Compliance Officer",
+    executive: "Executive",
+    general: "User",
+  };
+
+  const roleLabel = roleLabels[role || "general"] || "User";
 
   return (
     <div>
-      <h2 className="text-2xl font-semibold mb-6">Welcome to your Dashboard</h2>
-      <p className="text-lg mb-6">
-        Here, you can see the overview of your items and manage them.
-      </p>
-
       <div className="mb-6">
-        <Link href="/dashboard/add-item">
-          <Button variant="outline" className="text-lg px-4 py-2">
-            Add New Item
-          </Button>
-        </Link>
+        <h2 className="text-2xl font-semibold">Dashboard</h2>
+        <p className="text-muted-foreground">
+          Welcome, {roleLabel}. Here's your personalized overview.
+        </p>
       </div>
 
-      <section className="p-6 bg-white rounded-lg shadow-lg mt-8">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">Items</h2>
-          <PageSizeSelector currentSize={size} />
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {metricsData?.cards.map((card) => (
+          <ActionCard
+            key={card.card_id}
+            title={card.title}
+            metric={card.metric}
+            metricLabel={card.metric_label}
+            icon={card.icon}
+            actionLink={card.action_link}
+            status={card.status as "urgent" | "normal" | null}
+          />
+        ))}
+      </div>
+
+      {(!metricsData?.cards || metricsData.cards.length === 0) && (
+        <div className="p-8 bg-muted rounded-lg text-center">
+          <p className="text-muted-foreground">No dashboard cards available for your role.</p>
         </div>
-
-        <Table className="min-w-full text-sm">
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[120px]">Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead className="text-center">Quantity</TableHead>
-              <TableHead className="text-center">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {!items.items?.length ? (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center">
-                  No results.
-                </TableCell>
-              </TableRow>
-            ) : (
-              items.items.map((item, index) => (
-                <TableRow key={index}>
-                  <TableCell>{item.name}</TableCell>
-                  <TableCell>{item.description}</TableCell>
-                  <TableCell className="text-center">{item.quantity}</TableCell>
-                  <TableCell className="text-center">
-                    <DropdownMenu>
-                      <DropdownMenuTrigger className="cursor-pointer p-1 text-gray-600 hover:text-gray-800">
-                        <span className="text-lg font-semibold">...</span>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent className="p-2">
-                        <DropdownMenuItem disabled={true}>
-                          Edit
-                        </DropdownMenuItem>
-                        <DeleteButton itemId={item.id} />
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-
-        {/* Pagination Controls */}
-        <PagePagination
-          currentPage={page}
-          totalPages={totalPages}
-          pageSize={size}
-          totalItems={items.total || 0}
-          basePath="/dashboard"
-        />
-      </section>
+      )}
     </div>
   );
 }
