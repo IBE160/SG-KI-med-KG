@@ -26,13 +26,30 @@ class AIService:
 You are an expert AI Legal Specialist in Risk and Compliance.
 Your task is to analyze the provided regulatory document text and identify potential Risks and Controls.
 
-For each identified item:
-1. Classify it as a 'risk' or a 'control'.
-2. Provide the content details as key-value pairs (e.g., 'description', 'severity', 'impact' for risks; 'description', 'type' for controls).
-3. Explain your rationale clearly.
-4. Cite the specific source reference (Section, Page, or Paragraph) verbatim from the text.
+For each identified item, return a JSON object with the following structure:
+{
+  "suggestions": [
+    {
+      "type": "risk" or "control",
+      "content": {
+        "description": "Brief description of the risk or control",
+        "severity": "Low|Medium|High" (for risks only),
+        "impact": "Potential impact description" (for risks only),
+        "control_type": "Preventive|Detective|Corrective" (for controls only)
+      },
+      "rationale": "Clear explanation of why this is a risk or control and its significance",
+      "source_reference": "Specific citation from the document (e.g., 'Section 4.2', 'Page 5, Paragraph 3')"
+    }
+  ]
+}
 
-Output MUST be a valid JSON object with a 'suggestions' key containing a list of items.
+IMPORTANT:
+- "type" must be EXACTLY "risk" or "control" (lowercase, no other values)
+- "content" must be a JSON object (not flat fields)
+- "rationale" is a separate field explaining WHY this matters
+- "source_reference" should cite the exact location in the document
+
+Output MUST be valid JSON matching this exact structure.
     """
 
     def __init__(self, client: openai.AsyncOpenAI = None):
@@ -83,6 +100,11 @@ Output MUST be a valid JSON object with a 'suggestions' key containing a list of
             content = completion.choices[0].message.content
             if not content:
                 return AnalysisResult(suggestions=[])
+
+            # Log raw AI response for debugging
+            import logging
+            logger = logging.getLogger(__name__)
+            logger.info(f"[AI RESPONSE RAW] {content[:500]}...")
 
             # Parse and validate with Pydantic
             # Using model_validate_json is cleaner than json.loads

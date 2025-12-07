@@ -143,3 +143,50 @@ async def delete_document(
         db=db, document_id=document_id, user_id=current_user.id, tenant_id=current_user.tenant_id
     )
     return {"message": "Document archived successfully"}
+
+
+@router.post("/{document_id}/process", tags=["documents"])
+async def manually_process_document(
+    document_id: UUID,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: UserModel = Depends(has_role(["admin"])),
+):
+    """
+    Manually trigger document processing (for testing/debugging).
+
+    - **document_id**: UUID of the document to process
+    - Requires admin role
+    - Processes document synchronously and returns detailed status
+    - Useful for debugging when automatic processing fails
+    """
+    import logging
+    from tasks.analysis import _process_document_async
+
+    logger = logging.getLogger(__name__)
+
+    # Verify document exists and user has access
+    document = await DocumentService.get_document_by_id(
+        db=db, document_id=document_id, user_id=current_user.id, tenant_id=current_user.tenant_id
+    )
+
+    logger.info(f"Manual processing triggered for document {document_id} by user {current_user.id}")
+
+    try:
+        # Process document synchronously
+        await _process_document_async(document_id)
+
+        # Refresh document to get updated status
+        await db.refresh(document)
+
+        return {
+            "message": "Document processed successfully",
+            "document_id": str(document_id),
+            "status": document.status,
+            "filename": document.filename
+        }
+    except Exception as e:
+        logger.exception(f"Manual processing failed for document {document_id}: {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Processing failed: {str(e)}"
+        )

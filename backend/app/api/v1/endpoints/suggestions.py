@@ -7,6 +7,7 @@ from pydantic import BaseModel
 
 from app.database import get_async_session
 from app.models.user import User as UserModel
+from app.models.document import Document
 from app.models.suggestion import AISuggestion, SuggestionStatus
 from app.schemas.suggestion import AISuggestionRead
 from app.core.deps import has_role
@@ -26,15 +27,22 @@ async def list_suggestions(
 ):
     """
     List AI suggestions with optional status filtering.
+    Filtered by tenant - only shows suggestions from documents uploaded by users in the same tenant.
     """
-    query = select(AISuggestion)
+    query = (
+        select(AISuggestion)
+        .join(Document, AISuggestion.document_id == Document.id)
+        .join(UserModel, Document.uploaded_by == UserModel.id)
+        .filter(UserModel.tenant_id == current_user.tenant_id)
+    )
+
     if status:
         query = query.filter(AISuggestion.status == status)
-    
+
     # Order by creation time (implied by ID usually, or explicit if column existed)
     # Fallback to ID desc for now
     query = query.order_by(AISuggestion.id.desc())
-    
+
     result = await db.execute(query)
     return result.scalars().all()
 
