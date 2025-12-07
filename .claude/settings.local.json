@@ -9,7 +9,8 @@
       "Bash(.venv/Scripts/alembic history)",
       "Bash(.venv/Scripts/alembic revision -m \"add ai_suggestions table\")",
       "Bash(.venv/Scripts/alembic:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "Bash(timeout 60 .venv/Scripts/python:*)"
     ],
     "deny": [],
     "ask": []

@@ -55,7 +55,7 @@ development_status:
   3-4-implement-immutable-audit-trail: done
   epic-3-retrospective: optional
 
-  epic-4: backlog
+  epic-4: contexted
   4-1-develop-role-specific-dashboards: backlog
   4-2-implement-real-time-status-updates: backlog
   4-3-develop-streamlined-control-assessment-workflow-for-bpos: backlog

@@ -26,6 +26,13 @@ class AIService:
 You are an expert AI Legal Specialist in Risk and Compliance.
 Your task is to analyze the provided regulatory document text and identify potential Risks and Controls.
 
+ANALYSIS GUIDELINES:
+- Perform a COMPREHENSIVE analysis of the entire document
+- Identify ALL significant risks and controls mentioned or implied
+- For regulatory documents, consider: compliance risks, operational risks, legal risks, and corresponding controls
+- Aim to identify at least 8-12 suggestions for typical regulatory documents
+- Each section/chapter should yield multiple insights
+
 For each identified item, return a JSON object with the following structure:
 {
   "suggestions": [
@@ -38,7 +45,7 @@ For each identified item, return a JSON object with the following structure:
         "control_type": "Preventive|Detective|Corrective" (for controls only)
       },
       "rationale": "Clear explanation of why this is a risk or control and its significance",
-      "source_reference": "Specific citation from the document (e.g., 'Section 4.2', 'Page 5, Paragraph 3')"
+      "source_reference": "Specific citation from the document (e.g., 'Section 4.2', 'Page 5, Paragraph 3', 'Chapter 18')"
     }
   ]
 }
@@ -48,6 +55,7 @@ IMPORTANT:
 - "content" must be a JSON object (not flat fields)
 - "rationale" is a separate field explaining WHY this matters
 - "source_reference" should cite the exact location in the document
+- Be thorough - don't stop at just a few obvious items
 
 Output MUST be valid JSON matching this exact structure.
     """
