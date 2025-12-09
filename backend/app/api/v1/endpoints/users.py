@@ -5,10 +5,25 @@ from uuid import UUID
 
 from app.database import get_async_session
 from app.models.user import User as UserModel
-from app.schemas import UserRead, UserUpdate
+from app.schemas import UserRead, UserUpdate, UserCreate
 from app.core.deps import has_role, get_current_active_user
+from app.services.user_service import user_service
 
 router = APIRouter()
+
+
+@router.post("", response_model=UserRead, status_code=201, tags=["users"])
+async def create_user(
+    user_in: UserCreate,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: UserModel = Depends(has_role(["admin"])),
+):
+    """
+    Create a new user.
+    Requires admin role.
+    The new user is assigned to the admin's tenant.
+    """
+    return await user_service.create_user(user_in, current_user, db)
 
 
 @router.get("/me", response_model=UserRead, tags=["users"])

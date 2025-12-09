@@ -46,6 +46,7 @@ development_status:
   epic-2: contexted
   2-1-implement-user-registration-login-email-password: done
   2-2-implement-role-based-access-control-rbac: done
+  2-3-admin-user-creation-role-assignment: done
   epic-2-retrospective: optional
 
   epic-3: contexted
@@ -59,6 +60,7 @@ development_status:
   4-1-develop-role-specific-dashboards: done
   4-2-implement-real-time-status-updates: done
   4-3-develop-streamlined-control-assessment-workflow-for-bpos: review
+  4-4-dashboard-ux-enhancements: ready-for-dev
   epic-4-retrospective: optional
 
   epic-5: backlog

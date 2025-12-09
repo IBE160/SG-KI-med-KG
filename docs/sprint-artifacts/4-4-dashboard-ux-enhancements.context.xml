@@ -1,0 +1,45 @@
+<story-context story-id="4.4">
+  <story-file>docs/sprint-artifacts/4-4-dashboard-ux-enhancements.md</story-file>
+
+  <definitions>
+    <file path="backend/app/models/user.py">
+from fastapi_users.db import SQLAlchemyBaseUserTableUUID
+from sqlalchemy import String, Column
+# ... imports
+class User(SQLAlchemyBaseUserTableUUID, Base):
+    # ... existing fields
+    role = Column(String(50), default="general_user", nullable=False)
+    tenant_id = Column(UUID(as_uuid=True), default=uuid.uuid4, nullable=False)
+    # TODO: Add full_name = Column(String(100), nullable=True)
+    </file>
+
+    <file path="frontend/app/dashboard/layout.tsx">
+// ... imports
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+// ...
+// Inside DashboardLayout component:
+// Current:
+// <Avatar>
+//   <AvatarFallback>U</AvatarFallback>
+// </Avatar>
+// Needs to fetch user profile and display initials
+    </file>
+
+    <schema name="UserRead">
+      <!-- Pydantic schema for reading user -->
+      class UserRead(schemas.BaseUser[uuid.UUID]):
+          role: str
+          tenant_id: uuid.UUID
+          # TODO: Add full_name: str | None
+    </schema>
+  </definitions>
+
+  <instructions>
+    1. Backend: Add `full_name` column to `User` model and `UserRead` schema.
+    2. Backend: Generate Alembic migration (`alembic revision --autogenerate`).
+    3. Frontend: Ensure `useRole` (or new `useUser`) returns `full_name`.
+    4. Frontend: Update `DashboardLayout` to calculate initials from `full_name` (e.g. "John Doe" -> "JD") or fallback to email first letter.
+    5. Frontend: Update AvatarFallback to show these initials.
+    6. Frontend: Add Tooltip or Dropdown header showing full name.
+  </instructions>
+</story-context>

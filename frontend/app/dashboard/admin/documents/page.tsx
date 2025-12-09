@@ -502,7 +502,7 @@ export default function DocumentsPage() {
           <div className="relative bg-background border rounded-lg shadow-lg p-6 w-full max-w-lg mx-4">
             <h2 className="text-lg font-semibold mb-2">Archive Document</h2>
             <p className="text-sm text-muted-foreground mb-6">
-              Are you sure you want to archive "{documentToDelete?.filename}"?
+              Are you sure you want to archive &quot;{documentToDelete?.filename}&quot;?
               The document will be moved to archive and can be restored later.
             </p>
             <div className="flex justify-end gap-2">
@@ -538,7 +538,7 @@ export default function DocumentsPage() {
           <div className="relative bg-background border rounded-lg shadow-lg p-6 w-full max-w-lg mx-4">
             <h2 className="text-lg font-semibold mb-2">Rename Document</h2>
             <p className="text-sm text-muted-foreground mb-4">
-              Enter a new name for "{documentToRename?.filename}". The file extension will be preserved automatically.
+              Enter a new name for &quot;{documentToRename?.filename}&quot;. The file extension will be preserved automatically.
             </p>
             <Input
               type="text"

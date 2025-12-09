@@ -8,7 +8,7 @@
 
 import { test, expect, Page } from "@playwright/test";
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { Database } from "../../lib/database.types";
+import { Database } from "@/lib/database.types";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
@@ -35,9 +35,9 @@ test.describe("E2E-4.3: Real-Time Dashboard Updates", () => {
 
     // Simulate database change via Supabase service role
     const { data: insertedControl, error } = await supabase.from("controls").insert({
+      id: crypto.randomUUID(),
       name: "E2E Test Control",
       description: "Created by E2E test",
-      status: "pending_review",
       tenant_id: "test-tenant-id", // Should match logged-in user's tenant
     }).select().single();
 
@@ -132,9 +132,9 @@ test.describe("E2E-4.3: Tenant Isolation", () => {
 
     // Insert control for Tenant B
     const { data: tenantBControl } = await supabase.from("controls").insert({
+      id: crypto.randomUUID(),
       name: "Tenant B Control",
       description: "Should NOT appear in Tenant A dashboard",
-      status: "active",
       tenant_id: "tenant-b-id",
     }).select().single();
 

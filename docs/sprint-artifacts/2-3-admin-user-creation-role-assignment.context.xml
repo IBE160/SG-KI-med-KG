@@ -1,0 +1,46 @@
+<story-context story-id="2.3">
+  <story-file>docs/sprint-artifacts/2-3-admin-user-creation-role-assignment.md</story-file>
+
+  <definitions>
+    <file path="backend/app/api/v1/endpoints/users.py">
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from uuid import UUID
+
+from app.database import get_async_session
+from app.models.user import User as UserModel
+from app.schemas import UserRead, UserUpdate
+from app.core.deps import has_role, get_current_active_user
+
+router = APIRouter()
+
+# ... existing endpoints (me, list, update_role) ...
+# New endpoint will be added here: POST /api/v1/users
+    </file>
+
+    <file path="frontend/app/dashboard/admin/users/page.tsx">
+"use client";
+import { useEffect, useState } from "react";
+// ... imports ...
+// Existing UsersPage component
+// Will need to add "Create User" button and Dialog here
+    </file>
+
+    <schema name="UserCreate">
+      <!-- Pydantic schema for creating user -->
+      class UserCreate(BaseModel):
+          email: EmailStr
+          password: str
+          role: str = "general_user"
+          tenant_id: UUID | None = None
+    </schema>
+  </definitions>
+
+  <instructions>
+    1. Backend: Add `POST /` to `users.py` using `supabase-admin` (service role) to create Auth user, then DB insert.
+    2. Frontend: Add `CreateUserDialog.tsx` component.
+    3. Frontend: Add "Create User" button to `page.tsx` invoking the dialog.
+    4. Frontend: Handle API call and list refresh.
+  </instructions>
+</story-context>

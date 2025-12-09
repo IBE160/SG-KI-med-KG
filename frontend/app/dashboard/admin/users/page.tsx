@@ -31,6 +31,7 @@ import {
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { RoleGuard } from "@/lib/role";
+import { CreateUserDialog } from "@/components/admin/CreateUserDialog";
 
 export default function UsersPage() {
   const [users, setUsers] = useState<UserRead[]>([]);
@@ -54,7 +55,7 @@ export default function UsersPage() {
         throw new Error("Not authenticated");
       }
 
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users`, {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
         },
@@ -131,7 +132,10 @@ export default function UsersPage() {
   return (
     <RoleGuard allowedRoles={["admin"]}>
       <div className="container mx-auto py-10">
-        <h1 className="text-2xl font-bold mb-5">User Management</h1>
+        <div className="flex justify-between items-center mb-5">
+          <h1 className="text-2xl font-bold">User Management</h1>
+          <CreateUserDialog onUserCreated={fetchUsers} />
+        </div>
         <div className="rounded-md border">
           <Table>
             <TableHeader>

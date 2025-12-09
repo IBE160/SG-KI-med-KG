@@ -27,7 +27,7 @@ export default function BPOPendingReviewsPage() {
     },
   });
 
-  const handleRowClick = (suggestionId: number) => {
+  const handleRowClick = (suggestionId: string) => {
     router.push(`/dashboard/bpo/reviews/${suggestionId}`);
   };
 

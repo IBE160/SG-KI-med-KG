@@ -161,6 +161,22 @@ So that **I can control access to features and data according to defined permiss
 **Prerequisites:** Story 2.1.
 **Technical Notes:** Implement middleware or decorators on API endpoints to check user roles based on JWT claims. Frontend dynamically renders UI elements based on user role.
 
+### Story 2.3: Admin User Creation & Role Assignment
+As an **Admin**,
+I want **to create new users and assign them specific roles (Admin, BPO, Executive, General User)**,
+So that **I can manually onboard users and ensure they have the correct permissions immediately**.
+
+**Acceptance Criteria:**
+**Given** I am logged in as an Admin,
+**When** I access the "Users" management page,
+**Then** I see a "Create User" button.
+**And** clicking it opens a form to enter email, password (optional/temporary), and select a role.
+**And** submitting the form creates the user in Supabase Auth and the `users` table with the selected role.
+**And** the new user appears in the user list.
+
+**Prerequisites:** Story 2.2.
+**Technical Notes:** Use Supabase Admin API (`service_role` key) in the backend to create users without requiring email verification flow if preferred, or trigger standard invite. Ensure `public.users` table is synced.
+
 ---
 
 ## Epic 3: AI-Powered Gap Analysis & Auditing
@@ -280,6 +296,21 @@ So that **I can make the final, accountable decision on new controls and risks**
 
 **Prerequisites:** Epic 2 (BPO role), Epic 4.1 (BPO Dashboard), Epic 3.4 (Audit Trail), Story 3.3.
 **Technical Notes:** Dedicated frontend review screen leveraging Shadcn/UI. Backend endpoints to process assessments, manage change logs, and trigger audit logging.
+
+### Story 4.4: Dashboard UX Enhancements
+As a **user**,
+I want **my user icon in the dashboard to display my name instead of a generic "U"**,
+So that **the interface feels personalized and I can verify my identity at a glance**.
+
+**Acceptance Criteria:**
+**Given** I am logged in,
+**When** I view the dashboard header/sidebar,
+**Then** the user avatar displays my initials (e.g., "JD" for John Doe) or my full name if space permits.
+**And** hovering over the icon shows my full name and role (e.g., "John Doe (Admin)").
+**And** this persists across all dashboard pages.
+
+**Prerequisites:** Epic 4.1.
+**Technical Notes:** Ensure the `users` table has `first_name` / `last_name` or `full_name` fields, or derive from email if necessary (though name is preferred). Update the `UserNav` or `Avatar` component.
 
 ---
 

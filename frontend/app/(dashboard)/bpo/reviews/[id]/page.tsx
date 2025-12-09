@@ -83,7 +83,7 @@ export default function BPOReviewDetailPage() {
         path: { suggestion_id: suggestionId },
       });
       if (response.error) {
-        throw new Error(response.error.detail as string || "Failed to fetch suggestion details");
+        throw new Error((response.error.detail as unknown as string) || "Failed to fetch suggestion details");
       }
       return response.data!;
     },
@@ -128,7 +128,7 @@ export default function BPOReviewDetailPage() {
       });
 
       if (response.error) {
-        throw new Error(response.error.detail as string || "Failed to submit assessment");
+        throw new Error((response.error.detail as unknown as string) || "Failed to submit assessment");
       }
       return response.data;
     },

@@ -121,7 +121,7 @@ export default function DashboardPage() {
       <div className="mb-6">
         <h2 className="text-2xl font-semibold">Dashboard</h2>
         <p className="text-muted-foreground">
-          Welcome, {roleLabel}. Here's your personalized overview.
+          Welcome, {roleLabel}. Here&apos;s your personalized overview.
         </p>
       </div>
 
