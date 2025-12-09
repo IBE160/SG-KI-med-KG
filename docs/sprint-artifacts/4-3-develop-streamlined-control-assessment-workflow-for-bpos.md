@@ -185,7 +185,7 @@ so that **I can efficiently assess and add controls/risks to the register with p
 
 ### Learnings from Previous Story
 
-**From Story 4-2-implement-real-time-status-updates (Status: ready-for-dev)**
+**From Story 4-2-implement-real-time-status-updates (Status: review)**
 
 - **New Files to be Created** (not yet implemented, but designed in Story 4.2):
   - `frontend/hooks/useRealtimeSubscription.ts` - Custom hook for Supabase Realtime subscriptions
@@ -244,3 +244,6 @@ claude-sonnet-4-5-20250929
 ### Completion Notes List
 
 ### File List
+
+## Change Log
+
