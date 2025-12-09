@@ -7,15 +7,16 @@
  */
 
 import { test, expect, Page } from "@playwright/test";
-import { createClient } from "@supabase/supabase-js";
+import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { Database } from "../../lib/database.types";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
-let supabase: ReturnType<typeof createClient>;
+let supabase: SupabaseClient<Database>;
 
 test.beforeAll(() => {
-  supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+  supabase = createClient<Database>(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 });
 
 test.describe("E2E-4.3: Real-Time Dashboard Updates", () => {
