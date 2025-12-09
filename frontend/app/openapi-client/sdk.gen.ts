@@ -5,114 +5,157 @@ import {
   createConfig,
   type OptionsLegacyParser,
   urlSearchParamsBodySerializer,
+  formDataBodySerializer,
 } from "@hey-api/client-axios";
 import type {
-  AuthJwtLoginData,
-  AuthJwtLoginError,
-  AuthJwtLoginResponse,
-  AuthJwtLogoutError,
-  AuthJwtLogoutResponse,
-  RegisterRegisterData,
-  RegisterRegisterError,
-  RegisterRegisterResponse,
-  ResetForgotPasswordData,
-  ResetForgotPasswordError,
-  ResetForgotPasswordResponse,
-  ResetResetPasswordData,
-  ResetResetPasswordError,
-  ResetResetPasswordResponse,
-  VerifyRequestTokenData,
-  VerifyRequestTokenError,
-  VerifyRequestTokenResponse,
-  VerifyVerifyData,
-  VerifyVerifyError,
-  VerifyVerifyResponse,
-  UsersCurrentUserError,
-  UsersCurrentUserResponse,
-  UsersPatchCurrentUserData,
-  UsersPatchCurrentUserError,
-  UsersPatchCurrentUserResponse,
-  UsersUserData,
-  UsersUserError,
-  UsersUserResponse,
-  UsersPatchUserData,
-  UsersPatchUserError,
-  UsersPatchUserResponse,
-  UsersDeleteUserData,
-  UsersDeleteUserError,
-  UsersDeleteUserResponse,
-  ReadItemData,
-  ReadItemError,
-  ReadItemResponse,
-  CreateItemData,
-  CreateItemError,
-  CreateItemResponse,
-  DeleteItemData,
-  DeleteItemError,
-  DeleteItemResponse,
-  CreateControlData,
-  CreateControlError,
-  CreateControlResponse,
-  ReadControlsData,
-  ReadControlsError,
-  ReadControlsResponse,
-  ReadControlData,
-  ReadControlError,
-  ReadControlResponse,
-  UpdateControlData,
-  UpdateControlError,
-  UpdateControlResponse,
-  DeleteControlData,
-  DeleteControlError,
-  DeleteControlResponse,
-  CreateRiskData,
-  CreateRiskError,
-  CreateRiskResponse,
-  ReadRisksData,
-  ReadRisksError,
-  ReadRisksResponse,
-  ReadRiskData,
-  ReadRiskError,
-  ReadRiskResponse,
-  UpdateRiskData,
-  UpdateRiskError,
-  UpdateRiskResponse,
-  DeleteRiskData,
-  DeleteRiskError,
-  DeleteRiskResponse,
-  CreateBusinessProcessData,
-  CreateBusinessProcessError,
-  CreateBusinessProcessResponse,
-  ReadBusinessProcessesData,
-  ReadBusinessProcessesError,
-  ReadBusinessProcessesResponse,
-  ReadBusinessProcessData,
-  ReadBusinessProcessError,
-  ReadBusinessProcessResponse,
-  UpdateBusinessProcessData,
-  UpdateBusinessProcessError,
-  UpdateBusinessProcessResponse,
-  DeleteBusinessProcessData,
-  DeleteBusinessProcessError,
-  DeleteBusinessProcessResponse,
-  CreateRegulatoryFrameworkData,
-  CreateRegulatoryFrameworkError,
-  CreateRegulatoryFrameworkResponse,
-  ReadRegulatoryFrameworksData,
-  ReadRegulatoryFrameworksError,
-  ReadRegulatoryFrameworksResponse,
-  ReadRegulatoryFrameworkData,
-  ReadRegulatoryFrameworkError,
-  ReadRegulatoryFrameworkResponse,
-  UpdateRegulatoryFrameworkData,
-  UpdateRegulatoryFrameworkError,
-  UpdateRegulatoryFrameworkResponse,
-  DeleteRegulatoryFrameworkData,
-  DeleteRegulatoryFrameworkError,
-  DeleteRegulatoryFrameworkResponse,
-  UpdateUserRoleData,
-  UpdateUserRoleError,
-  UpdateUserRoleResponse,
+  AuthAuthJwtLoginData,
+  AuthAuthJwtLoginError,
+  AuthAuthJwtLoginResponse,
+  AuthAuthJwtLogoutError,
+  AuthAuthJwtLogoutResponse,
+  AuthRegisterRegisterData,
+  AuthRegisterRegisterError,
+  AuthRegisterRegisterResponse,
+  AuthResetForgotPasswordData,
+  AuthResetForgotPasswordError,
+  AuthResetForgotPasswordResponse,
+  AuthResetResetPasswordData,
+  AuthResetResetPasswordError,
+  AuthResetResetPasswordResponse,
+  AuthVerifyRequestTokenData,
+  AuthVerifyRequestTokenError,
+  AuthVerifyRequestTokenResponse,
+  AuthVerifyVerifyData,
+  AuthVerifyVerifyError,
+  AuthVerifyVerifyResponse,
+  UsersUsersCurrentUserError,
+  UsersUsersCurrentUserResponse,
+  UsersUsersPatchCurrentUserData,
+  UsersUsersPatchCurrentUserError,
+  UsersUsersPatchCurrentUserResponse,
+  UsersUsersUserData,
+  UsersUsersUserError,
+  UsersUsersUserResponse,
+  UsersUsersPatchUserData,
+  UsersUsersPatchUserError,
+  UsersUsersPatchUserResponse,
+  UsersUsersDeleteUserData,
+  UsersUsersDeleteUserError,
+  UsersUsersDeleteUserResponse,
+  ItemReadItemData,
+  ItemReadItemError,
+  ItemReadItemResponse,
+  ItemCreateItemData,
+  ItemCreateItemError,
+  ItemCreateItemResponse,
+  ItemDeleteItemData,
+  ItemDeleteItemError,
+  ItemDeleteItemResponse,
+  ControlsCreateControlData,
+  ControlsCreateControlError,
+  ControlsCreateControlResponse,
+  ControlsReadControlsData,
+  ControlsReadControlsError,
+  ControlsReadControlsResponse,
+  ControlsReadControlData,
+  ControlsReadControlError,
+  ControlsReadControlResponse,
+  ControlsUpdateControlData,
+  ControlsUpdateControlError,
+  ControlsUpdateControlResponse,
+  ControlsDeleteControlData,
+  ControlsDeleteControlError,
+  ControlsDeleteControlResponse,
+  RisksCreateRiskData,
+  RisksCreateRiskError,
+  RisksCreateRiskResponse,
+  RisksReadRisksData,
+  RisksReadRisksError,
+  RisksReadRisksResponse,
+  RisksReadRiskData,
+  RisksReadRiskError,
+  RisksReadRiskResponse,
+  RisksUpdateRiskData,
+  RisksUpdateRiskError,
+  RisksUpdateRiskResponse,
+  RisksDeleteRiskData,
+  RisksDeleteRiskError,
+  RisksDeleteRiskResponse,
+  BusinessProcessesCreateBusinessProcessData,
+  BusinessProcessesCreateBusinessProcessError,
+  BusinessProcessesCreateBusinessProcessResponse,
+  BusinessProcessesReadBusinessProcessesData,
+  BusinessProcessesReadBusinessProcessesError,
+  BusinessProcessesReadBusinessProcessesResponse,
+  BusinessProcessesReadBusinessProcessData,
+  BusinessProcessesReadBusinessProcessError,
+  BusinessProcessesReadBusinessProcessResponse,
+  BusinessProcessesUpdateBusinessProcessData,
+  BusinessProcessesUpdateBusinessProcessError,
+  BusinessProcessesUpdateBusinessProcessResponse,
+  BusinessProcessesDeleteBusinessProcessData,
+  BusinessProcessesDeleteBusinessProcessError,
+  BusinessProcessesDeleteBusinessProcessResponse,
+  RegulatoryFrameworksCreateRegulatoryFrameworkData,
+  RegulatoryFrameworksCreateRegulatoryFrameworkError,
+  RegulatoryFrameworksCreateRegulatoryFrameworkResponse,
+  RegulatoryFrameworksReadRegulatoryFrameworksData,
+  RegulatoryFrameworksReadRegulatoryFrameworksError,
+  RegulatoryFrameworksReadRegulatoryFrameworksResponse,
+  RegulatoryFrameworksReadRegulatoryFrameworkData,
+  RegulatoryFrameworksReadRegulatoryFrameworkError,
+  RegulatoryFrameworksReadRegulatoryFrameworkResponse,
+  RegulatoryFrameworksUpdateRegulatoryFrameworkData,
+  RegulatoryFrameworksUpdateRegulatoryFrameworkError,
+  RegulatoryFrameworksUpdateRegulatoryFrameworkResponse,
+  RegulatoryFrameworksDeleteRegulatoryFrameworkData,
+  RegulatoryFrameworksDeleteRegulatoryFrameworkError,
+  RegulatoryFrameworksDeleteRegulatoryFrameworkResponse,
+  UsersGetCurrentUserError,
+  UsersGetCurrentUserResponse,
+  UsersListUsersData,
+  UsersListUsersError,
+  UsersListUsersResponse,
+  UsersUpdateUserRoleData,
+  UsersUpdateUserRoleError,
+  UsersUpdateUserRoleResponse,
+  DocumentsUploadDocumentData,
+  DocumentsUploadDocumentError,
+  DocumentsUploadDocumentResponse,
+  DocumentsListDocumentsError,
+  DocumentsListDocumentsResponse,
+  DocumentsGetDocumentData,
+  DocumentsGetDocumentError,
+  DocumentsGetDocumentResponse,
+  DocumentsDeleteDocumentData,
+  DocumentsDeleteDocumentError,
+  DocumentsDeleteDocumentResponse,
+  DocumentsRenameDocumentData,
+  DocumentsRenameDocumentError,
+  DocumentsRenameDocumentResponse,
+  DocumentsManuallyProcessDocumentData,
+  DocumentsManuallyProcessDocumentError,
+  DocumentsManuallyProcessDocumentResponse,
+  SuggestionsListSuggestionsData,
+  SuggestionsListSuggestionsError,
+  SuggestionsListSuggestionsResponse,
+  SuggestionsUpdateSuggestionStatusData,
+  SuggestionsUpdateSuggestionStatusError,
+  SuggestionsUpdateSuggestionStatusResponse,
+  AuditLogsListAuditLogsData,
+  AuditLogsListAuditLogsError,
+  AuditLogsListAuditLogsResponse,
+  DashboardGetDashboardMetricsError,
+  DashboardGetDashboardMetricsResponse,
+  AssessmentsGetPendingReviewsData,
+  AssessmentsGetPendingReviewsError,
+  AssessmentsGetPendingReviewsResponse,
+  AssessmentsGetSuggestionDetailData,
+  AssessmentsGetSuggestionDetailError,
+  AssessmentsGetSuggestionDetailResponse,
+  AssessmentsSubmitAssessmentData,
+  AssessmentsSubmitAssessmentError,
+  AssessmentsSubmitAssessmentResponse,
 } from "./types.gen";
 
 export const client = createClient(createConfig());
@@ -120,12 +163,12 @@ export const client = createClient(createConfig());
 /**
  * Auth:Jwt.Login
  */
-export const authJwtLogin = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<AuthJwtLoginData, ThrowOnError>,
+export const authAuthJwtLogin = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<AuthAuthJwtLoginData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    AuthJwtLoginResponse,
-    AuthJwtLoginError,
+    AuthAuthJwtLoginResponse,
+    AuthAuthJwtLoginError,
     ThrowOnError
   >({
     ...options,
@@ -141,12 +184,12 @@ export const authJwtLogin = <ThrowOnError extends boolean = false>(
 /**
  * Auth:Jwt.Logout
  */
-export const authJwtLogout = <ThrowOnError extends boolean = false>(
+export const authAuthJwtLogout = <ThrowOnError extends boolean = false>(
   options?: OptionsLegacyParser<unknown, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    AuthJwtLogoutResponse,
-    AuthJwtLogoutError,
+    AuthAuthJwtLogoutResponse,
+    AuthAuthJwtLogoutError,
     ThrowOnError
   >({
     ...options,
@@ -157,12 +200,12 @@ export const authJwtLogout = <ThrowOnError extends boolean = false>(
 /**
  * Register:Register
  */
-export const registerRegister = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<RegisterRegisterData, ThrowOnError>,
+export const authRegisterRegister = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<AuthRegisterRegisterData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    RegisterRegisterResponse,
-    RegisterRegisterError,
+    AuthRegisterRegisterResponse,
+    AuthRegisterRegisterError,
     ThrowOnError
   >({
     ...options,
@@ -173,12 +216,12 @@ export const registerRegister = <ThrowOnError extends boolean = false>(
 /**
  * Reset:Forgot Password
  */
-export const resetForgotPassword = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<ResetForgotPasswordData, ThrowOnError>,
+export const authResetForgotPassword = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<AuthResetForgotPasswordData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    ResetForgotPasswordResponse,
-    ResetForgotPasswordError,
+    AuthResetForgotPasswordResponse,
+    AuthResetForgotPasswordError,
     ThrowOnError
   >({
     ...options,
@@ -189,12 +232,12 @@ export const resetForgotPassword = <ThrowOnError extends boolean = false>(
 /**
  * Reset:Reset Password
  */
-export const resetResetPassword = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<ResetResetPasswordData, ThrowOnError>,
+export const authResetResetPassword = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<AuthResetResetPasswordData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    ResetResetPasswordResponse,
-    ResetResetPasswordError,
+    AuthResetResetPasswordResponse,
+    AuthResetResetPasswordError,
     ThrowOnError
   >({
     ...options,
@@ -205,12 +248,12 @@ export const resetResetPassword = <ThrowOnError extends boolean = false>(
 /**
  * Verify:Request-Token
  */
-export const verifyRequestToken = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<VerifyRequestTokenData, ThrowOnError>,
+export const authVerifyRequestToken = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<AuthVerifyRequestTokenData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    VerifyRequestTokenResponse,
-    VerifyRequestTokenError,
+    AuthVerifyRequestTokenResponse,
+    AuthVerifyRequestTokenError,
     ThrowOnError
   >({
     ...options,
@@ -221,12 +264,12 @@ export const verifyRequestToken = <ThrowOnError extends boolean = false>(
 /**
  * Verify:Verify
  */
-export const verifyVerify = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<VerifyVerifyData, ThrowOnError>,
+export const authVerifyVerify = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<AuthVerifyVerifyData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    VerifyVerifyResponse,
-    VerifyVerifyError,
+    AuthVerifyVerifyResponse,
+    AuthVerifyVerifyError,
     ThrowOnError
   >({
     ...options,
@@ -237,12 +280,12 @@ export const verifyVerify = <ThrowOnError extends boolean = false>(
 /**
  * Users:Current User
  */
-export const usersCurrentUser = <ThrowOnError extends boolean = false>(
+export const usersUsersCurrentUser = <ThrowOnError extends boolean = false>(
   options?: OptionsLegacyParser<unknown, ThrowOnError>,
 ) => {
   return (options?.client ?? client).get<
-    UsersCurrentUserResponse,
-    UsersCurrentUserError,
+    UsersUsersCurrentUserResponse,
+    UsersUsersCurrentUserError,
     ThrowOnError
   >({
     ...options,
@@ -253,12 +296,14 @@ export const usersCurrentUser = <ThrowOnError extends boolean = false>(
 /**
  * Users:Patch Current User
  */
-export const usersPatchCurrentUser = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<UsersPatchCurrentUserData, ThrowOnError>,
+export const usersUsersPatchCurrentUser = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<UsersUsersPatchCurrentUserData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).patch<
-    UsersPatchCurrentUserResponse,
-    UsersPatchCurrentUserError,
+    UsersUsersPatchCurrentUserResponse,
+    UsersUsersPatchCurrentUserError,
     ThrowOnError
   >({
     ...options,
@@ -269,12 +314,12 @@ export const usersPatchCurrentUser = <ThrowOnError extends boolean = false>(
 /**
  * Users:User
  */
-export const usersUser = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<UsersUserData, ThrowOnError>,
+export const usersUsersUser = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UsersUsersUserData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).get<
-    UsersUserResponse,
-    UsersUserError,
+    UsersUsersUserResponse,
+    UsersUsersUserError,
     ThrowOnError
   >({
     ...options,
@@ -285,12 +330,12 @@ export const usersUser = <ThrowOnError extends boolean = false>(
 /**
  * Users:Patch User
  */
-export const usersPatchUser = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<UsersPatchUserData, ThrowOnError>,
+export const usersUsersPatchUser = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UsersUsersPatchUserData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).patch<
-    UsersPatchUserResponse,
-    UsersPatchUserError,
+    UsersUsersPatchUserResponse,
+    UsersUsersPatchUserError,
     ThrowOnError
   >({
     ...options,
@@ -301,12 +346,12 @@ export const usersPatchUser = <ThrowOnError extends boolean = false>(
 /**
  * Users:Delete User
  */
-export const usersDeleteUser = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<UsersDeleteUserData, ThrowOnError>,
+export const usersUsersDeleteUser = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UsersUsersDeleteUserData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).delete<
-    UsersDeleteUserResponse,
-    UsersDeleteUserError,
+    UsersUsersDeleteUserResponse,
+    UsersUsersDeleteUserError,
     ThrowOnError
   >({
     ...options,
@@ -317,12 +362,12 @@ export const usersDeleteUser = <ThrowOnError extends boolean = false>(
 /**
  * Read Item
  */
-export const readItem = <ThrowOnError extends boolean = false>(
-  options?: OptionsLegacyParser<ReadItemData, ThrowOnError>,
+export const itemReadItem = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<ItemReadItemData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).get<
-    ReadItemResponse,
-    ReadItemError,
+    ItemReadItemResponse,
+    ItemReadItemError,
     ThrowOnError
   >({
     ...options,
@@ -333,12 +378,12 @@ export const readItem = <ThrowOnError extends boolean = false>(
 /**
  * Create Item
  */
-export const createItem = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<CreateItemData, ThrowOnError>,
+export const itemCreateItem = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ItemCreateItemData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    CreateItemResponse,
-    CreateItemError,
+    ItemCreateItemResponse,
+    ItemCreateItemError,
     ThrowOnError
   >({
     ...options,
@@ -349,12 +394,12 @@ export const createItem = <ThrowOnError extends boolean = false>(
 /**
  * Delete Item
  */
-export const deleteItem = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<DeleteItemData, ThrowOnError>,
+export const itemDeleteItem = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ItemDeleteItemData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).delete<
-    DeleteItemResponse,
-    DeleteItemError,
+    ItemDeleteItemResponse,
+    ItemDeleteItemError,
     ThrowOnError
   >({
     ...options,
@@ -365,12 +410,12 @@ export const deleteItem = <ThrowOnError extends boolean = false>(
 /**
  * Create Control
  */
-export const createControl = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<CreateControlData, ThrowOnError>,
+export const controlsCreateControl = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ControlsCreateControlData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    CreateControlResponse,
-    CreateControlError,
+    ControlsCreateControlResponse,
+    ControlsCreateControlError,
     ThrowOnError
   >({
     ...options,
@@ -381,12 +426,12 @@ export const createControl = <ThrowOnError extends boolean = false>(
 /**
  * Read Controls
  */
-export const readControls = <ThrowOnError extends boolean = false>(
-  options?: OptionsLegacyParser<ReadControlsData, ThrowOnError>,
+export const controlsReadControls = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<ControlsReadControlsData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).get<
-    ReadControlsResponse,
-    ReadControlsError,
+    ControlsReadControlsResponse,
+    ControlsReadControlsError,
     ThrowOnError
   >({
     ...options,
@@ -397,12 +442,12 @@ export const readControls = <ThrowOnError extends boolean = false>(
 /**
  * Read Control
  */
-export const readControl = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<ReadControlData, ThrowOnError>,
+export const controlsReadControl = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ControlsReadControlData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).get<
-    ReadControlResponse,
-    ReadControlError,
+    ControlsReadControlResponse,
+    ControlsReadControlError,
     ThrowOnError
   >({
     ...options,
@@ -413,12 +458,12 @@ export const readControl = <ThrowOnError extends boolean = false>(
 /**
  * Update Control
  */
-export const updateControl = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<UpdateControlData, ThrowOnError>,
+export const controlsUpdateControl = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ControlsUpdateControlData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).put<
-    UpdateControlResponse,
-    UpdateControlError,
+    ControlsUpdateControlResponse,
+    ControlsUpdateControlError,
     ThrowOnError
   >({
     ...options,
@@ -429,12 +474,12 @@ export const updateControl = <ThrowOnError extends boolean = false>(
 /**
  * Delete Control
  */
-export const deleteControl = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<DeleteControlData, ThrowOnError>,
+export const controlsDeleteControl = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<ControlsDeleteControlData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).delete<
-    DeleteControlResponse,
-    DeleteControlError,
+    ControlsDeleteControlResponse,
+    ControlsDeleteControlError,
     ThrowOnError
   >({
     ...options,
@@ -445,12 +490,12 @@ export const deleteControl = <ThrowOnError extends boolean = false>(
 /**
  * Create Risk
  */
-export const createRisk = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<CreateRiskData, ThrowOnError>,
+export const risksCreateRisk = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<RisksCreateRiskData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).post<
-    CreateRiskResponse,
-    CreateRiskError,
+    RisksCreateRiskResponse,
+    RisksCreateRiskError,
     ThrowOnError
   >({
     ...options,
@@ -461,12 +506,12 @@ export const createRisk = <ThrowOnError extends boolean = false>(
 /**
  * Read Risks
  */
-export const readRisks = <ThrowOnError extends boolean = false>(
-  options?: OptionsLegacyParser<ReadRisksData, ThrowOnError>,
+export const risksReadRisks = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<RisksReadRisksData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).get<
-    ReadRisksResponse,
-    ReadRisksError,
+    RisksReadRisksResponse,
+    RisksReadRisksError,
     ThrowOnError
   >({
     ...options,
@@ -477,12 +522,12 @@ export const readRisks = <ThrowOnError extends boolean = false>(
 /**
  * Read Risk
  */
-export const readRisk = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<ReadRiskData, ThrowOnError>,
+export const risksReadRisk = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<RisksReadRiskData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).get<
-    ReadRiskResponse,
-    ReadRiskError,
+    RisksReadRiskResponse,
+    RisksReadRiskError,
     ThrowOnError
   >({
     ...options,
@@ -493,12 +538,12 @@ export const readRisk = <ThrowOnError extends boolean = false>(
 /**
  * Update Risk
  */
-export const updateRisk = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<UpdateRiskData, ThrowOnError>,
+export const risksUpdateRisk = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<RisksUpdateRiskData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).put<
-    UpdateRiskResponse,
-    UpdateRiskError,
+    RisksUpdateRiskResponse,
+    RisksUpdateRiskError,
     ThrowOnError
   >({
     ...options,
@@ -509,12 +554,12 @@ export const updateRisk = <ThrowOnError extends boolean = false>(
 /**
  * Delete Risk
  */
-export const deleteRisk = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<DeleteRiskData, ThrowOnError>,
+export const risksDeleteRisk = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<RisksDeleteRiskData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).delete<
-    DeleteRiskResponse,
-    DeleteRiskError,
+    RisksDeleteRiskResponse,
+    RisksDeleteRiskError,
     ThrowOnError
   >({
     ...options,
@@ -525,12 +570,17 @@ export const deleteRisk = <ThrowOnError extends boolean = false>(
 /**
  * Create Business Process
  */
-export const createBusinessProcess = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<CreateBusinessProcessData, ThrowOnError>,
+export const businessProcessesCreateBusinessProcess = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    BusinessProcessesCreateBusinessProcessData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).post<
-    CreateBusinessProcessResponse,
-    CreateBusinessProcessError,
+    BusinessProcessesCreateBusinessProcessResponse,
+    BusinessProcessesCreateBusinessProcessError,
     ThrowOnError
   >({
     ...options,
@@ -541,12 +591,17 @@ export const createBusinessProcess = <ThrowOnError extends boolean = false>(
 /**
  * Read Business Processes
  */
-export const readBusinessProcesses = <ThrowOnError extends boolean = false>(
-  options?: OptionsLegacyParser<ReadBusinessProcessesData, ThrowOnError>,
+export const businessProcessesReadBusinessProcesses = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: OptionsLegacyParser<
+    BusinessProcessesReadBusinessProcessesData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).get<
-    ReadBusinessProcessesResponse,
-    ReadBusinessProcessesError,
+    BusinessProcessesReadBusinessProcessesResponse,
+    BusinessProcessesReadBusinessProcessesError,
     ThrowOnError
   >({
     ...options,
@@ -557,12 +612,17 @@ export const readBusinessProcesses = <ThrowOnError extends boolean = false>(
 /**
  * Read Business Process
  */
-export const readBusinessProcess = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<ReadBusinessProcessData, ThrowOnError>,
+export const businessProcessesReadBusinessProcess = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    BusinessProcessesReadBusinessProcessData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).get<
-    ReadBusinessProcessResponse,
-    ReadBusinessProcessError,
+    BusinessProcessesReadBusinessProcessResponse,
+    BusinessProcessesReadBusinessProcessError,
     ThrowOnError
   >({
     ...options,
@@ -573,12 +633,17 @@ export const readBusinessProcess = <ThrowOnError extends boolean = false>(
 /**
  * Update Business Process
  */
-export const updateBusinessProcess = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<UpdateBusinessProcessData, ThrowOnError>,
+export const businessProcessesUpdateBusinessProcess = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    BusinessProcessesUpdateBusinessProcessData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).put<
-    UpdateBusinessProcessResponse,
-    UpdateBusinessProcessError,
+    BusinessProcessesUpdateBusinessProcessResponse,
+    BusinessProcessesUpdateBusinessProcessError,
     ThrowOnError
   >({
     ...options,
@@ -589,12 +654,17 @@ export const updateBusinessProcess = <ThrowOnError extends boolean = false>(
 /**
  * Delete Business Process
  */
-export const deleteBusinessProcess = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<DeleteBusinessProcessData, ThrowOnError>,
+export const businessProcessesDeleteBusinessProcess = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    BusinessProcessesDeleteBusinessProcessData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).delete<
-    DeleteBusinessProcessResponse,
-    DeleteBusinessProcessError,
+    BusinessProcessesDeleteBusinessProcessResponse,
+    BusinessProcessesDeleteBusinessProcessError,
     ThrowOnError
   >({
     ...options,
@@ -605,12 +675,17 @@ export const deleteBusinessProcess = <ThrowOnError extends boolean = false>(
 /**
  * Create Regulatory Framework
  */
-export const createRegulatoryFramework = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<CreateRegulatoryFrameworkData, ThrowOnError>,
+export const regulatoryFrameworksCreateRegulatoryFramework = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    RegulatoryFrameworksCreateRegulatoryFrameworkData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).post<
-    CreateRegulatoryFrameworkResponse,
-    CreateRegulatoryFrameworkError,
+    RegulatoryFrameworksCreateRegulatoryFrameworkResponse,
+    RegulatoryFrameworksCreateRegulatoryFrameworkError,
     ThrowOnError
   >({
     ...options,
@@ -621,12 +696,17 @@ export const createRegulatoryFramework = <ThrowOnError extends boolean = false>(
 /**
  * Read Regulatory Frameworks
  */
-export const readRegulatoryFrameworks = <ThrowOnError extends boolean = false>(
-  options?: OptionsLegacyParser<ReadRegulatoryFrameworksData, ThrowOnError>,
+export const regulatoryFrameworksReadRegulatoryFrameworks = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: OptionsLegacyParser<
+    RegulatoryFrameworksReadRegulatoryFrameworksData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).get<
-    ReadRegulatoryFrameworksResponse,
-    ReadRegulatoryFrameworksError,
+    RegulatoryFrameworksReadRegulatoryFrameworksResponse,
+    RegulatoryFrameworksReadRegulatoryFrameworksError,
     ThrowOnError
   >({
     ...options,
@@ -637,12 +717,17 @@ export const readRegulatoryFrameworks = <ThrowOnError extends boolean = false>(
 /**
  * Read Regulatory Framework
  */
-export const readRegulatoryFramework = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<ReadRegulatoryFrameworkData, ThrowOnError>,
+export const regulatoryFrameworksReadRegulatoryFramework = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    RegulatoryFrameworksReadRegulatoryFrameworkData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).get<
-    ReadRegulatoryFrameworkResponse,
-    ReadRegulatoryFrameworkError,
+    RegulatoryFrameworksReadRegulatoryFrameworkResponse,
+    RegulatoryFrameworksReadRegulatoryFrameworkError,
     ThrowOnError
   >({
     ...options,
@@ -653,12 +738,17 @@ export const readRegulatoryFramework = <ThrowOnError extends boolean = false>(
 /**
  * Update Regulatory Framework
  */
-export const updateRegulatoryFramework = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<UpdateRegulatoryFrameworkData, ThrowOnError>,
+export const regulatoryFrameworksUpdateRegulatoryFramework = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    RegulatoryFrameworksUpdateRegulatoryFrameworkData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).put<
-    UpdateRegulatoryFrameworkResponse,
-    UpdateRegulatoryFrameworkError,
+    RegulatoryFrameworksUpdateRegulatoryFrameworkResponse,
+    RegulatoryFrameworksUpdateRegulatoryFrameworkError,
     ThrowOnError
   >({
     ...options,
@@ -669,12 +759,17 @@ export const updateRegulatoryFramework = <ThrowOnError extends boolean = false>(
 /**
  * Delete Regulatory Framework
  */
-export const deleteRegulatoryFramework = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<DeleteRegulatoryFrameworkData, ThrowOnError>,
+export const regulatoryFrameworksDeleteRegulatoryFramework = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    RegulatoryFrameworksDeleteRegulatoryFrameworkData,
+    ThrowOnError
+  >,
 ) => {
   return (options?.client ?? client).delete<
-    DeleteRegulatoryFrameworkResponse,
-    DeleteRegulatoryFrameworkError,
+    RegulatoryFrameworksDeleteRegulatoryFrameworkResponse,
+    RegulatoryFrameworksDeleteRegulatoryFrameworkError,
     ThrowOnError
   >({
     ...options,
@@ -683,17 +778,405 @@ export const deleteRegulatoryFramework = <ThrowOnError extends boolean = false>(
 };
 
 /**
+ * Get Current User
+ * Get the current authenticated user's information including their role.
+ */
+export const usersGetCurrentUser = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<unknown, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    UsersGetCurrentUserResponse,
+    UsersGetCurrentUserError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/users/me",
+  });
+};
+
+/**
+ * List Users
+ * List users in the current tenant, optionally filtered by role.
+ * Requires admin or compliance_officer role.
+ */
+export const usersListUsers = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<UsersListUsersData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    UsersListUsersResponse,
+    UsersListUsersError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/users",
+  });
+};
+
+/**
  * Update User Role
  */
-export const updateUserRole = <ThrowOnError extends boolean = false>(
-  options: OptionsLegacyParser<UpdateUserRoleData, ThrowOnError>,
+export const usersUpdateUserRole = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UsersUpdateUserRoleData, ThrowOnError>,
 ) => {
   return (options?.client ?? client).put<
-    UpdateUserRoleResponse,
-    UpdateUserRoleError,
+    UsersUpdateUserRoleResponse,
+    UsersUpdateUserRoleError,
     ThrowOnError
   >({
     ...options,
     url: "/api/v1/users/{user_id}/role",
+  });
+};
+
+/**
+ * Upload Document
+ * Upload a regulatory document for AI analysis.
+ *
+ * - **file**: PDF or text file (max 20MB)
+ * - Requires admin role
+ * - Returns document metadata with processing status
+ */
+export const documentsUploadDocument = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<DocumentsUploadDocumentData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).post<
+    DocumentsUploadDocumentResponse,
+    DocumentsUploadDocumentError,
+    ThrowOnError
+  >({
+    ...options,
+    ...formDataBodySerializer,
+    headers: {
+      "Content-Type": null,
+      ...options?.headers,
+    },
+    url: "/api/v1/documents/upload",
+  });
+};
+
+/**
+ * List Documents
+ * List all documents for the current user's tenant.
+ *
+ * - Requires admin, bpo, or executive role
+ * - Returns documents ordered by creation date (newest first)
+ */
+export const documentsListDocuments = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<unknown, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    DocumentsListDocumentsResponse,
+    DocumentsListDocumentsError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/documents",
+  });
+};
+
+/**
+ * Get Document
+ * Get a specific document by ID.
+ *
+ * - Requires admin, bpo, or executive role
+ * - Returns document metadata
+ */
+export const documentsGetDocument = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<DocumentsGetDocumentData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    DocumentsGetDocumentResponse,
+    DocumentsGetDocumentError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/documents/{document_id}",
+  });
+};
+
+/**
+ * Delete Document
+ * Archive a document (soft delete).
+ *
+ * - **document_id**: UUID of the document to archive
+ * - Requires admin role
+ * - Moves document to archive in both database and Supabase storage
+ * - Returns success message
+ */
+export const documentsDeleteDocument = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<DocumentsDeleteDocumentData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).delete<
+    DocumentsDeleteDocumentResponse,
+    DocumentsDeleteDocumentError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/documents/{document_id}",
+  });
+};
+
+/**
+ * Rename Document
+ * Rename a document.
+ *
+ * - **document_id**: UUID of the document to rename
+ * - **new_filename**: New filename for the document (in request body)
+ * - Requires admin role
+ * - Updates filename in database only (storage path remains unchanged)
+ * - File extension is preserved automatically
+ * - Returns updated document metadata
+ */
+export const documentsRenameDocument = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<DocumentsRenameDocumentData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).patch<
+    DocumentsRenameDocumentResponse,
+    DocumentsRenameDocumentError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/documents/{document_id}/rename",
+  });
+};
+
+/**
+ * Manually Process Document
+ * Manually trigger document processing (for testing/debugging).
+ *
+ * - **document_id**: UUID of the document to process
+ * - Requires admin role
+ * - Processes document synchronously and returns detailed status
+ * - Useful for debugging when automatic processing fails
+ */
+export const documentsManuallyProcessDocument = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    DocumentsManuallyProcessDocumentData,
+    ThrowOnError
+  >,
+) => {
+  return (options?.client ?? client).post<
+    DocumentsManuallyProcessDocumentResponse,
+    DocumentsManuallyProcessDocumentError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/documents/{document_id}/process",
+  });
+};
+
+/**
+ * List Suggestions
+ * List AI suggestions with optional status filtering.
+ * Filtered by tenant - only shows suggestions from documents uploaded by users in the same tenant.
+ */
+export const suggestionsListSuggestions = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: OptionsLegacyParser<SuggestionsListSuggestionsData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    SuggestionsListSuggestionsResponse,
+    SuggestionsListSuggestionsError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/suggestions",
+  });
+};
+
+/**
+ * Update Suggestion Status
+ * Update the status of an AI suggestion.
+ * Transitions:
+ * - pending -> awaiting_bpo_approval (Accept)
+ * - pending -> rejected (Reject)
+ */
+export const suggestionsUpdateSuggestionStatus = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    SuggestionsUpdateSuggestionStatusData,
+    ThrowOnError
+  >,
+) => {
+  return (options?.client ?? client).patch<
+    SuggestionsUpdateSuggestionStatusResponse,
+    SuggestionsUpdateSuggestionStatusError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/suggestions/{suggestion_id}/status",
+  });
+};
+
+/**
+ * List Audit Logs
+ * Retrieve audit logs.
+ * Requires admin or compliance_officer role.
+ */
+export const auditLogsListAuditLogs = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<AuditLogsListAuditLogsData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    AuditLogsListAuditLogsResponse,
+    AuditLogsListAuditLogsError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/audit-logs",
+  });
+};
+
+/**
+ * Get Dashboard Metrics
+ * Retrieve role-specific dashboard metrics for the authenticated user.
+ *
+ * Returns:
+ * DashboardMetrics: Role-specific dashboard cards and data
+ *
+ * Raises:
+ * 401: Unauthorized (JWT missing/invalid)
+ * 403: Forbidden (user inactive or invalid tenant)
+ * 500: Internal server error (database/service failure)
+ */
+export const dashboardGetDashboardMetrics = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: OptionsLegacyParser<unknown, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    DashboardGetDashboardMetricsResponse,
+    DashboardGetDashboardMetricsError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/dashboard/metrics",
+  });
+};
+
+/**
+ * Get Pending Reviews
+ * Retrieve paginated list of suggestions with status 'pending_review' assigned to the logged-in BPO.
+ *
+ * Only accessible to users with BPO role. Returns suggestions filtered by:
+ * - status = "pending_review"
+ * - assigned_bpo_id = current_user.id
+ * - tenant_id = current_user.tenant_id (enforced by RLS)
+ *
+ * Args:
+ * page: Page number (1-indexed)
+ * size: Number of items per page (max 100)
+ * db: Database session
+ * current_user: Authenticated user from JWT
+ *
+ * Returns:
+ * PendingReviewsResponse: Paginated list of pending review items
+ *
+ * Raises:
+ * 401: Unauthorized (JWT missing/invalid)
+ * 403: Forbidden (non-BPO user or user has no tenant)
+ * 500: Internal server error
+ */
+export const assessmentsGetPendingReviews = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: OptionsLegacyParser<AssessmentsGetPendingReviewsData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    AssessmentsGetPendingReviewsResponse,
+    AssessmentsGetPendingReviewsError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/assessments/pending",
+  });
+};
+
+/**
+ * Get Suggestion Detail
+ * Retrieve detailed information for a specific AI suggestion.
+ *
+ * Only accessible to BPO assigned to the suggestion.
+ *
+ * Args:
+ * suggestion_id: ID of the suggestion
+ * db: Database session
+ * current_user: Authenticated user from JWT
+ *
+ * Returns:
+ * SuggestionDetailResponse: Detailed suggestion data
+ *
+ * Raises:
+ * 403: Forbidden (not BPO or not assigned)
+ * 404: Not Found
+ */
+export const assessmentsGetSuggestionDetail = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<
+    AssessmentsGetSuggestionDetailData,
+    ThrowOnError
+  >,
+) => {
+  return (options?.client ?? client).get<
+    AssessmentsGetSuggestionDetailResponse,
+    AssessmentsGetSuggestionDetailError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/assessments/{suggestion_id}",
+  });
+};
+
+/**
+ * Submit Assessment
+ * Submit BPO assessment action (approve or discard) for an AI suggestion.
+ *
+ * Authorization checks:
+ * - User must have BPO role
+ * - Suggestion.assigned_bpo_id must match current_user.id
+ * - Suggestion.tenant_id must match current_user.tenant_id (enforced by service layer)
+ *
+ * Validation:
+ * - For approve action: residual_risk is REQUIRED (400 Bad Request if missing)
+ * - Suggestion must exist and have status "pending_review" (404 if not found, 409 if wrong status)
+ *
+ * Side effects:
+ * - Approve: Creates active records (business_process, risk, control), updates status to "active"
+ * - Discard: Updates status to "archived"
+ * - Both actions: Creates immutable audit log entry
+ *
+ * Args:
+ * suggestion_id: ID of the suggestion to assess
+ * request: AssessmentRequest with action, residual_risk (if approve), and optional edits
+ * db: Database session
+ * current_user: Authenticated user from JWT
+ *
+ * Returns:
+ * AssessmentResponse: Success status, message, updated status, audit_log_id, and active_record_ids (if approved)
+ *
+ * Raises:
+ * 400: Bad Request (residual_risk missing for approve action)
+ * 401: Unauthorized (JWT missing/invalid)
+ * 403: Forbidden (non-BPO user, not assigned to this suggestion, or no tenant)
+ * 404: Not Found (suggestion doesn't exist or belongs to different tenant)
+ * 409: Conflict (suggestion status is not "pending_review")
+ * 500: Internal server error
+ */
+export const assessmentsSubmitAssessment = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<AssessmentsSubmitAssessmentData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).post<
+    AssessmentsSubmitAssessmentResponse,
+    AssessmentsSubmitAssessmentError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/assessments/{suggestion_id}/assess",
   });
 };

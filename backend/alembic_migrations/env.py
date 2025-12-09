@@ -10,9 +10,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 from app.models import Base
-from dotenv import load_dotenv
-
-load_dotenv()
+from app.config import settings # Import settings
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -33,12 +31,11 @@ target_metadata = Base.metadata
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
 
-# Retrieve the database URL from the environment
-# set it during execution
-database_url = os.getenv("DATABASE_URL")
+# Use the database URL from app.config.settings
+database_url = settings.DATABASE_URL 
 
-if not database_url:
-    raise ValueError("DATABASE_URL environment variable is not set!")
+# No need to check for empty database_url, as settings will provide a default
+# if it's not set in .env or via environment variables for the app.
 
 parsed_db_url = urlparse(database_url)
 
