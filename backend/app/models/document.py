@@ -23,7 +23,8 @@ class Document(Base):
     filename = Column(String(255), nullable=False)
     storage_path = Column(String(512), nullable=False)
     status = Column(SQLEnum(DocumentStatus), default=DocumentStatus.pending, nullable=False)
-    uploaded_by = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
+    # Use String for uploaded_by to ensure compatibility with User.id (which is hyphenated string in SQLite)
+    uploaded_by = Column(String(36), ForeignKey("user.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     archived_at = Column(DateTime, nullable=True)
 

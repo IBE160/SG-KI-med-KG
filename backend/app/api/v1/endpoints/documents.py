@@ -27,11 +27,9 @@ async def upload_document(
 ):
     """
     Upload a regulatory document for AI analysis.
-
-    - **file**: PDF or text file (max 20MB)
-    - Requires admin role
-    - Returns document metadata with processing status
     """
+    print(f"DEBUG: Uploading document for User {current_user.id}, Tenant {current_user.tenant_id}")
+    
     # Validate file
     await DocumentService.validate_file(file)
 
@@ -45,14 +43,30 @@ async def upload_document(
         storage_path=storage_path,
         user_id=current_user.id,
     )
+    print(f"DEBUG: Document created in DB: {document.id}")
 
     # Trigger background analysis (non-blocking)
     try:
-        process_document.delay(str(document.id))
+        from app.core.celery_app import celery_app
+        from tasks.analysis import _process_document_async
+        
+        if celery_app.conf.task_always_eager:
+            print(f"DEBUG: Eager mode detected, awaiting task directly")
+            # We are in the event loop, so we must await the async function directly
+            # instead of using .delay() which calls asyncio.run()
+            await _process_document_async(document.id)
+            print("DEBUG: Task completed (eager)")
+        else:
+            print(f"DEBUG: Triggering process_document.delay({document.id})")
+            process_document.delay(str(document.id))
+            print("DEBUG: Task triggered successfully")
     except Exception as e:
         # Log but don't fail - document is uploaded, task can be retried
         import logging
         logging.error(f"Failed to queue document processing task: {str(e)}")
+        print(f"DEBUG: Task trigger failed: {e}")
+        import traceback
+        traceback.print_exc()
 
     # Return response
     return DocumentUploadResponse(
@@ -70,13 +84,12 @@ async def list_documents(
 ):
     """
     List all documents for the current user's tenant.
-
-    - Requires admin, bpo, or executive role
-    - Returns documents ordered by creation date (newest first)
     """
+    print(f"DEBUG: Listing documents for User {current_user.id}, Tenant {current_user.tenant_id}")
     documents = await DocumentService.get_documents_by_user(
         db=db, user_id=current_user.id, tenant_id=current_user.tenant_id
     )
+    print(f"DEBUG: Found {len(documents)} documents")
     return documents
 
 

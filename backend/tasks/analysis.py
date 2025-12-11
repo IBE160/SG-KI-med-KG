@@ -1,8 +1,9 @@
 import uuid
-from celery import shared_task
 from sqlalchemy.ext.asyncio import AsyncSession
 import asyncio
 import logging
+
+from app.core.celery_app import celery_app
 
 # Internal imports need to be careful with Celery context
 from app.database import async_session_maker
@@ -29,6 +30,13 @@ async def _process_document_async(document_id: uuid.UUID):
                 return
 
             logger.info(f"[STEP 1/6] ✓ Document found: {document.filename}")
+
+            # Fetch uploader to get tenant_id for suggestions
+            from app.models.user import User
+            uploader = await db.get(User, document.uploaded_by)
+            tenant_id = uploader.tenant_id if uploader else None
+            if not tenant_id:
+                logger.warning(f"Document {document_id} uploader has no tenant_id")
 
             # Update status to processing
             document.status = DocumentStatus.processing
@@ -84,6 +92,7 @@ async def _process_document_async(document_id: uuid.UUID):
             for i, item in enumerate(analysis_result.suggestions):
                 suggestion = AISuggestion(
                     document_id=document.id,
+                    tenant_id=tenant_id,
                     type=item.type,
                     content=item.content,
                     rationale=item.rationale,
@@ -112,14 +121,20 @@ async def _process_document_async(document_id: uuid.UUID):
             except Exception as db_e:
                 logger.error(f"Failed to update document status to failed: {db_e}")
 
-@shared_task(name="process_document")
+@celery_app.task(name="process_document")
 def process_document(document_id_str: str):
     """
     Celery task entry point.
-    Args:
-        document_id_str: UUID string of the document.
     """
-    # Celery doesn't natively support async/await tasks in standard pool
-    # We use asyncio.run to execute the async logic
-    document_id = uuid.UUID(document_id_str)
-    asyncio.run(_process_document_async(document_id))
+    print(f"DEBUG: Celery Task process_document START for {document_id_str}")
+    try:
+        # Celery doesn't natively support async/await tasks in standard pool
+        # We use asyncio.run to execute the async logic
+        document_id = uuid.UUID(document_id_str)
+        asyncio.run(_process_document_async(document_id))
+        print(f"DEBUG: Celery Task process_document FINISHED logic")
+    except Exception as e:
+        print(f"CRITICAL ERROR IN TASK: {e}")
+        import traceback
+        traceback.print_exc()
+    print(f"DEBUG: Celery Task process_document END")

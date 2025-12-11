@@ -130,7 +130,7 @@ class DocumentService:
             filename=doc_create.filename,
             storage_path=doc_create.storage_path,
             status=doc_create.status,
-            uploaded_by=doc_create.uploaded_by,
+            uploaded_by=str(doc_create.uploaded_by),
         )
 
         db.add(document)
