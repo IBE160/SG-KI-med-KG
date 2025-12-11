@@ -35,7 +35,7 @@ def upgrade():
             "created_at",
             sa.DateTime(),
             nullable=False,
-            server_default=sa.text("now()"),
+            server_default=sa.func.now(),
         ),
         sa.ForeignKeyConstraint(
             ["uploaded_by"],

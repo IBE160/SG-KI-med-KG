@@ -100,10 +100,9 @@ class DashboardService:
         # BPO sees: Pending Reviews, My Controls, Overdue Assessments
 
         # Count pending reviews assigned to this BPO
-        # Note: assigned_bpo_id field needs to exist on AISuggestion model
-        # For now, using status awaiting_bpo_approval as proxy
         pending_reviews_query = select(func.count(AISuggestion.id)).where(
-            AISuggestion.status == SuggestionStatus.awaiting_bpo_approval
+            AISuggestion.status == SuggestionStatus.pending_review,
+            AISuggestion.assigned_bpo_id == user_id
         )
         pending_reviews_result = await db.execute(pending_reviews_query)
         pending_reviews = pending_reviews_result.scalar() or 0

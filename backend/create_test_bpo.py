@@ -1,7 +1,7 @@
 """
-Create a test admin user with predefined credentials.
-Email: admin@test.com
-Password: Admin123!
+Create a test BPO user with predefined credentials.
+Email: bpo@test.com
+Password: Bpo123!
 """
 import asyncio
 import uuid
@@ -15,17 +15,19 @@ def hash_password(password: str) -> str:
     return bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt()).decode('utf-8')
 
 
-async def create_test_admin():
+async def create_test_bpo():
     # Predefined credentials
-    email = "admin@test.com"
-    password = "Admin123!"
+    email = "bpo@test.com"
+    password = "Bpo123!"
 
     # Hash password
     hashed_password = hash_password(password)
 
     # Generate IDs
     user_id = uuid.uuid4()
-    tenant_id = uuid.uuid4()
+    # Use same tenant as admin if possible, or new one. 
+    # For simplicity, generating new one, but in real app admin invites BPO to tenant.
+    tenant_id = uuid.uuid4() 
 
     async with engine.begin() as conn:
         # Check if user already exists
@@ -37,17 +39,17 @@ async def create_test_admin():
 
         if existing_user:
             print(f"\nWARNING: User '{email}' already exists!")
-
-            # Update to admin if not already
-            if existing_user[1] != 'admin':
+            
+            # Update to bpo if not already
+            if existing_user[1] != 'bpo':
                 await conn.execute(
-                    text("UPDATE \"user\" SET role = 'admin' WHERE email = :email"),
+                    text("UPDATE \"user\" SET role = 'bpo' WHERE email = :email"),
                     {"email": email}
                 )
-                print(f"SUCCESS: Updated user to admin role!")
+                print(f"SUCCESS: Updated user to bpo role!")
             else:
-                print(f"SUCCESS: User already has admin role!")
-
+                print(f"SUCCESS: User already has bpo role!")
+                
             print(f"\nEmail: {email}")
             print(f"Password: {password}")
             return
@@ -55,10 +57,10 @@ async def create_test_admin():
         # Create new user
         await conn.execute(
             text("""
-                INSERT INTO "user"
+                INSERT INTO \"user\"
                 (id, email, hashed_password, is_active, is_superuser, is_verified, role, tenant_id)
                 VALUES
-                (:id, :email, :hashed_password, true, false, true, 'admin', :tenant_id)
+                (:id, :email, :hashed_password, true, false, true, 'bpo', :tenant_id)
             """),
             {
                 "id": str(user_id),
@@ -69,17 +71,17 @@ async def create_test_admin():
         )
 
         print("\n" + "=" * 60)
-        print("SUCCESS: TEST ADMIN USER CREATED!")
+        print("SUCCESS: TEST BPO USER CREATED!")
         print("=" * 60)
         print(f"Email:     {email}")
         print(f"Password:  {password}")
         print(f"User ID:   {str(user_id)}")
         print(f"Tenant ID: {str(tenant_id)}")
-        print(f"Role:      admin")
+        print(f"Role:      bpo")
         print("=" * 60)
         print("\nYou can now login at: http://localhost:3000")
         print("=" * 60)
 
 
 if __name__ == "__main__":
-    asyncio.run(create_test_admin())
+    asyncio.run(create_test_bpo())
