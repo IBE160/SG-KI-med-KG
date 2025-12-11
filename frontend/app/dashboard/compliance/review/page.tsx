@@ -61,12 +61,14 @@ export default function AIReviewPage() {
 
   const handleAccept = (updatedContent?: any, bpoId?: string) => {
     if (!selectedId) return;
+    
     updateStatus.mutate({ 
       suggestionId: selectedId, 
-      status: "awaiting_bpo_approval",
-      updatedContent,
-      bpoId: bpoId 
+      status: "pending_review", 
+      updatedContent, 
+      bpoId 
     });
+
     // Optimistic selection of next
     const currentIndex = suggestions?.findIndex((s: any) => s.id === selectedId) || 0;
     const next = suggestions?.[currentIndex + 1] || suggestions?.[0];

@@ -77,18 +77,26 @@ async def update_suggestion_status(
     if request.updated_content:
         suggestion.content = request.updated_content
     
+    # Handle BPO Assignment
+    if request.bpo_id:
+        suggestion.assigned_bpo_id = request.bpo_id
+
     # Audit Log
+    changes = {"status": {"old": old_status, "new": request.status}}
+    if request.bpo_id:
+        changes["assigned_bpo_id"] = str(request.bpo_id)
+
     await AuditService.log_action(
         db,
         actor_id=current_user.id,
         action=f"SUGGESTION_{request.status.name.upper()}",
         entity_type="AISuggestion",
         entity_id=suggestion.id,
-        changes={"status": {"old": old_status, "new": request.status}}
+        changes=changes
     )
 
     # Mock Notification Trigger
-    if request.status == SuggestionStatus.awaiting_bpo_approval:
+    if request.status == SuggestionStatus.pending_review:
         if request.bpo_id:
             # Send notification logic here (mocked)
             print(f"Sending notification to BPO {request.bpo_id} for suggestion {suggestion_id}")

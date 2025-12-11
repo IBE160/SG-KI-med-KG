@@ -6,7 +6,7 @@ import { toast } from "sonner";
 
 interface UpdateSuggestionStatusParams {
   suggestionId: string;
-  status: "pending" | "awaiting_bpo_approval" | "rejected";
+  status: "pending" | "pending_review" | "rejected";
   updatedContent?: any;
   bpoId?: string;
 }
