@@ -295,3 +295,83 @@ WHERE rf.id = {framework_id} AND crr.id IS NULL AND rf.tenant_id = {tenant_id}
 
 **2025-12-12** - Story drafted by Scrum Master (Bob). Ready for technical context generation and development.
 **2025-12-12** - Implemented Story 5.2 (Gap Analysis).
+
+## Senior Developer Review (AI)
+
+### Reviewer: Amelia
+### Date: Friday, December 12, 2025
+### Outcome: Blocked
+
+**Justification:**
+Critical architecture logic mismatch found. The current implementation treats "Regulatory Framework" as a single requirement (Assumption 5.1), meaning the "Gap Analysis Report" only analyzes a single requirement at a time, not a full standard (e.g., GDPR) with multiple requirements. This renders the report functionally useless for the user's goal ("understand areas of non-compliance" for a framework). The data model requires either a parent "Framework" entity or a grouping mechanism (e.g., shared name/version) to aggregate requirements for the report.
+
+### Summary
+The code is high quality and follows patterns, but it implements the wrong business logic due to a flaw in the Technical Specification and Data Model assumptions. The system cannot generate a "Gap Analysis" for a set of requirements because it lacks the concept of a "Set". It only checks one row in the `regulatory_frameworks` table.
+
+### Key Findings
+
+- **[HIGH] Critical Logic Flaw (Architecture):** The `GapAnalysisService` queries a single `framework_id` and checks if *that specific row* is mapped. Since `RegulatoryFramework` rows represent individual requirements (e.g., "Article 1"), the report only shows 0% or 100% coverage for that one line item. It does not aggregate all requirements for "GDPR".
+- **[HIGH] Testing Gaps:** Unit tests use Mocks that return a report with 10 requirements, while the actual service implementation can only ever return 1 (the one requested). This masked the logic flaw.
+- **[MED] Misleading UX:** The "Select Framework" dropdown will list every single requirement (potentially hundreds) as individual options, rather than grouping them by Standard (e.g., GDPR, SOX).
+- **[LOW] Project Structure Inconsistency:** `compliance.py` is in `backend/app/routes/` while other v1 endpoints are in `backend/app/api/v1/endpoints/`.
+
+### Acceptance Criteria Coverage
+
+| AC# | Description | Status | Evidence |
+| :--- | :--- | :--- | :--- |
+| 1 | Gap Analysis Endpoint (GET /api/v1/reports/gap-analysis/{id}) | **PARTIAL** | Implemented in `backend/app/api/v1/endpoints/reports.py:22`, but logic is flawed (single item). |
+| 2 | Gap Analysis Service (LEFT JOIN query) | **PARTIAL** | Implemented in `backend/app/services/gap_analysis_service.py:12`, but query selects single ID (`WHERE rf.id = framework_id`). |
+| 3 | GapAnalysisReport Schema | **IMPLEMENTED** | `backend/app/schemas/reports.py:15` |
+| 4 | Authorization (Admin/Executive) | **IMPLEMENTED** | `backend/app/api/v1/endpoints/reports.py:13` (`verify_admin_or_executive_role`) |
+| 5 | Tenant Isolation | **IMPLEMENTED** | `backend/app/services/gap_analysis_service.py:27` (filters by tenant_id) |
+| 6 | Gap Analysis Report UI Page | **IMPLEMENTED** | `frontend/app/dashboard/reports/gap-analysis/page.tsx` |
+| 7 | Report Display (Metrics, Table) | **IMPLEMENTED** | `frontend/app/dashboard/reports/gap-analysis/page.tsx:112` |
+| 8 | Print Functionality | **IMPLEMENTED** | `frontend/app/dashboard/reports/gap-analysis/page.tsx:44` (`window.print()`) |
+| 9 | Performance (<2s for 500 reqs) | **FAILED** | Service processes only 1 requirement. Cannot support 500 requirements as architected. |
+| 10 | Error Handling (404, 504) | **IMPLEMENTED** | `backend/app/services/gap_analysis_service.py:38` (404) |
+| 11 | Security (RBAC, XSS) | **IMPLEMENTED** | Verified in `reports.py` and React encoding. |
+| 12 | Data Consistency (TTL 60s) | **IMPLEMENTED** | `frontend/hooks/useGapAnalysis.ts:21` (`staleTime: 60000`) |
+
+**Summary:** 9 of 12 ACs implemented technically, but the core functionality (AC 1, 2, 9) fails to meet the user intent due to architectural limitations.
+
+### Task Completion Validation
+
+| Task | Marked As | Verified As | Evidence |
+| :--- | :--- | :--- | :--- |
+| Backend: Create Pydantic Schemas | [x] | **VERIFIED** | `backend/app/schemas/reports.py` |
+| Backend: Create Gap Analysis Service | [x] | **VERIFIED** | `backend/app/services/gap_analysis_service.py` (Note: Logic invalid) |
+| Backend: Create Gap Analysis API Endpoint | [x] | **VERIFIED** | `backend/app/api/v1/endpoints/reports.py` |
+| Backend: Write Tests for Gap Analysis | [x] | **VERIFIED** | `backend/tests/api/v1/test_reports.py` (Note: Mock usage masked bugs) |
+| Frontend: Update API Client Types | [x] | **VERIFIED** | Usage in frontend code implies types exist. |
+| Frontend: Create Gap Analysis Report UI Page | [x] | **VERIFIED** | `frontend/app/dashboard/reports/gap-analysis/page.tsx` |
+| Frontend: Implement Print Functionality | [x] | **VERIFIED** | `frontend/app/dashboard/reports/gap-analysis/page.tsx` |
+| Frontend: Implement React Query Hooks | [x] | **VERIFIED** | `frontend/hooks/useGapAnalysis.ts` |
+| Frontend: Write Component Tests | [x] | **VERIFIED** | `frontend/__tests__/app/dashboard/reports/gap-analysis/page.test.tsx` |
+| Integration Testing | [x] | **FAILED** | No evidence of true integration test verifying "Gap Analysis" on a full framework (mocked tests passed). |
+
+### Test Coverage and Gaps
+- **Backend:** `test_reports.py` covers authorization and response format well, but relies on `mocker.patch` for the service, completely bypassing the flawed SQL logic. Needs integration tests with a seeded database of multiple requirements.
+- **Frontend:** Component tests are adequate for UI behavior.
+
+### Architectural Alignment
+- **Violation:** The Data Model (`RegulatoryFramework` = single requirement) contradicts the User Story ("Report for a Framework"). This requires an Architecture Refinement (Epic 1/5) to introduce a grouping concept (e.g., `Framework` entity vs `Requirement` entity, or a `group_id`).
+
+### Security Notes
+- Authorization checks are correctly implemented.
+- Tenant isolation is robust using explicit filters.
+
+### Best-Practices and References
+- **Testing:** Avoid mocking the System Under Test's core logic (Service methods) in API tests. Use a test database with seed data to verify SQL logic.
+- **Naming:** `RegulatoryFramework` is ambiguously named if it represents a single requirement. Consider renaming to `RegulatoryRequirement` and adding a `RegulatoryFramework` parent.
+
+### Action Items
+
+**Code Changes Required:**
+- [ ] [High] **Refactor Data Model:** Introduce a "Framework" grouping concept (e.g., parent table or `name` grouping) to allow aggregating requirements. [AC: 1, 2, 9]
+- [ ] [High] **Update GapAnalysisService:** Modify `generate_report` to accept a grouping ID (or name) and query ALL related requirements, not just one. [AC: 2]
+- [ ] [High] **Fix Tests:** Remove mocks in `test_reports.py` and use real DB seed data to verify the report counts correct number of requirements (mapped vs unmapped). [AC: 9]
+- [ ] [Med] **Update UI:** Ensure `useRegulatoryFrameworks` returns the *Groups* (Standards), not individual requirements, for the dropdown. [AC: 6]
+- [ ] [Low] **Move File:** Move `backend/app/routes/compliance.py` to `backend/app/api/v1/endpoints/compliance.py` for consistency.
+
+**Advisory Notes:**
+- Note: This blockage requires a revisit of Epic 1/5 schema design.

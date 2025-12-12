@@ -13,3 +13,8 @@
 | 2025-12-06 | 3.2 | 3 | Enhancement | Low | TBD | Open | **Document Chunking:** Implement robust chunking for large docs (token counting) to prevent context overflow. [file: `backend/app/services/ai_service.py`] |
 | 2025-12-06 | 3.3 | 3 | UX | Med | TBD | Done | **BPO Selection:** Implement BPO Selection dropdown in Frontend to allow manual assignment. [file: `frontend/app/dashboard/compliance/review/page.tsx`] |
 | 2025-12-06 | 3.4 | 3 | TechDebt | Med | TBD | Open | **Audit Integration:** Integrate `log_action` into Risk and Control CRUD endpoints. [file: `backend/app/routes/compliance.py`] |
+| 2025-12-12 | 5.2 | 5 | Bug | High | TBD | Open | **Refactor Data Model:** Introduce "Framework" grouping concept to allow aggregating requirements for Gap Analysis. [file: `backend/app/models/compliance.py`] |
+| 2025-12-12 | 5.2 | 5 | Bug | High | TBD | Open | **Update GapAnalysisService:** Modify `generate_report` to query ALL related requirements, not just one. [file: `backend/app/services/gap_analysis_service.py`] |
+| 2025-12-12 | 5.2 | 5 | TechDebt | High | TBD | Open | **Fix Tests:** Remove mocks in `test_reports.py` and use real DB seed data to verify report counts. [file: `backend/tests/api/v1/test_reports.py`] |
+| 2025-12-12 | 5.2 | 5 | UX | Med | TBD | Open | **Update UI:** Ensure `useRegulatoryFrameworks` returns Standards (Groups) for the dropdown, not individual requirements. [file: `frontend/app/dashboard/reports/gap-analysis/page.tsx`] |
+| 2025-12-12 | 5.2 | 5 | TechDebt | Low | TBD | Open | **Move File:** Move `backend/app/routes/compliance.py` to `backend/app/api/v1/endpoints/compliance.py` for consistency. |

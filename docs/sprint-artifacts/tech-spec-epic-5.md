@@ -758,3 +758,12 @@ class GapAnalysisReport(BaseModel):
 - Test print preview and actual PDF output for formatting consistency
 
 **Coverage Target:** 80% code coverage for backend services and frontend components
+
+## Post-Review Follow-ups
+
+**Story 5.2 (Gap Analysis)**
+- [ ] [High] **Refactor Data Model:** Introduce "Framework" grouping concept (e.g., parent table or `name` grouping) to allow aggregating requirements for Gap Analysis.
+- [ ] [High] **Update GapAnalysisService:** Modify `generate_report` to accept a grouping ID (or name) and query ALL related requirements, not just one.
+- [ ] [High] **Fix Tests:** Remove mocks in `test_reports.py` and use real DB seed data to verify the report counts correct number of requirements (mapped vs unmapped).
+- [ ] [Med] **Update UI:** Ensure `useRegulatoryFrameworks` returns the *Groups* (Standards), not individual requirements, for the dropdown.
+- [ ] [Low] **Move File:** Move `backend/app/routes/compliance.py` to `backend/app/api/v1/endpoints/compliance.py` for consistency.
