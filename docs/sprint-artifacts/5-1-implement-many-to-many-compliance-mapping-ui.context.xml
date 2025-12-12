@@ -1,0 +1,556 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>5.1</storyId>
+    <title>Implement Many-to-Many Compliance Mapping UI</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-12</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/5-1-implement-many-to-many-compliance-mapping-ui.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Admin</asA>
+    <iWant>to link internal controls to specific requirements within various regulatory frameworks via an intuitive compliance mapping interface</iWant>
+    <soThat>I can establish a comprehensive mapping for gap analysis and demonstrate regulatory coverage</soThat>
+    <tasks>
+      - Backend: Create Database Migration (AC: 1)
+        - Create Alembic migration `create_controls_regulatory_requirements_table.py`
+        - Define table schema with columns: id, control_id, regulatory_requirement_id, tenant_id, created_by, created_at
+        - Add foreign key constraints with ON DELETE CASCADE
+        - Add unique constraint on (control_id, regulatory_requirement_id, tenant_id)
+        - Create indexes on control_id, regulatory_requirement_id, tenant_id
+        - Enable Row-Level Security (RLS) with tenant isolation policy
+        - Apply migration and verify schema in database
+
+      - Backend: Create SQLAlchemy Model (AC: 2)
+        - Create `backend/app/models/mapping.py` with `ControlRegulatoryRequirement` class
+        - Define table columns matching migration schema
+        - Add relationships to `Control` and `RegulatoryFramework` models
+        - Update `Control` model with `regulatory_mappings` relationship
+        - Update `RegulatoryFramework` model with `control_mappings` relationship
+
+      - Backend: Create Pydantic Schemas (AC: 3)
+        - Create `backend/app/schemas/mapping.py`
+        - Define `MappingCreate`, `MappingDelete`, `MappingDetail`, `MappingListResponse` schemas
+
+      - Backend: Implement Mapping CRUD (AC: 4, 5, 6, 7)
+        - Create `backend/app/crud/mapping.py` with database query functions
+        - Implement create_mapping, delete_mapping, get_mappings_for_control, get_mappings_for_requirement
+
+      - Backend: Create Mapping Service (AC: 14)
+        - Create `backend/app/services/mapping_service.py`
+        - Implement MappingService with tenant validation and audit logging integration
+
+      - Backend: Create API Endpoints (AC: 4, 5, 6, 7)
+        - Create `backend/app/api/v1/mapping.py` router
+        - Implement POST /api/v1/mappings, DELETE /api/v1/mappings
+        - Implement GET /api/v1/mappings/control/{control_id}, GET /api/v1/mappings/requirement/{requirement_id}
+
+      - Backend: Write Tests (AC: 1-7, 13-15)
+        - Create `backend/tests/api/v1/test_mapping.py`
+        - Test all endpoints with success/error scenarios, authorization, CASCADE deletion, audit logging
+
+      - Frontend: Update API Client Types (AC: 3)
+        - Run `npm run generate-client` to update frontend types
+
+      - Frontend: Create DualListSelector Component (AC: 9)
+        - Create `frontend/components/custom/DualListSelector.tsx`
+        - Implement two-panel selector with multi-select and move operations
+
+      - Frontend: Create Compliance Mapping Page (AC: 8, 10, 11, 12)
+        - Create `frontend/app/(dashboard)/admin/compliance-mapping/page.tsx`
+        - Implement control/requirement perspective toggle
+        - Implement add/remove mapping flows with optimistic updates
+
+      - Frontend: Implement React Query Hooks (AC: 10, 11)
+        - Create `useMappings` hook in `frontend/hooks/useMappings.ts`
+        - Implement useControlMappings, useRequirementMappings, useCreateMapping, useDeleteMapping
+
+      - Frontend: Add Toast Notifications (AC: 10, 11)
+        - Add success/error toasts for mapping operations
+
+      - Frontend: Write Component Tests (AC: 9, 10, 11)
+        - Test DualListSelector component and compliance mapping page
+
+      - Integration Testing (AC: 13, 14, 15)
+        - Test complete flows, performance, security, CASCADE deletion
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. Junction Table Creation: Database migration creates `controls_regulatory_requirements` junction table with foreign keys, unique constraint, indexes, and RLS policy for tenant isolation.
+
+    2. SQLAlchemy Model: `ControlRegulatoryRequirement` model defined with relationships to Control and RegulatoryFramework models.
+
+    3. Pydantic Schemas: Request/response schemas defined including MappingCreate, MappingDelete, MappingDetail, and MappingListResponse.
+
+    4. Create Mapping Endpoint: POST /api/v1/mappings accepts payload, validates, prevents duplicates (409), creates mapping with audit logging. Admin role required.
+
+    5. Delete Mapping Endpoint: DELETE /api/v1/mappings deletes mapping, logs to audit trail, idempotent. Admin role required.
+
+    6. Get Mappings for Control: GET /api/v1/mappings/control/{control_id} returns list of requirements mapped to control. Admin/Executive/BPO roles.
+
+    7. Get Mappings for Requirement: GET /api/v1/mappings/requirement/{requirement_id} returns list of controls mapped to requirement. Admin/Executive/BPO roles.
+
+    8. Compliance Mapping UI Page: Admin can navigate to /dashboard/admin/compliance-mapping, displays controls list, selecting control fetches existing mappings.
+
+    9. Dual-List Selector Component: Custom DualListSelector component with left panel (available) and right panel (mapped), supports multi-select and move operations.
+
+    10. Add Mapping Flow: Admin selects requirements from left panel, clicks "Add Mapping", frontend sends POST requests, UI updates optimistically with success/error toasts.
+
+    11. Remove Mapping Flow: Admin clicks "Remove" next to mapped requirement, frontend sends DELETE request, UI updates optimistically with rollback on errors.
+
+    12. Requirement Perspective Toggle: Admin can toggle to "Requirement Perspective", displays requirements list, selecting requirement fetches mappings, dual-list shows controls.
+
+    13. Performance: Mapping creation <300ms, queries <400ms for 100+ mappings, database queries use indexes (<100ms).
+
+    14. Security & Tenant Isolation: JWT authentication (401), Admin role for create/delete (403), tenant_id filtering via RLS, cross-tenant access returns 404, audit logging for all operations.
+
+    15. Data Consistency: Unique constraint prevents duplicates (409), atomic operations with audit logging, CASCADE deletion removes mappings when control/requirement deleted.
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic Technical Specification: Advanced Compliance Mapping &amp; Reporting</title>
+        <section>Data Models and Contracts - Junction Table Schema</section>
+        <snippet>Defines the `controls_regulatory_requirements` junction table with foreign keys to controls and regulatory_frameworks tables, unique constraint on (control_id, requirement_id, tenant_id), indexes, and RLS policies for tenant isolation. Includes SQLAlchemy model `ControlRegulatoryRequirement` with relationships.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic Technical Specification: Advanced Compliance Mapping &amp; Reporting</title>
+        <section>APIs and Interfaces - Mapping CRUD Endpoints</section>
+        <snippet>POST /api/v1/mappings (create mapping), DELETE /api/v1/mappings (delete mapping), GET /api/v1/mappings/control/{id} (get mappings for control), GET /api/v1/mappings/requirement/{id} (get mappings for requirement). Includes Pydantic schemas: MappingCreate, MappingDelete, MappingDetail, MappingListResponse.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic Technical Specification: Advanced Compliance Mapping &amp; Reporting</title>
+        <section>Workflows and Sequencing - Admin Creates Control-to-Requirement Mapping</section>
+        <snippet>Admin selects control, frontend fetches existing mappings, displays dual-list selector (available requirements left, mapped requirements right), admin adds/removes mappings via POST/DELETE endpoints, UI uses optimistic updates with toast feedback.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic Technical Specification: Advanced Compliance Mapping &amp; Reporting</title>
+        <section>Non-Functional Requirements - Performance</section>
+        <snippet>POST /api/v1/mappings must complete within 300ms, GET endpoints within 400ms for 100+ mappings. Database queries leverage indexes on control_id, requirement_id, tenant_id for sub-100ms performance. React Query caching with 60-second TTL.</snippet>
+      </doc>
+      <doc>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic Technical Specification: Advanced Compliance Mapping &amp; Reporting</title>
+        <section>Non-Functional Requirements - Security</section>
+        <snippet>JWT authentication required (401 if missing). Admin role required for create/delete (403 for non-Admin). Tenant isolation via RLS policies. Audit logging for all mapping operations via AuditLogService from Epic 3.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>Project Structure &amp; Boundaries</section>
+        <snippet>Monorepo structure with backend/ (FastAPI app with api/v1/, models/, schemas/, services/, crud/) and frontend/ (Next.js app with app/(dashboard)/, components/ui/, components/custom/, hooks/). Epic 5 lives in backend/app/api/v1/mapping.py and frontend/app/(dashboard)/admin/compliance-mapping/.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>Architectural Decision Records - Data Persistence</section>
+        <snippet>Supabase PostgreSQL with Row-Level Security (RLS) for tenant isolation. All database queries filtered by tenant_id via RLS policies. SQLAlchemy ORM for database operations.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>Implementation Patterns - API Structure</section>
+        <snippet>API routes prefixed with /api/v1/. All protected routes expect JWT in Authorization: Bearer header. Successful responses return JSON directly, DELETE returns 204 No Content. Errors follow format: { "detail": "Error message" }.</snippet>
+      </doc>
+      <doc>
+        <path>docs/architecture.md</path>
+        <title>ibe160 Decision Architecture Document</title>
+        <section>Implementation Patterns - State Management (Frontend)</section>
+        <snippet>React Query for server state management, caching, and mutations. Do not store server data in Zustand. Use optimistic updates for instant UI feedback with automatic rollback on errors.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>ibe160 UX Design Specification</title>
+        <section>Design System Foundation - Shadcn/UI</section>
+        <snippet>Use Shadcn/UI components for all standard UI elements (buttons, form inputs, data tables, modals, toasts). Components are copied into project for full customization. Built on Tailwind CSS and Radix UI primitives for accessibility.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>ibe160 UX Design Specification</title>
+        <section>Visual Foundation - Color System</section>
+        <snippet>Light Mode (Clarity Green): Primary #28a745, Secondary #17a2b8. Dark Mode (Focused Slate): Primary #0A84FF, Secondary #5E5CE6. Semantic colors for success, warning, error. Typography uses system font stack for legibility. 8px base spacing unit.</snippet>
+      </doc>
+      <doc>
+        <path>docs/ux-design-specification.md</path>
+        <title>ibe160 UX Design Specification</title>
+        <section>UX Pattern Decisions - Consistency Rules</section>
+        <snippet>Primary actions use solid primary color button. Secondary actions use thin border transparent background. Destructive actions reveal red on hover. Success feedback via bottom toast notifications (auto-dismiss after 5s). Form labels above fields. Validation onBlur with error messages below field.</snippet>
+      </doc>
+      <doc>
+        <path>docs/epics.md</path>
+        <title>ibe160 - Epic Breakdown</title>
+        <section>Epic 5: Advanced Compliance Mapping &amp; Reporting - Story 5.1</section>
+        <snippet>As an Admin, I want to link internal controls to specific requirements within various regulatory frameworks, so that I can establish a comprehensive mapping for gap analysis. Acceptance Criteria: many-to-many mapping via junction table, multi-select/dual-list UI, intuitive visual management.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact>
+        <path>backend/app/models/compliance.py</path>
+        <kind>model</kind>
+        <symbol>Control</symbol>
+        <lines>47-64</lines>
+        <reason>Existing Control model with UUID id, tenant_id, name, description, type, owner_id. Will need to add regulatory_mappings relationship for junction table.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/models/compliance.py</path>
+        <kind>model</kind>
+        <symbol>RegulatoryFramework</symbol>
+        <lines>67-83</lines>
+        <reason>Existing RegulatoryFramework model with UUID id, tenant_id, name, description, version. Will need to add control_mappings relationship for junction table.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/services/audit_service.py</path>
+        <kind>service</kind>
+        <symbol>AuditService.log_action</symbol>
+        <lines>9-33</lines>
+        <reason>Existing audit logging service from Epic 3. Use this method to log all mapping create/delete operations with action, entity_type, entity_id, changes parameters.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/api/v1/endpoints/assessments.py</path>
+        <kind>endpoint</kind>
+        <symbol>verify_bpo_role</symbol>
+        <lines>26-39</lines>
+        <reason>Example role verification pattern. Create similar verify_admin_role function for mapping endpoints to enforce Admin-only access for create/delete operations.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/api/v1/endpoints/assessments.py</path>
+        <kind>endpoint</kind>
+        <symbol>get_pending_reviews</symbol>
+        <lines>42-130</lines>
+        <reason>Example API endpoint pattern: async function with Depends(get_async_session), Depends(get_current_active_user), pagination, error handling, tenant_id filtering. Follow this pattern for mapping endpoints.</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/lib/role.tsx</path>
+        <kind>hook</kind>
+        <symbol>useRole</symbol>
+        <lines>8-112</lines>
+        <reason>Existing role checking hook from Epic 2. Use role === 'admin' check in compliance mapping page to enforce Admin-only UI access. Also provides fullName and email for user display.</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/app/(dashboard)/layout.tsx</path>
+        <kind>layout</kind>
+        <symbol>DashboardLayout</symbol>
+        <lines>8-23</lines>
+        <reason>Dashboard layout structure. New compliance mapping page will be nested under this layout at /dashboard/admin/compliance-mapping/page.tsx.</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/hooks/useRealtimeSubscription.ts</path>
+        <kind>hook</kind>
+        <symbol>useRealtimeSubscription</symbol>
+        <lines>N/A</lines>
+        <reason>Existing realtime subscription hook for live updates. May be used in future for real-time mapping updates across users, though not required for MVP.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <backend>
+        <package name="fastapi[standard]" version=">=0.115.0,&lt;0.116" />
+        <package name="asyncpg" version=">=0.29.0,&lt;0.30" purpose="PostgreSQL async driver for database operations" />
+        <package name="sqlalchemy" version="(via fastapi-users)" purpose="ORM for database queries and junction table management" />
+        <package name="alembic" version=">=1.14.0,&lt;2" purpose="Database migrations for creating controls_regulatory_requirements table" />
+        <package name="pydantic" version="v2.5.2+ (via fastapi)" purpose="Request/response validation for MappingCreate, MappingDelete, MappingDetail schemas" />
+        <package name="pytest" version=">=8.3.3,&lt;9" purpose="Backend testing framework for API endpoint tests" />
+      </backend>
+      <frontend>
+        <package name="@tanstack/react-query" version="^5.90.12" purpose="Server state management, caching, optimistic updates for mapping operations" />
+        <package name="@supabase/supabase-js" version="^2.86.2" purpose="Supabase client for JWT token management and auth" />
+        <package name="react-hook-form" version="^7.54.0" purpose="Form state management in DualListSelector component" />
+        <package name="zod" version="^3.23.8" purpose="Client-side validation for mapping create/delete requests" />
+        <package name="@radix-ui/react-dialog" version="^1.1.15" purpose="Modal/dialog primitives (Shadcn/UI) for confirmations" />
+        <package name="@radix-ui/react-select" version="^2.2.5" purpose="Select dropdown for framework/control/requirement selection" />
+        <package name="sonner" version="^2.0.7" purpose="Toast notifications for success/error feedback" />
+        <package name="lucide-react" version="^0.452.0" purpose="Icons for dual-list selector UI (arrows, plus, x)" />
+        <package name="next" version="15.5.0" purpose="React framework for app router pages" />
+        <package name="@testing-library/react" version="^16.0.1" purpose="Component testing for DualListSelector and page" />
+        <package name="jest" version="^29.7.0" purpose="Frontend testing framework" />
+      </frontend>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint category="Architecture">
+      <rule>All database queries must filter by tenant_id via Row-Level Security (RLS) policies. No cross-tenant data access permitted.</rule>
+    </constraint>
+    <constraint category="Architecture">
+      <rule>Use SQLAlchemy ORM for all database operations. No raw SQL queries. Parameterized statements prevent SQL injection.</rule>
+    </constraint>
+    <constraint category="Architecture">
+      <rule>Service layer (MappingService) handles business logic and audit logging. CRUD layer (MappingCRUD) handles database queries. API layer handles HTTP and authorization.</rule>
+    </constraint>
+    <constraint category="Testing">
+      <rule>All API endpoints must have pytest tests covering success scenarios, error scenarios (400, 403, 404, 409), authorization checks, and tenant isolation.</rule>
+    </constraint>
+    <constraint category="Testing">
+      <rule>Frontend components must have Jest + React Testing Library tests covering rendering, user interactions, API integration (mocked), and optimistic updates.</rule>
+    </constraint>
+    <constraint category="Testing">
+      <rule>Integration tests must verify CASCADE deletion behavior: deleting control/requirement must automatically delete associated mappings.</rule>
+    </constraint>
+    <constraint category="Patterns">
+      <rule>API routes prefixed with /api/v1/. Protected routes expect JWT in Authorization: Bearer header. Successful GET/POST return JSON, DELETE returns 204 No Content.</rule>
+    </constraint>
+    <constraint category="Patterns">
+      <rule>Use React Query for server state management. No server data in Zustand. Optimistic updates for instant UI feedback with automatic rollback on errors.</rule>
+    </constraint>
+    <constraint category="Patterns">
+      <rule>Database tables use snake_case (controls_regulatory_requirements). Columns use snake_case (control_id, tenant_id). React components use PascalCase. Variables/functions use camelCase.</rule>
+    </constraint>
+    <constraint category="Security">
+      <rule>All mapping create/delete endpoints require Admin role. Return 403 Forbidden for non-Admin users. Use verify_admin_role() function pattern from assessments.py.</rule>
+    </constraint>
+    <constraint category="Security">
+      <rule>All mapping operations must be logged to immutable audit trail via AuditService.log_action() with action, entity_type, entity_id, and changes parameters.</rule>
+    </constraint>
+    <constraint category="UX">
+      <rule>Primary actions use solid primary color button (#28a745). Secondary actions use thin border transparent background. Destructive actions reveal red on hover.</rule>
+    </constraint>
+    <constraint category="UX">
+      <rule>Success feedback via toast notifications (Sonner) that auto-dismiss after 5 seconds. Error feedback via toast with error message from API response.</rule>
+    </constraint>
+    <constraint category="UX">
+      <rule>Form labels positioned above input fields. Validation on blur (onBlur). Error messages display below field in red text.</rule>
+    </constraint>
+    <constraint category="Performance">
+      <rule>Mapping creation must respond within 300ms. Mapping queries within 400ms for 100+ mappings. Database queries use indexes for sub-100ms performance.</rule>
+    </constraint>
+    <constraint category="Performance">
+      <rule>React Query caching with 60-second TTL. Cache invalidated immediately on create/delete actions to ensure data consistency.</rule>
+    </constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>POST /api/v1/mappings</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Request Body: MappingCreate { control_id: int, regulatory_requirement_id: int }
+        Response: 201 Created - MappingDetail { id, control_id, requirement_id, control_name, requirement_name, created_at, created_by }
+        Errors: 400 (invalid IDs), 409 (duplicate mapping), 403 (non-Admin)
+        Auth: JWT required, Admin role required
+      </signature>
+      <path>backend/app/api/v1/mapping.py (NEW)</path>
+    </interface>
+    <interface>
+      <name>DELETE /api/v1/mappings</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Request Body: MappingDelete { control_id: int, regulatory_requirement_id: int }
+        Response: 204 No Content
+        Errors: 404 (mapping not found), 403 (non-Admin)
+        Auth: JWT required, Admin role required
+      </signature>
+      <path>backend/app/api/v1/mapping.py (NEW)</path>
+    </interface>
+    <interface>
+      <name>GET /api/v1/mappings/control/{control_id}</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Path Param: control_id (int)
+        Response: 200 OK - MappingListResponse { total: int, mappings: List[MappingDetail] }
+        Errors: 404 (control not found or cross-tenant)
+        Auth: JWT required, Admin/Executive/BPO roles
+      </signature>
+      <path>backend/app/api/v1/mapping.py (NEW)</path>
+    </interface>
+    <interface>
+      <name>GET /api/v1/mappings/requirement/{requirement_id}</name>
+      <kind>REST endpoint</kind>
+      <signature>
+        Path Param: requirement_id (int)
+        Response: 200 OK - MappingListResponse { total: int, mappings: List[MappingDetail] }
+        Errors: 404 (requirement not found or cross-tenant)
+        Auth: JWT required, Admin/Executive/BPO roles
+      </signature>
+      <path>backend/app/api/v1/mapping.py (NEW)</path>
+    </interface>
+    <interface>
+      <name>AuditService.log_action()</name>
+      <kind>Service method</kind>
+      <signature>
+        async def log_action(db: AsyncSession, actor_id: UUID, action: str, entity_type: str, entity_id: UUID, changes: Optional[Dict[str, Any]] = None) -> AuditLog
+        Usage: await AuditService.log_action(db, user.id, "create_mapping", "controls_regulatory_requirements", mapping.id, {"control_id": control_id, "requirement_id": req_id})
+      </signature>
+      <path>backend/app/services/audit_service.py:10-33</path>
+    </interface>
+    <interface>
+      <name>useRole()</name>
+      <kind>React hook</kind>
+      <signature>
+        Returns: { role: string | null, fullName: string | null, email: string | null, loading: boolean, isAdmin: boolean }
+        Usage: const { role, isAdmin, loading } = useRole(); if (isAdmin) { /* render admin UI */ }
+      </signature>
+      <path>frontend/lib/role.tsx:8-112</path>
+    </interface>
+    <interface>
+      <name>Control Model (SQLAlchemy)</name>
+      <kind>Database model</kind>
+      <signature>
+        class Control(Base):
+          id: UUID (primary key)
+          tenant_id: UUID
+          name: String(255)
+          description: Text
+          type: String(100)
+          owner_id: UUID (ForeignKey user.id)
+          regulatory_mappings: Relationship (to be added)
+      </signature>
+      <path>backend/app/models/compliance.py:47-64</path>
+    </interface>
+    <interface>
+      <name>RegulatoryFramework Model (SQLAlchemy)</name>
+      <kind>Database model</kind>
+      <signature>
+        class RegulatoryFramework(Base):
+          id: UUID (primary key)
+          tenant_id: UUID
+          name: String(255)
+          description: Text
+          version: String(50)
+          control_mappings: Relationship (to be added)
+      </signature>
+      <path>backend/app/models/compliance.py:67-83</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+      **Backend Testing Standards (pytest):**
+      - Use pytest framework with async support (pytest-asyncio)
+      - Test API endpoints with FastAPI TestClient for integration tests
+      - Mock external services (Supabase, OpenAI) when testing business logic
+      - Use fixtures for test data setup (users, controls, regulatory frameworks, mappings)
+      - Assert database state after operations (verify records created/deleted)
+      - Test authorization by mocking current_user with different roles (Admin, BPO, Executive, General User)
+      - Verify audit logging by querying audit_log table after each create/delete operation
+      - Test tenant isolation by creating data for multiple tenants and verifying cross-tenant access returns 404
+      - Coverage target: 80% code coverage minimum for services, CRUD, and endpoints
+
+      **Frontend Testing Standards (Jest + React Testing Library):**
+      - Use Jest as test runner with jsdom environment
+      - Use React Testing Library for component testing with user-centric queries (getByRole, getByLabelText)
+      - Mock API calls using msw (Mock Service Worker) or jest.mock for fetch
+      - Test user interactions with fireEvent or userEvent library (click, type, select)
+      - Verify optimistic updates: check UI state immediately after action, then verify final state after API response
+      - Test error scenarios: mock API failures and verify error toast displays and optimistic updates rollback
+      - Test accessibility: verify keyboard navigation, focus management, ARIA labels
+      - Use React Query testing utilities for cache and mutation testing
+      - Coverage target: 80% code coverage minimum for components and hooks
+    </standards>
+    <locations>
+      **Backend Test Locations:**
+      - backend/tests/api/v1/test_mapping.py - API endpoint integration tests for POST, DELETE, GET mapping endpoints
+      - backend/tests/services/test_mapping_service.py - Unit tests for MappingService business logic
+      - backend/tests/crud/test_mapping_crud.py - Unit tests for MappingCRUD database queries
+      - backend/tests/models/test_mapping_model.py - Tests for ControlRegulatoryRequirement model relationships and constraints
+      - backend/tests/conftest.py - Shared fixtures for test database, users, controls, regulatory frameworks
+
+      **Frontend Test Locations:**
+      - frontend/__tests__/components/custom/DualListSelector.test.tsx - DualListSelector component tests
+      - frontend/__tests__/app/(dashboard)/admin/compliance-mapping/page.test.tsx - Compliance mapping page integration tests
+      - frontend/__tests__/hooks/useMappings.test.ts - React Query hooks tests for mapping operations
+      - frontend/__tests__/setup.ts - Jest configuration and global test setup
+    </locations>
+    <ideas>
+      **Backend Test Ideas (AC 1-7, 13-15):**
+
+      AC1 (Junction Table Creation):
+      - Test migration creates controls_regulatory_requirements table with all columns
+      - Test unique constraint enforced on (control_id, regulatory_requirement_id, tenant_id)
+      - Test CASCADE deletion: delete control, verify mappings removed
+      - Test RLS policy filters by tenant_id
+
+      AC2 (SQLAlchemy Model):
+      - Test ControlRegulatoryRequirement model relationships to Control and RegulatoryFramework
+      - Test Control.regulatory_mappings relationship returns list of requirements
+      - Test RegulatoryFramework.control_mappings relationship returns list of controls
+
+      AC3 (Pydantic Schemas):
+      - Test MappingCreate schema validation (required fields, type validation)
+      - Test MappingDetail schema serialization from database model
+      - Test MappingListResponse schema with list of mappings
+
+      AC4 (Create Mapping Endpoint):
+      - Test POST /api/v1/mappings success (201 Created) with valid payload as Admin
+      - Test 400 Bad Request with invalid control_id or requirement_id
+      - Test 409 Conflict when duplicate mapping exists
+      - Test 403 Forbidden when non-Admin user attempts create
+      - Test 401 Unauthorized when JWT missing
+      - Test 404 when control_id belongs to different tenant (cross-tenant access)
+      - Test audit log entry created with action="create_mapping"
+
+      AC5 (Delete Mapping Endpoint):
+      - Test DELETE /api/v1/mappings success (204 No Content) with valid payload as Admin
+      - Test 404 Not Found when mapping doesn't exist
+      - Test idempotency: repeated delete returns 404 (not 500)
+      - Test 403 Forbidden when non-Admin user attempts delete
+      - Test audit log entry created with action="delete_mapping"
+
+      AC6 (Get Mappings for Control):
+      - Test GET /api/v1/mappings/control/{id} returns list of requirements for Admin
+      - Test returns empty list when control has zero mappings
+      - Test 404 when control doesn't exist or belongs to different tenant
+      - Test accessible to BPO and Executive roles (not just Admin)
+
+      AC7 (Get Mappings for Requirement):
+      - Test GET /api/v1/mappings/requirement/{id} returns list of controls
+      - Test tenant isolation: only returns mappings for user's tenant
+
+      AC13 (Performance):
+      - Load test: POST /api/v1/mappings with 100 concurrent requests, measure p95 latency &lt;300ms
+      - Load test: GET /api/v1/mappings/control/{id} with control having 100+ mappings, measure response time &lt;400ms
+      - Database query performance: EXPLAIN ANALYZE on junction table queries, verify index usage
+
+      AC14 (Security & Tenant Isolation):
+      - Test JWT authentication: missing token returns 401
+      - Test Admin role enforcement: BPO user attempting POST returns 403
+      - Test cross-tenant access: Admin from Tenant A tries to map Control from Tenant B, verify 404
+      - Test audit trail logging: verify all create/delete operations logged
+
+      AC15 (Data Consistency):
+      - Test unique constraint: attempt duplicate mapping returns 409
+      - Test CASCADE deletion: delete control, query junction table, verify mappings removed
+      - Test atomic operations: simulate audit logging failure, verify transaction rollback
+
+      **Frontend Test Ideas (AC 8-12):**
+
+      AC8 (Compliance Mapping UI Page):
+      - Test page renders for Admin user (not 403 redirect)
+      - Test control list displays all controls for tenant
+      - Test selecting control triggers GET /api/v1/mappings/control/{id} API call
+      - Test DualListSelector renders with available/mapped requirements
+
+      AC9 (Dual-List Selector Component):
+      - Test component renders with availableItems and selectedItems props
+      - Test multi-select checkboxes for item selection
+      - Test "Add &gt;" button moves selected items from left to right panel
+      - Test "&lt; Remove" button moves selected items from right to left panel
+      - Test search/filter input filters items in left panel
+
+      AC10 (Add Mapping Flow):
+      - Test user selects requirements from left panel, clicks "Add Mapping"
+      - Test frontend sends POST /api/v1/mappings for each new mapping
+      - Test UI optimistically updates (moves requirements left to right) before API response
+      - Test success toast displays "✅ Mapping created"
+      - Test error handling: mock API failure, verify optimistic update rollback and error toast
+
+      AC11 (Remove Mapping Flow):
+      - Test user clicks "Remove" button next to mapped requirement
+      - Test frontend sends DELETE /api/v1/mappings with control_id and requirement_id
+      - Test UI optimistically updates (moves requirement right to left)
+      - Test success toast displays "✅ Mapping removed"
+      - Test error rollback on API failure
+
+      AC12 (Requirement Perspective Toggle):
+      - Test view toggle button changes perspective from Control to Requirement
+      - Test selecting requirement triggers GET /api/v1/mappings/requirement/{id}
+      - Test dual-list shows controls (instead of requirements)
+      - Test add/remove operations work identically in requirement perspective
+    </ideas>
+  </tests>
+</story-context>
