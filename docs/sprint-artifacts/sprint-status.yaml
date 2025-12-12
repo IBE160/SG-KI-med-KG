@@ -65,5 +65,5 @@ development_status:
 
   epic-5: contexted
   5-1-implement-many-to-many-compliance-mapping-ui: ready-for-dev
-  5-2-develop-gap-analysis-report-generation: backlog
+  5-2-develop-gap-analysis-report-generation: ready-for-dev
   epic-5-retrospective: optional

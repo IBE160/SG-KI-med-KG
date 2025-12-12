@@ -1,0 +1,289 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>2</storyId>
+    <title>Develop Gap Analysis Report Generation</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-12</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/5-2-develop-gap-analysis-report-generation.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Admin or Executive</asA>
+    <iWant>to generate a report showing compliance gaps for a selected regulatory framework</iWant>
+    <soThat>I can understand areas of non-compliance and prioritize remediation efforts</soThat>
+    <tasks>
+- Backend: Create Pydantic Schemas for Gap Analysis (AC: 3)
+  - Create backend/app/schemas/reports.py
+  - Define UnmappedRequirement and GapAnalysisReport schemas
+- Backend: Create Gap Analysis Service (AC: 2, 5)
+  - Create backend/app/services/gap_analysis_service.py
+  - Implement LEFT JOIN query to identify unmapped requirements
+  - Calculate coverage metrics
+- Backend: Create Gap Analysis API Endpoint (AC: 1, 4, 5, 9, 10)
+  - Create backend/app/api/v1/reports.py router
+  - Implement GET /api/v1/reports/gap-analysis/{framework_id}
+  - Add Admin/Executive role check (403 for others)
+  - Handle errors: 404, 403, 504
+- Backend: Write Tests for Gap Analysis (AC: 1-5, 9-12)
+  - Create backend/tests/api/v1/test_reports.py
+  - Test endpoint success/error scenarios
+  - Test authorization for all roles
+  - Test tenant isolation and query performance
+- Frontend: Update API Client Types (AC: 3)
+  - Run npm run generate-client after backend schema changes
+- Frontend: Create Gap Analysis Report UI Page (AC: 6, 7, 10, 12)
+  - Create frontend/app/(dashboard)/reports/gap-analysis/page.tsx
+  - Implement framework selection and report display
+  - Handle loading, error states
+- Frontend: Implement Print Functionality (AC: 8)
+  - Add Print Report button with window.print()
+  - Create @media print CSS for A4/Letter formatting
+- Frontend: Implement React Query Hooks (AC: 12)
+  - Create frontend/hooks/useGapAnalysis.ts
+  - Implement useGapAnalysisReport with 60s TTL
+- Frontend: Write Component Tests (AC: 6, 7, 8)
+  - Create frontend/__tests__/app/(dashboard)/reports/gap-analysis/page.test.tsx
+  - Test rendering, authorization, print functionality
+- Integration Testing (AC: 9, 10, 11, 12)
+  - Test complete flow, performance, authorization, tenant isolation
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Gap Analysis Endpoint: GET /api/v1/reports/gap-analysis/{framework_id} accepts framework_id, queries unmapped requirements, returns GapAnalysisReport with 200 OK. Admin or Executive role required (403 for BPO/General User).
+
+2. Gap Analysis Service: GapAnalysisService executes LEFT JOIN query (SELECT rf.* FROM regulatory_frameworks rf LEFT JOIN controls_regulatory_requirements crr ON rf.id = crr.regulatory_requirement_id WHERE crr.id IS NULL AND rf.tenant_id = {tenant_id}). Calculates total, mapped, unmapped requirements and coverage percentage.
+
+3. GapAnalysisReport Schema: Pydantic schema in backend/app/schemas/reports.py includes framework_id, framework_name, total_requirements, mapped_requirements, unmapped_requirements, coverage_percentage, gaps (list of UnmappedRequirement objects).
+
+4. Authorization: Admin or Executive role check enforced. Returns 403 for BPO or General User. JWT authentication required (401 if missing).
+
+5. Tenant Isolation: Query filters by tenant_id via RLS policies. Returns 404 if framework doesn't exist in user's tenant. No cross-tenant access.
+
+6. Gap Analysis Report UI Page: Admin/Executive can navigate to /dashboard/reports/gap-analysis, select framework from list (GET /api/v1/regulatory-frameworks), trigger gap analysis report generation.
+
+7. Report Display: Renders framework name, coverage metrics (e.g., "75% coverage: 45 of 60 requirements mapped"), table of unmapped requirements (name, description).
+
+8. Print Functionality: Print Report button opens browser print dialog with print-optimized CSS (hides nav/sidebar/buttons, formats for A4/Letter).
+
+9. Performance: Report generation <2 seconds for 500 requirements. Database queries leverage indexes for <100ms query performance.
+
+10. Error Handling: Returns 404 if framework doesn't exist/wrong tenant, 504 if query >5 seconds. Frontend displays error toast with API message.
+
+11. Security: Report generation accessible only to Admin and Executive. No audit logging for read-only operations. XSS prevention via React automatic escaping.
+
+12. Data Consistency: Report reflects current mappings state. React Query cache with 60-second TTL. Cache invalidated when mappings created/deleted.
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic 5 Technical Specification - Gap Analysis Service Design</title>
+        <section>Services and Modules - GapAnalysisService</section>
+        <snippet>GapAnalysisService queries database to identify regulatory requirements with no associated controls; generates structured gap report with JSON output including unmapped requirements and coverage metrics.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic 5 Technical Specification - Gap Analysis API Endpoint</title>
+        <section>APIs and Interfaces - Generate Gap Analysis Report</section>
+        <snippet>GET /api/v1/reports/gap-analysis/{framework_id} requires Admin or Executive role, returns GapAnalysisReport with 200 OK. Queries all requirements and identifies those with zero associated controls.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic 5 Technical Specification - Report Generation Workflow</title>
+        <section>Workflows and Sequencing - Workflow 3</section>
+        <snippet>Executive selects framework, backend executes LEFT JOIN query to identify unmapped requirements, calculates coverage percentage, returns JSON. Frontend renders structured report with print capability.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic 5 Technical Specification - GapAnalysisReport Schema</title>
+        <section>Data Models and Contracts - API Request/Response Schemas</section>
+        <snippet>Pydantic schemas in backend/app/schemas/reports.py include UnmappedRequirement and GapAnalysisReport with framework metrics, coverage percentage, and gaps list.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/sprint-artifacts/tech-spec-epic-5.md</path>
+        <title>Epic 5 Technical Specification - Performance Requirements</title>
+        <section>Non-Functional Requirements - Performance</section>
+        <snippet>Gap analysis report generation must complete within 2 seconds for 500 requirements. Database queries leverage indexes for sub-100ms query performance.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>System Architecture - Data Persistence with Supabase</title>
+        <section>Architectural Decision Records - 4.1</section>
+        <snippet>Supabase PostgreSQL with Row-Level Security for tenant isolation. All queries filter by tenant_id via RLS policies.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>System Architecture - API Structure Conventions</title>
+        <section>Implementation Patterns - API Structure</section>
+        <snippet>API routes prefixed /api/v1/, GET returns JSON, DELETE returns 204. Protected routes require JWT in Authorization header.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design - Print Functionality Patterns</title>
+        <section>UX Pattern Decisions - Consistency Rules</section>
+        <snippet>Print Report button uses @media print CSS to hide nav/sidebar/buttons, formats for A4/Letter. Browser print dialog provides print-to-PDF.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/ux-design-specification.md</path>
+        <title>UX Design - Feedback and Loading States</title>
+        <section>UX Pattern Decisions - Consistency Rules #2</section>
+        <snippet>Success uses toast notification. Critical errors use modal. Loading states use skeleton placeholders for components.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/epics.md</path>
+        <title>Epics - Story 5.2 Definition</title>
+        <section>Epic 5: Advanced Compliance Mapping & Reporting</section>
+        <snippet>Admin/Executive generates report showing compliance gaps. System identifies requirements with no associated controls, report exportable via browser print-to-PDF.</snippet>
+      </artifact>
+    </docs>
+    <code>
+      <artifact>
+        <path>backend/app/models/compliance.py</path>
+        <kind>model</kind>
+        <symbol>RegulatoryFramework</symbol>
+        <lines>67-83</lines>
+        <reason>Existing model used in gap analysis LEFT JOIN query. Contains id, tenant_id, name, description fields needed for report generation.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/api/v1/endpoints/assessments.py</path>
+        <kind>endpoint</kind>
+        <symbol>verify_bpo_role</symbol>
+        <lines>26-39</lines>
+        <reason>Pattern for role verification. Story 5.2 extends this to verify_admin_or_executive_role() function for gap analysis endpoint authorization.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/schemas/assessment.py</path>
+        <kind>schema</kind>
+        <symbol>AssessmentRequest, AssessmentResponse</symbol>
+        <lines>1-50</lines>
+        <reason>Reference pattern for Pydantic schemas. Story 5.2 follows similar structure for UnmappedRequirement and GapAnalysisReport in backend/app/schemas/reports.py.</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/app/(dashboard)/page.tsx</path>
+        <kind>component</kind>
+        <symbol>DashboardPage</symbol>
+        <lines>1-100</lines>
+        <reason>Existing dashboard structure. Gap analysis report page follows similar layout pattern with role-based rendering for Admin/Executive access.</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/app/(dashboard)/bpo/reviews/page.tsx</path>
+        <kind>component</kind>
+        <symbol>ReviewsPage</symbol>
+        <lines>1-150</lines>
+        <reason>Reference for list-based UI pattern. Gap analysis page displays framework selection and unmapped requirements table using similar structure.</reason>
+      </artifact>
+      <artifact>
+        <path>frontend/hooks/useRealtimeSubscription.ts</path>
+        <kind>hook</kind>
+        <symbol>useRealtimeSubscription</symbol>
+        <lines>1-50</lines>
+        <reason>React Query hook pattern. Story 5.2 creates useGapAnalysisReport hook following similar structure with 60-second TTL and cache invalidation.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <backend>
+        <package name="fastapi[standard]" version=">=0.115.0" purpose="Web framework for API endpoints. Gap analysis endpoint in backend/app/api/v1/reports.py" />
+        <package name="pydantic" version=">=2.5.2 (via fastapi)" purpose="Request/response validation and schemas. GapAnalysisReport and UnmappedRequirement schemas in backend/app/schemas/reports.py" />
+        <package name="sqlalchemy" version="(via fastapi-users)" purpose="ORM for database queries. LEFT JOIN query in GapAnalysisService to identify unmapped requirements" />
+        <package name="asyncpg" version=">=0.29.0" purpose="PostgreSQL async driver. All database operations via SQLAlchemy" />
+        <package name="alembic" version=">=1.14.0 (dev)" purpose="Database migrations. May need migration for indexes on junction table (control_id, requirement_id, tenant_id)" />
+        <package name="pytest" version=">=8.3.3 (dev)" purpose="Testing framework. Tests in backend/tests/api/v1/test_reports.py" />
+      </backend>
+      <frontend>
+        <package name="next" version="15.5.0" purpose="React framework. App router for frontend/app/(dashboard)/reports/gap-analysis/page.tsx" />
+        <package name="react" version="19.1.1" purpose="UI framework for components" />
+        <package name="@tanstack/react-query" version="5.90.12" purpose="Server state management and caching. useGapAnalysisReport hook with 60s TTL" />
+        <package name="@supabase/supabase-js" version="2.86.2" purpose="Supabase client for JWT token management and auth" />
+        <package name="@radix-ui/react-select" version="2.2.5" purpose="Select dropdown primitives (Shadcn/UI). Framework selector in gap analysis UI" />
+        <package name="react-hook-form" version="7.54.0" purpose="Form state management for report filters" />
+        <package name="zod" version="3.23.8" purpose="Client-side validation for framework selection" />
+        <package name="sonner" version="2.0.7" purpose="Toast notifications. Success/error feedback for report generation" />
+        <package name="lucide-react" version="0.452.0" purpose="Icon library for report UI and print button" />
+        <package name="tailwindcss" version="4.1.17" purpose="CSS framework including @media print styles for print-to-PDF functionality" />
+        <package name="jest" version="29.7.0 (dev)" purpose="Testing framework. Component tests in frontend/__tests__/app/(dashboard)/reports/gap-analysis/page.test.tsx" />
+        <package name="@testing-library/react" version="16.0.1 (dev)" purpose="React testing utilities for component tests" />
+      </frontend>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+- Service Layer Pattern: GapAnalysisService handles business logic (query execution, coverage calculation). CRUD layer not needed (direct SQLAlchemy query in service).
+- Authorization: Admin or Executive role required. Extend verify_bpo_role pattern from assessments.py to verify_admin_or_executive_role() function.
+- Tenant Isolation: All queries filter by tenant_id via RLS policies. Backend validates framework_id exists in user's tenant (404 if cross-tenant).
+- Performance Target: Report generation &lt;2 seconds for 500 requirements. Query optimized with indexes on junction table (control_id, requirement_id, tenant_id).
+- React Query Caching: 60-second TTL for gap analysis reports. Invalidate cache when mappings change (create/delete events trigger cache refresh).
+- Print-Optimized CSS: @media print query hides nav/sidebar/buttons, formats report for A4/Letter page size. Use window.print() for browser print dialog.
+- No Audit Logging: Gap analysis is read-only operation (no data modification). Audit logging not required for report generation.
+- Error Handling: 404 if framework doesn't exist or belongs to different tenant. 504 Gateway Timeout if query exceeds 5 seconds. Frontend displays error toast with API message.
+  </constraints>
+  <interfaces>
+    <interface>
+      <name>GET /api/v1/reports/gap-analysis/{framework_id}</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/v1/reports/gap-analysis/{framework_id} -&gt; GapAnalysisReport (200 OK) | 404 | 403 | 504</signature>
+      <path>backend/app/api/v1/reports.py (NEW)</path>
+    </interface>
+    <interface>
+      <name>GET /api/v1/regulatory-frameworks</name>
+      <kind>REST endpoint</kind>
+      <signature>GET /api/v1/regulatory-frameworks -&gt; List[RegulatoryFramework] (200 OK)</signature>
+      <path>backend/app/routes/compliance.py (EXISTING)</path>
+    </interface>
+    <interface>
+      <name>GapAnalysisService.generate_report</name>
+      <kind>service method</kind>
+      <signature>async def generate_report(framework_id: int, tenant_id: UUID) -&gt; GapAnalysisReport</signature>
+      <path>backend/app/services/gap_analysis_service.py (NEW)</path>
+    </interface>
+    <interface>
+      <name>verify_admin_or_executive_role</name>
+      <kind>function</kind>
+      <signature>def verify_admin_or_executive_role(current_user: User) -&gt; None raises HTTPException(403)</signature>
+      <path>backend/app/api/v1/reports.py (NEW - extend verify_bpo_role pattern)</path>
+    </interface>
+    <interface>
+      <name>useGapAnalysisReport</name>
+      <kind>React Query hook</kind>
+      <signature>function useGapAnalysisReport(frameworkId: string) -&gt; {data: GapAnalysisReport, isLoading, error}</signature>
+      <path>frontend/hooks/useGapAnalysis.ts (NEW)</path>
+    </interface>
+  </interfaces>
+  <tests>
+    <standards>
+Backend: pytest for API endpoint testing with pytest-asyncio for async tests. Test all API success/error scenarios (200, 404, 403, 504). Test authorization for all roles (Admin succeeds, Executive succeeds, BPO/General User returns 403). Test tenant isolation (cross-tenant access returns 404). Test query performance (LEFT JOIN execution &lt;100ms, total response &lt;2 seconds). Target: 80% code coverage for backend services.
+
+Frontend: Jest + React Testing Library (RTL) for component tests. Test page rendering for Admin/Executive (200), redirect for BPO/General User (403). Test framework selection triggers report fetch. Test report display with coverage metrics and unmapped requirements table. Test print button functionality (mock window.print). Test error handling (404 displays message, 504 displays timeout toast). Test loading state displays skeleton UI. Target: 80% code coverage for frontend components.
+
+Integration: Test complete gap analysis flow (login as Admin, select framework, verify report data). Test performance (report generation &lt;2s for 100 requirements). Test authorization (BPO gets 403, Executive gets 200). Test tenant isolation (Admin from Tenant A cannot access Tenant B framework). Test print functionality (click button, verify print dialog opens). Test data consistency (cache invalidation when mappings change).
+    </standards>
+    <locations>
+backend/tests/api/v1/test_reports.py (NEW - API endpoint tests)
+frontend/__tests__/app/(dashboard)/reports/gap-analysis/page.test.tsx (NEW - page component tests)
+    </locations>
+    <ideas>
+      <idea ac="1" test="GET /api/v1/reports/gap-analysis/{id} success: Framework with unmapped requirements returns 200 with GapAnalysisReport containing gaps list, coverage metrics, framework details" />
+      <idea ac="1" test="GET /api/v1/reports/gap-analysis/{id} success: Framework with 100% coverage (zero gaps) returns 200 with empty gaps list, coverage_percentage=100" />
+      <idea ac="1" test="GET /api/v1/reports/gap-analysis/{id} error: Framework not found returns 404 Not Found" />
+      <idea ac="1" test="GET /api/v1/reports/gap-analysis/{id} error: Cross-tenant access (Admin from Tenant A tries to access Tenant B framework) returns 404" />
+      <idea ac="4" test="Authorization: Admin can access endpoint (200), Executive can access (200), BPO cannot access (403), General User cannot access (403)" />
+      <idea ac="5" test="Tenant isolation: Verify query filters by tenant_id, cross-tenant framework_id returns 404" />
+      <idea ac="2" test="Gap Analysis Service: Verify LEFT JOIN query identifies unmapped requirements correctly (rf.id where crr.id IS NULL)" />
+      <idea ac="2" test="Gap Analysis Service: Verify coverage calculation accuracy (mapped/total * 100)" />
+      <idea ac="3" test="GapAnalysisReport Schema: Verify Pydantic schema includes all fields (framework_id, framework_name, total_requirements, mapped_requirements, unmapped_requirements, coverage_percentage, gaps)" />
+      <idea ac="6" test="Gap Analysis UI: Page renders for Admin user (not 403 redirect), displays framework selection dropdown" />
+      <idea ac="6" test="Gap Analysis UI: Page renders for Executive user (200), displays framework selection" />
+      <idea ac="6" test="Gap Analysis UI: Page redirects for BPO user (403), displays error message" />
+      <idea ac="6" test="Gap Analysis UI: Framework selection triggers report fetch (React Query hook called with framework_id)" />
+      <idea ac="7" test="Report Display: Renders framework name, coverage metrics card (e.g., '75% coverage: 45 of 60 requirements mapped'), unmapped requirements table with requirement name and description columns" />
+      <idea ac="8" test="Print Functionality: Click 'Print Report' button opens browser print dialog (mock window.print), print-optimized CSS hides nav/sidebar/buttons" />
+      <idea ac="9" test="Performance: Measure report generation time for framework with 100 requirements (&lt;2 seconds total), measure query execution time (&lt;100ms)" />
+      <idea ac="10" test="Error Handling: 404 error displays 'Framework not found' toast message, 504 timeout displays 'Report generation exceeded time limit' toast" />
+      <idea ac="11" test="Security: Attempt access without JWT returns 401, attempt access as BPO returns 403, verify XSS prevention via React automatic escaping for requirement names/descriptions" />
+      <idea ac="12" test="Data Consistency: Create mapping, refresh report (verify unmapped count decreases), test React Query cache with 60-second TTL, test cache invalidation when mappings created/deleted" />
+    </ideas>
+  </tests>
+</story-context>
