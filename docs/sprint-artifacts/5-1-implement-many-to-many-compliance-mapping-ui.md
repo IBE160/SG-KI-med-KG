@@ -1,6 +1,6 @@
 # Story 5.1: Implement Many-to-Many Compliance Mapping UI
 
-Status: ready-for-dev
+Status: ready-for-review
 
 ## Story
 

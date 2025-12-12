@@ -1,5 +1,6 @@
 from sqlalchemy import Column, String, ForeignKey, DateTime, Text
 from sqlalchemy.dialects.postgresql import UUID
+from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from uuid import uuid4
 from .base import Base
@@ -63,6 +64,11 @@ class Control(Base):
         nullable=False,
     )
 
+    # Relationships
+    regulatory_mappings = relationship(
+        "ControlRegulatoryRequirement", back_populates="control", cascade="all, delete-orphan"
+    )
+
 
 class RegulatoryFramework(Base):
     __tablename__ = "regulatory_frameworks"
@@ -80,4 +86,9 @@ class RegulatoryFramework(Base):
         server_default=func.now(),
         onupdate=func.now(),
         nullable=False,
+    )
+
+    # Relationships
+    control_mappings = relationship(
+        "ControlRegulatoryRequirement", back_populates="regulatory_requirement", cascade="all, delete-orphan"
     )

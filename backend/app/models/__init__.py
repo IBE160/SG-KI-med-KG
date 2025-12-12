@@ -8,3 +8,6 @@ from .compliance import (
     Control as Control,
     RegulatoryFramework as RegulatoryFramework,
 )
+from .mapping import (
+    ControlRegulatoryRequirement as ControlRegulatoryRequirement,
+)
