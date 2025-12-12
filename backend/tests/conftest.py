@@ -1,5 +1,7 @@
 import uuid
 from unittest.mock import patch
+from datetime import datetime, timedelta, timezone
+from jose import jwt
 
 from httpx import AsyncClient, ASGITransport
 import pytest_asyncio
@@ -102,6 +104,7 @@ async def authenticated_user(test_client, db_session):
         "is_active": True,
         "is_superuser": False,
         "is_verified": True,
+        "tenant_id": uuid.uuid4(),
     }
 
     # Create user directly in database
@@ -110,9 +113,23 @@ async def authenticated_user(test_client, db_session):
     await db_session.commit()
     await db_session.refresh(user)
 
-    # Generate token using the strategy directly
-    strategy = get_jwt_strategy()
-    access_token = await strategy.write_token(user)
+    # Generate token using Supabase format (compatible with both)
+    settings.SUPABASE_JWT_SECRET = "test-supabase-secret"
+    settings.ACCESS_SECRET_KEY = "test-supabase-secret"
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(user.id),
+        "email": user.email,
+        "aud": ["authenticated", "fastapi-users:auth"],
+        "iat": now,
+        "exp": now + timedelta(hours=1),
+        "app_metadata": {
+            "role": "general_user",
+            "tenant_id": str(user.tenant_id)
+        }
+    }
+    
+    access_token = jwt.encode(payload, settings.SUPABASE_JWT_SECRET, algorithm="HS256")
 
     # Return both the headers and the user data
     return {
@@ -135,6 +152,7 @@ async def superuser_token_headers(test_client, db_session):
         "is_superuser": True,
         "is_verified": True,
         "role": "admin",
+        "tenant_id": uuid.uuid4(),
     }
 
     # Create user directly in database
@@ -143,8 +161,177 @@ async def superuser_token_headers(test_client, db_session):
     await db_session.commit()
     await db_session.refresh(user)
 
-    # Generate token using the strategy directly
-    strategy = get_jwt_strategy()
-    access_token = await strategy.write_token(user)
+    # Generate token using Supabase format (compatible with both)
+    settings.SUPABASE_JWT_SECRET = "test-supabase-secret"
+    settings.ACCESS_SECRET_KEY = "test-supabase-secret"
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(user.id),
+        "email": user.email,
+        "aud": ["authenticated", "fastapi-users:auth"],
+        "iat": now,
+        "exp": now + timedelta(hours=1),
+        "app_metadata": {
+            "role": user.role,
+            "tenant_id": str(user.tenant_id)
+        }
+    }
+    access_token = jwt.encode(payload, settings.SUPABASE_JWT_SECRET, algorithm="HS256")
 
+    return {"Authorization": f"Bearer {access_token}"}
+
+
+@pytest_asyncio.fixture(scope="function")
+async def admin_user(db_session):
+    """Fixture to create an admin user."""
+    user = User(
+        id=uuid.uuid4(),
+        email="admin_role@example.com",
+        hashed_password=PasswordHelper().hash("Password123!"),
+        is_active=True,
+        is_superuser=False,
+        is_verified=True,
+        role="admin",
+        tenant_id=uuid.uuid4()
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user
+
+
+@pytest_asyncio.fixture(scope="function")
+async def admin_token_headers(admin_user):
+    settings.SUPABASE_JWT_SECRET = "test-supabase-secret"
+    settings.ACCESS_SECRET_KEY = "test-supabase-secret"
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(admin_user.id),
+        "email": admin_user.email,
+        "aud": ["authenticated", "fastapi-users:auth"],
+        "iat": now,
+        "exp": now + timedelta(hours=1),
+        "app_metadata": {
+            "role": admin_user.role,
+            "tenant_id": str(admin_user.tenant_id)
+        }
+    }
+    access_token = jwt.encode(payload, settings.SUPABASE_JWT_SECRET, algorithm="HS256")
+    return {"Authorization": f"Bearer {access_token}"}
+
+
+@pytest_asyncio.fixture(scope="function")
+async def executive_user(db_session):
+    """Fixture to create an executive user."""
+    user = User(
+        id=uuid.uuid4(),
+        email="executive@example.com",
+        hashed_password=PasswordHelper().hash("Password123!"),
+        is_active=True,
+        is_superuser=False,
+        is_verified=True,
+        role="executive",
+        tenant_id=uuid.uuid4()
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user
+
+
+@pytest_asyncio.fixture(scope="function")
+async def executive_token_headers(executive_user):
+    settings.SUPABASE_JWT_SECRET = "test-supabase-secret"
+    settings.ACCESS_SECRET_KEY = "test-supabase-secret"
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(executive_user.id),
+        "email": executive_user.email,
+        "aud": ["authenticated", "fastapi-users:auth"],
+        "iat": now,
+        "exp": now + timedelta(hours=1),
+        "app_metadata": {
+            "role": executive_user.role,
+            "tenant_id": str(executive_user.tenant_id)
+        }
+    }
+    access_token = jwt.encode(payload, settings.SUPABASE_JWT_SECRET, algorithm="HS256")
+    return {"Authorization": f"Bearer {access_token}"}
+
+
+@pytest_asyncio.fixture(scope="function")
+async def bpo_user(db_session):
+    """Fixture to create a BPO user."""
+    user = User(
+        id=uuid.uuid4(),
+        email="bpo@example.com",
+        hashed_password=PasswordHelper().hash("Password123!"),
+        is_active=True,
+        is_superuser=False,
+        is_verified=True,
+        role="bpo",
+        tenant_id=uuid.uuid4()
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user
+
+
+@pytest_asyncio.fixture(scope="function")
+async def bpo_token_headers(bpo_user):
+    settings.SUPABASE_JWT_SECRET = "test-supabase-secret"
+    settings.ACCESS_SECRET_KEY = "test-supabase-secret"
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(bpo_user.id),
+        "email": bpo_user.email,
+        "aud": ["authenticated", "fastapi-users:auth"],
+        "iat": now,
+        "exp": now + timedelta(hours=1),
+        "app_metadata": {
+            "role": bpo_user.role,
+            "tenant_id": str(bpo_user.tenant_id)
+        }
+    }
+    access_token = jwt.encode(payload, settings.SUPABASE_JWT_SECRET, algorithm="HS256")
+    return {"Authorization": f"Bearer {access_token}"}
+
+
+@pytest_asyncio.fixture(scope="function")
+async def general_user(db_session):
+    """Fixture to create a general user."""
+    user = User(
+        id=uuid.uuid4(),
+        email="general@example.com",
+        hashed_password=PasswordHelper().hash("Password123!"),
+        is_active=True,
+        is_superuser=False,
+        is_verified=True,
+        role="general_user",
+        tenant_id=uuid.uuid4()
+    )
+    db_session.add(user)
+    await db_session.commit()
+    await db_session.refresh(user)
+    return user
+
+
+@pytest_asyncio.fixture(scope="function")
+async def user_token_headers(general_user):
+    settings.SUPABASE_JWT_SECRET = "test-supabase-secret"
+    settings.ACCESS_SECRET_KEY = "test-supabase-secret"
+    now = datetime.now(timezone.utc)
+    payload = {
+        "sub": str(general_user.id),
+        "email": general_user.email,
+        "aud": ["authenticated", "fastapi-users:auth"],
+        "iat": now,
+        "exp": now + timedelta(hours=1),
+        "app_metadata": {
+            "role": general_user.role,
+            "tenant_id": str(general_user.tenant_id)
+        }
+    }
+    access_token = jwt.encode(payload, settings.SUPABASE_JWT_SECRET, algorithm="HS256")
     return {"Authorization": f"Bearer {access_token}"}

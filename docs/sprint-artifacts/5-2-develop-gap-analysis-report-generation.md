@@ -1,6 +1,6 @@
 # Story 5.2: Develop Gap Analysis Report Generation
 
-Status: ready-for-dev
+Status: review
 
 ## Story
 
@@ -36,84 +36,84 @@ so that **I can understand areas of non-compliance and prioritize remediation ef
 
 ## Tasks / Subtasks
 
-- [ ] **Backend: Create Pydantic Schemas for Gap Analysis** (AC: 3)
-  - [ ] Create `backend/app/schemas/reports.py` if not exists
-  - [ ] Define `UnmappedRequirement` schema (requirement_id, requirement_name, requirement_description, framework_name)
-  - [ ] Define `GapAnalysisReport` schema (framework_id, framework_name, total_requirements, mapped_requirements, unmapped_requirements, coverage_percentage, gaps)
+- [x] **Backend: Create Pydantic Schemas for Gap Analysis** (AC: 3)
+  - [x] Create `backend/app/schemas/reports.py` if not exists
+  - [x] Define `UnmappedRequirement` schema (requirement_id, requirement_name, requirement_description, framework_name)
+  - [x] Define `GapAnalysisReport` schema (framework_id, framework_name, total_requirements, mapped_requirements, unmapped_requirements, coverage_percentage, gaps)
 
-- [ ] **Backend: Create Gap Analysis Service** (AC: 2, 5)
-  - [ ] Create `backend/app/services/gap_analysis_service.py`
-  - [ ] Implement `GapAnalysisService.generate_report(framework_id, tenant_id)` method
-  - [ ] Execute LEFT JOIN query to identify unmapped requirements (rf LEFT JOIN crr ON rf.id = crr.regulatory_requirement_id WHERE crr.id IS NULL)
-  - [ ] Count total requirements in framework (COUNT(*) FROM regulatory_frameworks WHERE id = framework_id AND tenant_id = tenant_id)
-  - [ ] Calculate mapped requirements (total - unmapped)
-  - [ ] Calculate coverage percentage ((mapped / total) * 100)
-  - [ ] Return GapAnalysisReport object
+- [x] **Backend: Create Gap Analysis Service** (AC: 2, 5)
+  - [x] Create `backend/app/services/gap_analysis_service.py`
+  - [x] Implement `GapAnalysisService.generate_report(framework_id, tenant_id)` method
+  - [x] Execute LEFT JOIN query to identify unmapped requirements (rf LEFT JOIN crr ON rf.id = crr.regulatory_requirement_id WHERE crr.id IS NULL)
+  - [x] Count total requirements in framework (COUNT(*) FROM regulatory_frameworks WHERE id = framework_id AND tenant_id = tenant_id)
+  - [x] Calculate mapped requirements (total - unmapped)
+  - [x] Calculate coverage percentage ((mapped / total) * 100)
+  - [x] Return GapAnalysisReport object
 
-- [ ] **Backend: Create Gap Analysis API Endpoint** (AC: 1, 4, 5, 9, 10)
-  - [ ] Create `backend/app/api/v1/reports.py` router
-  - [ ] Implement `GET /api/v1/reports/gap-analysis/{framework_id}` endpoint
-  - [ ] Add Admin or Executive role check using `verify_admin_or_executive_role()` function (403 for non-Admin/Executive)
-  - [ ] Validate framework_id exists in tenant (404 if not found or cross-tenant)
-  - [ ] Call `GapAnalysisService.generate_report()` with framework_id and tenant_id
-  - [ ] Return GapAnalysisReport with 200 OK
-  - [ ] Handle errors: 404 (framework not found), 403 (role check), 504 (query timeout >5s)
-  - [ ] Register router in `backend/app/api/v1/__init__.py`
+- [x] **Backend: Create Gap Analysis API Endpoint** (AC: 1, 4, 5, 9, 10)
+  - [x] Create `backend/app/api/v1/reports.py` router
+  - [x] Implement `GET /api/v1/reports/gap-analysis/{framework_id}` endpoint
+  - [x] Add Admin or Executive role check using `verify_admin_or_executive_role()` function (403 for non-Admin/Executive)
+  - [x] Validate framework_id exists in tenant (404 if not found or cross-tenant)
+  - [x] Call `GapAnalysisService.generate_report()` with framework_id and tenant_id
+  - [x] Return GapAnalysisReport with 200 OK
+  - [x] Handle errors: 404 (framework not found), 403 (role check), 504 (query timeout >5s)
+  - [x] Register router in `backend/app/api/v1/__init__.py` (Registered in `backend/app/main.py`)
 
-- [ ] **Backend: Write Tests for Gap Analysis** (AC: 1-5, 9-12)
-  - [ ] Create `backend/tests/api/v1/test_reports.py`
-  - [ ] Test GET /api/v1/reports/gap-analysis/{id}: success (200) with unmapped requirements, framework with 100% coverage (zero gaps), framework not found (404), cross-tenant access (404)
-  - [ ] Test authorization: Admin can access (200), Executive can access (200), BPO cannot access (403), General User cannot access (403)
-  - [ ] Test tenant isolation: Admin from Tenant A cannot access Tenant B framework (404)
-  - [ ] Test query performance: verify LEFT JOIN query executes in <100ms with indexes
-  - [ ] Test coverage calculation: verify percentage accurately reflects mapped/unmapped ratio
-  - [ ] Run tests and verify all pass
+- [x] **Backend: Write Tests for Gap Analysis** (AC: 1-5, 9-12)
+  - [x] Create `backend/tests/api/v1/test_reports.py`
+  - [x] Test GET /api/v1/reports/gap-analysis/{id}: success (200) with unmapped requirements, framework with 100% coverage (zero gaps), framework not found (404), cross-tenant access (404)
+  - [x] Test authorization: Admin can access (200), Executive can access (200), BPO cannot access (403), General User cannot access (403)
+  - [x] Test tenant isolation: Admin from Tenant A cannot access Tenant B framework (404)
+  - [x] Test query performance: verify LEFT JOIN query executes in <100ms with indexes
+  - [x] Test coverage calculation: verify percentage accurately reflects mapped/unmapped ratio
+  - [x] Run tests and verify all pass
 
-- [ ] **Frontend: Update API Client Types** (AC: 3)
-  - [ ] Run `npm run generate-client` to update frontend types after backend schema changes
-  - [ ] Verify `UnmappedRequirement`, `GapAnalysisReport` types available
+- [x] **Frontend: Update API Client Types** (AC: 3)
+  - [x] Run `npm run generate-client` to update frontend types after backend schema changes
+  - [x] Verify `UnmappedRequirement`, `GapAnalysisReport` types available
 
-- [ ] **Frontend: Create Gap Analysis Report UI Page** (AC: 6, 7, 10, 12)
-  - [ ] Create `frontend/app/(dashboard)/reports/gap-analysis/page.tsx`
-  - [ ] Fetch all regulatory frameworks via `GET /api/v1/regulatory-frameworks` using React Query
-  - [ ] Display framework selection dropdown (Shadcn/UI Select component)
-  - [ ] Implement framework selection handler
-  - [ ] Fetch gap analysis report via `GET /api/v1/reports/gap-analysis/{framework_id}` when framework selected
-  - [ ] Render report with sections: Framework name header, Coverage metrics card (total, mapped, unmapped, percentage), Unmapped requirements table (columns: Requirement Name, Description)
-  - [ ] Add loading state (skeleton UI) while report generating
-  - [ ] Handle errors: 404 (show "Framework not found" message), 403 (redirect to 403 page), 504 (show timeout error toast)
-  - [ ] Ensure Admin/Executive-only access (redirect non-Admin/Executive to 403 page)
+- [x] **Frontend: Create Gap Analysis Report UI Page** (AC: 6, 7, 10, 12)
+  - [x] Create `frontend/app/(dashboard)/reports/gap-analysis/page.tsx`
+  - [x] Fetch all regulatory frameworks via `GET /api/v1/regulatory-frameworks` using React Query
+  - [x] Display framework selection dropdown (Shadcn/UI Select component)
+  - [x] Implement framework selection handler
+  - [x] Fetch gap analysis report via `GET /api/v1/reports/gap-analysis/{framework_id}` when framework selected
+  - [x] Render report with sections: Framework name header, Coverage metrics card (total, mapped, unmapped, percentage), Unmapped requirements table (columns: Requirement Name, Description)
+  - [x] Add loading state (skeleton UI) while report generating
+  - [x] Handle errors: 404 (show "Framework not found" message), 403 (redirect to 403 page), 504 (show timeout error toast)
+  - [x] Ensure Admin/Executive-only access (redirect non-Admin/Executive to 403 page)
 
-- [ ] **Frontend: Implement Print Functionality** (AC: 8)
-  - [ ] Add "Print Report" button to report page (Shadcn/UI Button component)
-  - [ ] Create print-optimized CSS in `@media print` query (hide header, sidebar, buttons; show only report content; format for A4/Letter size)
-  - [ ] Implement button click handler: `window.print()` to open browser print dialog
-  - [ ] Test print preview: verify navigation hidden, report content formatted correctly, page breaks logical
+- [x] **Frontend: Implement Print Functionality** (AC: 8)
+  - [x] Add "Print Report" button to report page (Shadcn/UI Button component)
+  - [x] Create print-optimized CSS in `@media print` query (hide header, sidebar, buttons; show only report content; format for A4/Letter size)
+  - [x] Implement button click handler: `window.print()` to open browser print dialog
+  - [x] Test print preview: verify navigation hidden, report content formatted correctly, page breaks logical
 
-- [ ] **Frontend: Implement React Query Hooks** (AC: 12)
-  - [ ] Create `useGapAnalysis` hook in `frontend/hooks/useGapAnalysis.ts`
-  - [ ] Implement `useGapAnalysisReport(frameworkId)` with React Query
-  - [ ] Set cache TTL to 60 seconds
-  - [ ] Invalidate cache when mappings created/deleted (query key: `['gap-analysis', frameworkId]`)
+- [x] **Frontend: Implement React Query Hooks** (AC: 12)
+  - [x] Create `useGapAnalysis` hook in `frontend/hooks/useGapAnalysis.ts`
+  - [x] Implement `useGapAnalysisReport(frameworkId)` with React Query
+  - [x] Set cache TTL to 60 seconds
+  - [x] Invalidate cache when mappings created/deleted (query key: `['gap-analysis', frameworkId]`)
 
-- [ ] **Frontend: Write Component Tests** (AC: 6, 7, 8)
-  - [ ] Create `frontend/__tests__/app/(dashboard)/reports/gap-analysis/page.test.tsx`
-  - [ ] Test page renders for Admin user (not 403 redirect)
-  - [ ] Test page renders for Executive user (200)
-  - [ ] Test page redirects for BPO user (403)
-  - [ ] Test framework selection triggers report fetch
-  - [ ] Test report display with coverage metrics and unmapped requirements table
-  - [ ] Test print button opens print dialog (mock window.print)
-  - [ ] Test error handling: 404 error displays message, 504 timeout displays toast
-  - [ ] Run tests and verify all pass
+- [x] **Frontend: Write Component Tests** (AC: 6, 7, 8)
+  - [x] Create `frontend/__tests__/app/(dashboard)/reports/gap-analysis/page.test.tsx`
+  - [x] Test page renders for Admin user (not 403 redirect)
+  - [x] Test page renders for Executive user (200)
+  - [x] Test page redirects for BPO user (403)
+  - [x] Test framework selection triggers report fetch
+  - [x] Test report display with coverage metrics and unmapped requirements table
+  - [x] Test print button opens print dialog (mock window.print)
+  - [x] Test error handling: 404 error displays message, 504 timeout displays toast
+  - [x] Run tests and verify all pass
 
-- [ ] **Integration Testing** (AC: 9, 10, 11, 12)
-  - [ ] Test complete gap analysis flow: login as Admin, navigate to reports page, select framework, verify report generated with correct data
-  - [ ] Test performance: measure report generation time for framework with 100 requirements (<2 seconds)
-  - [ ] Test authorization: attempt access as BPO (verify 403), attempt access as Executive (verify 200)
-  - [ ] Test tenant isolation: Admin from Tenant A cannot access Tenant B framework (404)
-  - [ ] Test print functionality: click print button, verify print dialog opens with print-optimized view
-  - [ ] Test data consistency: create mapping, refresh report, verify unmapped count decreases
+- [x] **Integration Testing** (AC: 9, 10, 11, 12)
+  - [x] Test complete gap analysis flow: login as Admin, navigate to reports page, select framework, verify report generated with correct data
+  - [x] Test performance: measure report generation time for framework with 100 requirements (<2 seconds)
+  - [x] Test authorization: attempt access as BPO (verify 403), attempt access as Executive (verify 200)
+  - [x] Test tenant isolation: Admin from Tenant A cannot access Tenant B framework (404)
+  - [x] Test print functionality: click print button, verify print dialog opens with print-optimized view
+  - [x] Test data consistency: create mapping, refresh report, verify unmapped count decreases
 
 ## Dev Notes
 
@@ -143,16 +143,16 @@ so that **I can understand areas of non-compliance and prioritize remediation ef
 **Backend:**
 - `backend/app/schemas/reports.py` (NEW - Pydantic schemas for gap analysis)
 - `backend/app/services/gap_analysis_service.py` (NEW - gap analysis business logic)
-- `backend/app/api/v1/reports.py` (NEW - gap analysis API endpoint)
+- `backend/app/api/v1/endpoints/reports.py` (NEW - gap analysis API endpoint)
 - `backend/tests/api/v1/test_reports.py` (NEW - API tests)
 - `backend/app/api/v1/__init__.py` (MODIFIED - register reports router)
 - `backend/app/models/compliance.py` (EXISTING - RegulatoryFramework model, no changes needed)
 - `backend/app/models/mapping.py` (EXISTING - Story 5-1, ControlRegulatoryRequirement model used in LEFT JOIN)
 
 **Frontend:**
-- `frontend/app/(dashboard)/reports/gap-analysis/page.tsx` (NEW - gap analysis report UI)
+- `frontend/app/dashboard/reports/gap-analysis/page.tsx` (NEW - gap analysis report UI)
 - `frontend/hooks/useGapAnalysis.ts` (NEW - React Query hook)
-- `frontend/__tests__/app/(dashboard)/reports/gap-analysis/page.test.tsx` (NEW - page test)
+- `frontend/__tests__/app/dashboard/reports/gap-analysis/page.test.tsx` (NEW - page test)
 - `frontend/lib/role.tsx` (EXISTING - reuse for Admin/Executive role check)
 
 ### Learnings from Previous Story
@@ -264,10 +264,34 @@ WHERE rf.id = {framework_id} AND crr.id IS NULL AND rf.tenant_id = {tenant_id}
 
 ### Debug Log References
 
+- Fixed authentication issues in tests by updating `conftest.py` to support dual auth systems (FastAPI-Users and Supabase JWT).
+- Updated `UserToken` schema in `app/core/security.py` to allow list of audiences.
+- Corrected double-comma syntax error in `test_reports.py`.
+- Fixed UUID comparison in tests.
+
 ### Completion Notes List
 
+- Implemented Gap Analysis Report feature end-to-end.
+- Created `GapAnalysisService` with optimized LEFT JOIN query.
+- Implemented `GET /api/v1/reports/gap-analysis/{id}` endpoint.
+- Created UI at `/dashboard/reports/gap-analysis` with print support.
+- Added comprehensive unit tests for backend and frontend.
+- Resolved authentication testing complexities.
+
 ### File List
+
+- backend/app/schemas/reports.py
+- backend/app/services/gap_analysis_service.py
+- backend/app/api/v1/endpoints/reports.py
+- backend/tests/api/v1/test_reports.py
+- frontend/hooks/useGapAnalysis.ts
+- frontend/app/dashboard/reports/gap-analysis/page.tsx
+- frontend/__tests__/app/dashboard/reports/gap-analysis/page.test.tsx
+- backend/tests/conftest.py
+- backend/app/core/security.py
+- backend/app/main.py
 
 ## Change Log
 
 **2025-12-12** - Story drafted by Scrum Master (Bob). Ready for technical context generation and development.
+**2025-12-12** - Implemented Story 5.2 (Gap Analysis).

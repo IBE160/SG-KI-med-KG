@@ -17,7 +17,7 @@ class UserToken(BaseModel):
     tenant_id: Optional[str] = None
     exp: int
     iat: int
-    aud: Optional[str] = None
+    aud: Optional[str | list[str]] = None
 
     class Config:
         extra = "ignore"
