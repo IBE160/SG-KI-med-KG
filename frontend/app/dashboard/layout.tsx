@@ -43,10 +43,30 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { role, isAdmin } = useRole();
+  const { role, fullName, email, isAdmin } = useRole();
   const router = useRouter();
-  
+
   const isComplianceOfficer = role === "compliance_officer";
+
+  const getInitials = (name: string | null, emailAddress: string | null) => {
+    if (!name) {
+      // Fallback to email initial if no name
+      if (emailAddress && emailAddress.length > 0) {
+        return emailAddress.charAt(0).toUpperCase();
+      }
+      return "U";
+    }
+    const parts = name.trim().split(" ");
+    if (parts.length === 0) {
+      // If name is empty after trimming, fallback to email
+      if (emailAddress && emailAddress.length > 0) {
+        return emailAddress.charAt(0).toUpperCase();
+      }
+      return "U";
+    }
+    if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+    return (parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase();
+  };
 
   const handleLogout = async () => {
     try {
@@ -62,6 +82,7 @@ export default function DashboardLayout({
   return (
     <div className="flex min-h-screen">
       <aside className="fixed inset-y-0 left-0 z-10 w-16 flex flex-col border-r bg-background p-4">
+        {/* ... (aside content remains same) ... */}
         <div className="flex flex-col items-center gap-4">
           <Link
             href="/"
@@ -209,27 +230,27 @@ export default function DashboardLayout({
           <div className="relative">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400">
+                <button className="flex items-center justify-center w-10 h-10 rounded-full bg-gray-300 hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                   <Avatar>
-                    <AvatarFallback>U</AvatarFallback>
+                    <AvatarFallback>{getInitials(fullName, email)}</AvatarFallback>
                   </Avatar>
                 </button>
               </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" side="bottom">
+              <DropdownMenuContent align="end" side="bottom" className="w-56">
                 <div className="px-4 py-2 text-sm border-b">
-                  <div className="font-semibold">Current Role</div>
-                  <div className="text-muted-foreground capitalize">
-                    {role || "Loading..."}
+                  <div className="font-semibold text-lg">{fullName || "User"}</div>
+                  <div className="text-muted-foreground text-xs capitalize">
+                    {role ? role.replace("_", " ") : "Loading..."}
                   </div>
                 </div>
                 <DropdownMenuItem asChild>
-                  <Link href="/support">
+                  <Link href="/support" className="cursor-pointer">
                     Support
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={handleLogout}
-                  className="cursor-pointer"
+                  className="cursor-pointer text-red-600 focus:text-red-600"
                 >
                   Logout
                 </DropdownMenuItem>

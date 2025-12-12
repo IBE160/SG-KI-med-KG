@@ -7,6 +7,8 @@ import { jwtDecode } from "jwt-decode";
 
 export function useRole() {
   const [role, setRole] = useState<string | null>(null);
+  const [fullName, setFullName] = useState<string | null>(null);
+  const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const supabase = createClient();
 
@@ -37,6 +39,8 @@ export function useRole() {
             const userData = await response.json();
             console.log("User data from backend:", userData);
             setRole(userData.role || "general_user");
+            setFullName(userData.full_name || null);
+            setEmail(userData.email || null);
           } else {
             const errorText = await response.text();
             console.error("Failed to fetch from backend:", response.status, errorText);
@@ -45,10 +49,14 @@ export function useRole() {
             const appRole = decoded.app_metadata?.role;
             console.log("Falling back to JWT role:", appRole);
             setRole(appRole || "general_user");
+            setFullName(null);
+            setEmail(decoded.email || null);
           }
         } catch (e) {
           console.error("Failed to get user role", e);
           setRole("general_user");
+          setFullName(null);
+          setEmail(null);
         }
       }
       setLoading(false);
@@ -74,25 +82,33 @@ export function useRole() {
             const userData = await response.json();
             console.log("Auth state change - User data:", userData);
             setRole(userData.role || "general_user");
+            setFullName(userData.full_name || null);
+            setEmail(userData.email || null);
           } else {
             console.log("Auth state change - Backend fetch failed, using JWT");
             const decoded: any = jwtDecode(session.access_token);
             setRole(decoded.app_metadata?.role || "general_user");
+            setFullName(null);
+            setEmail(decoded.email || null);
           }
         } catch (e) {
           console.error("Auth state change error:", e);
           const decoded: any = jwtDecode(session.access_token);
           setRole(decoded.app_metadata?.role || "general_user");
+          setFullName(null);
+          setEmail(decoded.email || null);
         }
       } else {
         setRole(null);
+        setFullName(null);
+        setEmail(null);
       }
     });
 
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
-  return { role, loading, isAdmin: role === "admin" };
+  return { role, fullName, email, loading, isAdmin: role === "admin" };
 }
 
 export function RoleGuard({

@@ -12,6 +12,7 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
 
     # New fields for Story 2.1
     role = Column(String(50), default="general_user", nullable=False)
+    full_name = Column(String(100), nullable=True)
     # tenant_id is required, but we might need to generate one or assign one.
     # For MVP/dev, allowing null might be safer during migration, but spec says NOT NULL.
     # We will default to a random UUID for now if not provided, or leave nullable=True temporarily
