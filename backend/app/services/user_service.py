@@ -15,10 +15,6 @@ class UserService:
         # We ignore what comes in user_in.tenant_id if we want to strictly enforce it
         target_tenant_id = admin_user.tenant_id
         
-        # Convert single role to list for new schema
-        # TODO: Update UserCreate schema to support multiple roles directly
-        roles = [user_in.role]
-        
         # 1. Create in Supabase Auth
         try:
             # supabase.auth.admin.create_user is the correct method for server-side creation
@@ -27,7 +23,7 @@ class UserService:
                 "password": user_in.password,
                 "email_confirm": True, # Auto confirm since admin created it
                 "user_metadata": {
-                    "roles": roles, # Store as array in metadata
+                    "roles": user_in.roles, # Store as array in metadata
                     "tenant_id": str(target_tenant_id)
                 }
             })
@@ -57,9 +53,9 @@ class UserService:
                 email=user_in.email,
                 hashed_password="managed_by_supabase", # Placeholder as we use Supabase Auth
                 is_active=True,
-                is_superuser=user_in.role == "admin",
+                is_superuser="admin" in user_in.roles,
                 is_verified=True,
-                roles=roles, # Use roles array
+                roles=user_in.roles, # Use roles array directly
                 tenant_id=target_tenant_id
             )
             

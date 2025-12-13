@@ -11,7 +11,7 @@
           "auth"
         ],
         "summary": "Auth:Jwt.Login",
-        "operationId": "auth:jwt.login",
+        "operationId": "auth-auth:jwt.login",
         "requestBody": {
           "content": {
             "application/x-www-form-urlencoded": {
@@ -80,7 +80,7 @@
           "auth"
         ],
         "summary": "Auth:Jwt.Logout",
-        "operationId": "auth:jwt.logout",
+        "operationId": "auth-auth:jwt.logout",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -107,7 +107,7 @@
           "auth"
         ],
         "summary": "Register:Register",
-        "operationId": "register:register",
+        "operationId": "auth-register:register",
         "requestBody": {
           "content": {
             "application/json": {
@@ -175,7 +175,7 @@
           "auth"
         ],
         "summary": "Reset:Forgot Password",
-        "operationId": "reset:forgot_password",
+        "operationId": "auth-reset:forgot_password",
         "requestBody": {
           "content": {
             "application/json": {
@@ -214,7 +214,7 @@
           "auth"
         ],
         "summary": "Reset:Reset Password",
-        "operationId": "reset:reset_password",
+        "operationId": "auth-reset:reset_password",
         "requestBody": {
           "content": {
             "application/json": {
@@ -280,7 +280,7 @@
           "auth"
         ],
         "summary": "Verify:Request-Token",
-        "operationId": "verify:request-token",
+        "operationId": "auth-verify:request-token",
         "requestBody": {
           "content": {
             "application/json": {
@@ -319,7 +319,7 @@
           "auth"
         ],
         "summary": "Verify:Verify",
-        "operationId": "verify:verify",
+        "operationId": "auth-verify:verify",
         "requestBody": {
           "content": {
             "application/json": {
@@ -384,7 +384,7 @@
           "users"
         ],
         "summary": "Users:Current User",
-        "operationId": "users:current_user",
+        "operationId": "users-users:current_user",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -411,7 +411,7 @@
           "users"
         ],
         "summary": "Users:Patch Current User",
-        "operationId": "users:patch_current_user",
+        "operationId": "users-users:patch_current_user",
         "requestBody": {
           "content": {
             "application/json": {
@@ -487,7 +487,7 @@
           "users"
         ],
         "summary": "Users:User",
-        "operationId": "users:user",
+        "operationId": "users-users:user",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -541,7 +541,7 @@
           "users"
         ],
         "summary": "Users:Patch User",
-        "operationId": "users:patch_user",
+        "operationId": "users-users:patch_user",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -632,7 +632,7 @@
           "users"
         ],
         "summary": "Users:Delete User",
-        "operationId": "users:delete_user",
+        "operationId": "users-users:delete_user",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -681,7 +681,7 @@
           "item"
         ],
         "summary": "Read Item",
-        "operationId": "read_item",
+        "operationId": "item-read_item",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -744,7 +744,7 @@
           "item"
         ],
         "summary": "Create Item",
-        "operationId": "create_item",
+        "operationId": "item-create_item",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -790,7 +790,7 @@
           "item"
         ],
         "summary": "Delete Item",
-        "operationId": "delete_item",
+        "operationId": "item-delete_item",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -836,7 +836,7 @@
           "controls"
         ],
         "summary": "Create Control",
-        "operationId": "create_control",
+        "operationId": "controls-create_control",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -880,7 +880,7 @@
           "controls"
         ],
         "summary": "Read Controls",
-        "operationId": "read_controls",
+        "operationId": "controls-read_controls",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -945,7 +945,7 @@
           "controls"
         ],
         "summary": "Read Control",
-        "operationId": "read_control",
+        "operationId": "controls-read_control",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -991,7 +991,7 @@
           "controls"
         ],
         "summary": "Update Control",
-        "operationId": "update_control",
+        "operationId": "controls-update_control",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1047,7 +1047,7 @@
           "controls"
         ],
         "summary": "Delete Control",
-        "operationId": "delete_control",
+        "operationId": "controls-delete_control",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1088,7 +1088,7 @@
           "risks"
         ],
         "summary": "Create Risk",
-        "operationId": "create_risk",
+        "operationId": "risks-create_risk",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1132,7 +1132,7 @@
           "risks"
         ],
         "summary": "Read Risks",
-        "operationId": "read_risks",
+        "operationId": "risks-read_risks",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1197,7 +1197,7 @@
           "risks"
         ],
         "summary": "Read Risk",
-        "operationId": "read_risk",
+        "operationId": "risks-read_risk",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1243,7 +1243,7 @@
           "risks"
         ],
         "summary": "Update Risk",
-        "operationId": "update_risk",
+        "operationId": "risks-update_risk",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1299,7 +1299,7 @@
           "risks"
         ],
         "summary": "Delete Risk",
-        "operationId": "delete_risk",
+        "operationId": "risks-delete_risk",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1340,7 +1340,7 @@
           "business-processes"
         ],
         "summary": "Create Business Process",
-        "operationId": "create_business_process",
+        "operationId": "business-processes-create_business_process",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1384,7 +1384,7 @@
           "business-processes"
         ],
         "summary": "Read Business Processes",
-        "operationId": "read_business_processes",
+        "operationId": "business-processes-read_business_processes",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1449,7 +1449,7 @@
           "business-processes"
         ],
         "summary": "Read Business Process",
-        "operationId": "read_business_process",
+        "operationId": "business-processes-read_business_process",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1495,7 +1495,7 @@
           "business-processes"
         ],
         "summary": "Update Business Process",
-        "operationId": "update_business_process",
+        "operationId": "business-processes-update_business_process",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1551,7 +1551,7 @@
           "business-processes"
         ],
         "summary": "Delete Business Process",
-        "operationId": "delete_business_process",
+        "operationId": "business-processes-delete_business_process",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1592,7 +1592,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Create Regulatory Framework",
-        "operationId": "create_regulatory_framework",
+        "operationId": "regulatory-frameworks-create_regulatory_framework",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1636,7 +1636,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Read Regulatory Frameworks",
-        "operationId": "read_regulatory_frameworks",
+        "operationId": "regulatory-frameworks-read_regulatory_frameworks",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1701,7 +1701,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Read Regulatory Framework",
-        "operationId": "read_regulatory_framework",
+        "operationId": "regulatory-frameworks-read_regulatory_framework",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1747,7 +1747,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Update Regulatory Framework",
-        "operationId": "update_regulatory_framework",
+        "operationId": "regulatory-frameworks-update_regulatory_framework",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1803,7 +1803,7 @@
           "regulatory-frameworks"
         ],
         "summary": "Delete Regulatory Framework",
-        "operationId": "delete_regulatory_framework",
+        "operationId": "regulatory-frameworks-delete_regulatory_framework",
         "security": [
           {
             "OAuth2PasswordBearer": []
@@ -1838,6 +1838,277 @@
         }
       }
     },
+    "/api/v1/regulatory-requirements": {
+      "post": {
+        "tags": [
+          "regulatory-requirements"
+        ],
+        "summary": "Create Regulatory Requirement",
+        "operationId": "regulatory-requirements-create_regulatory_requirement",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegulatoryRequirementCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegulatoryRequirementRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "regulatory-requirements"
+        ],
+        "summary": "Read Regulatory Requirements",
+        "operationId": "regulatory-requirements-read_regulatory_requirements",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "framework_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "uuid"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Filter by framework ID",
+              "title": "Framework Id"
+            },
+            "description": "Filter by framework ID"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Page size",
+              "default": 50,
+              "title": "Size"
+            },
+            "description": "Page size"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Page_RegulatoryRequirementRead_"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/regulatory-requirements/{requirement_id}": {
+      "get": {
+        "tags": [
+          "regulatory-requirements"
+        ],
+        "summary": "Read Regulatory Requirement",
+        "operationId": "regulatory-requirements-read_regulatory_requirement",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "requirement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Requirement Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegulatoryRequirementRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "regulatory-requirements"
+        ],
+        "summary": "Update Regulatory Requirement",
+        "operationId": "regulatory-requirements-update_regulatory_requirement",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "requirement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Requirement Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegulatoryRequirementUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegulatoryRequirementRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "regulatory-requirements"
+        ],
+        "summary": "Delete Regulatory Requirement",
+        "operationId": "regulatory-requirements-delete_regulatory_requirement",
+        "security": [
+          {
+            "OAuth2PasswordBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "requirement_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Requirement Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users": {
       "post": {
         "tags": [
@@ -1846,7 +2117,7 @@
         ],
         "summary": "Create User",
         "description": "Create a new user.\nRequires admin role.\nThe new user is assigned to the admin's tenant.",
-        "operationId": "create_user",
+        "operationId": "users-create_user",
         "security": [
           {
             "HTTPBearer": []
@@ -1892,7 +2163,7 @@
         ],
         "summary": "List Users",
         "description": "List users in the current tenant, optionally filtered by role.\nRequires admin or compliance_officer role.",
-        "operationId": "list_users",
+        "operationId": "users-list_users",
         "security": [
           {
             "HTTPBearer": []
@@ -1952,7 +2223,7 @@
         ],
         "summary": "Get Current User",
         "description": "Get the current authenticated user's information including their role.",
-        "operationId": "get_current_user",
+        "operationId": "users-get_current_user",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -1979,7 +2250,7 @@
           "users"
         ],
         "summary": "Update User Role",
-        "operationId": "update_user_role",
+        "operationId": "users-update_user_role",
         "security": [
           {
             "HTTPBearer": []
@@ -2039,7 +2310,7 @@
         ],
         "summary": "Upload Document",
         "description": "Upload a regulatory document for AI analysis.",
-        "operationId": "upload_document",
+        "operationId": "documents-upload_document",
         "requestBody": {
           "content": {
             "multipart/form-data": {
@@ -2087,7 +2358,7 @@
         ],
         "summary": "List Documents",
         "description": "List all documents for the current user's tenant.",
-        "operationId": "list_documents",
+        "operationId": "documents-list_documents",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2119,7 +2390,7 @@
         ],
         "summary": "Get Document",
         "description": "Get a specific document by ID.\n\n- Requires admin, bpo, or executive role\n- Returns document metadata",
-        "operationId": "get_document",
+        "operationId": "documents-get_document",
         "security": [
           {
             "HTTPBearer": []
@@ -2167,7 +2438,7 @@
         ],
         "summary": "Delete Document",
         "description": "Archive a document (soft delete).\n\n- **document_id**: UUID of the document to archive\n- Requires admin role\n- Moves document to archive in both database and Supabase storage\n- Returns success message",
-        "operationId": "delete_document",
+        "operationId": "documents-delete_document",
         "security": [
           {
             "HTTPBearer": []
@@ -2215,7 +2486,7 @@
         ],
         "summary": "Rename Document",
         "description": "Rename a document.\n\n- **document_id**: UUID of the document to rename\n- **new_filename**: New filename for the document (in request body)\n- Requires admin role\n- Updates filename in database only (storage path remains unchanged)\n- File extension is preserved automatically\n- Returns updated document metadata",
-        "operationId": "rename_document",
+        "operationId": "documents-rename_document",
         "security": [
           {
             "HTTPBearer": []
@@ -2275,7 +2546,7 @@
         ],
         "summary": "Manually Process Document",
         "description": "Manually trigger document processing (for testing/debugging).\n\n- **document_id**: UUID of the document to process\n- Requires admin role\n- Processes document synchronously and returns detailed status\n- Useful for debugging when automatic processing fails",
-        "operationId": "manually_process_document",
+        "operationId": "documents-manually_process_document",
         "security": [
           {
             "HTTPBearer": []
@@ -2323,7 +2594,7 @@
         ],
         "summary": "List Suggestions",
         "description": "List AI suggestions with optional status filtering.\nFiltered by tenant - only shows suggestions from documents uploaded by users in the same tenant.",
-        "operationId": "list_suggestions",
+        "operationId": "suggestions-list_suggestions",
         "security": [
           {
             "HTTPBearer": []
@@ -2385,7 +2656,7 @@
         ],
         "summary": "Update Suggestion Status",
         "description": "Update the status of an AI suggestion.\nTransitions:\n- pending -> awaiting_bpo_approval (Accept)\n- pending -> rejected (Reject)",
-        "operationId": "update_suggestion_status",
+        "operationId": "suggestions-update_suggestion_status",
         "security": [
           {
             "HTTPBearer": []
@@ -2445,7 +2716,7 @@
         ],
         "summary": "List Audit Logs",
         "description": "Retrieve audit logs.\nRequires admin or compliance_officer role.",
-        "operationId": "list_audit_logs",
+        "operationId": "audit-logs-list_audit_logs",
         "security": [
           {
             "HTTPBearer": []
@@ -2545,7 +2816,7 @@
         ],
         "summary": "Get Dashboard Metrics",
         "description": "Retrieve role-specific dashboard metrics for the authenticated user.\n\nReturns:\n    DashboardMetrics: Role-specific dashboard cards and data\n\nRaises:\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (user inactive or invalid tenant)\n    500: Internal server error (database/service failure)",
-        "operationId": "get_dashboard_metrics",
+        "operationId": "dashboard-get_dashboard_metrics",
         "responses": {
           "200": {
             "description": "Successful Response",
@@ -2573,7 +2844,7 @@
         ],
         "summary": "Get Pending Reviews",
         "description": "Retrieve paginated list of suggestions with status 'pending_review' assigned to the logged-in BPO.\n\nOnly accessible to users with BPO role. Returns suggestions filtered by:\n- status = \"pending_review\"\n- assigned_bpo_id = current_user.id\n- tenant_id = current_user.tenant_id (enforced by RLS)\n\nArgs:\n    page: Page number (1-indexed)\n    size: Number of items per page (max 100)\n    db: Database session\n    current_user: Authenticated user from JWT\n\nReturns:\n    PendingReviewsResponse: Paginated list of pending review items\n\nRaises:\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (non-BPO user or user has no tenant)\n    500: Internal server error",
-        "operationId": "get_pending_reviews",
+        "operationId": "assessments-get_pending_reviews",
         "security": [
           {
             "HTTPBearer": []
@@ -2640,7 +2911,7 @@
         ],
         "summary": "Get Suggestion Detail",
         "description": "Retrieve detailed information for a specific AI suggestion.\n\nOnly accessible to BPO assigned to the suggestion.\n\nArgs:\n    suggestion_id: ID of the suggestion\n    db: Database session\n    current_user: Authenticated user from JWT\n\nReturns:\n    SuggestionDetailResponse: Detailed suggestion data\n\nRaises:\n    403: Forbidden (not BPO or not assigned)\n    404: Not Found",
-        "operationId": "get_suggestion_detail",
+        "operationId": "assessments-get_suggestion_detail",
         "security": [
           {
             "HTTPBearer": []
@@ -2692,7 +2963,7 @@
         ],
         "summary": "Submit Assessment",
         "description": "Submit BPO assessment action (approve or discard) for an AI suggestion.\n\nAuthorization checks:\n- User must have BPO role\n- Suggestion.assigned_bpo_id must match current_user.id\n- Suggestion.tenant_id must match current_user.tenant_id (enforced by service layer)\n\nValidation:\n- For approve action: residual_risk is REQUIRED (400 Bad Request if missing)\n- Suggestion must exist and have status \"pending_review\" (404 if not found, 409 if wrong status)\n\nSide effects:\n- Approve: Creates active records (business_process, risk, control), updates status to \"active\"\n- Discard: Updates status to \"archived\"\n- Both actions: Creates immutable audit log entry\n\nArgs:\n    suggestion_id: ID of the suggestion to assess\n    request: AssessmentRequest with action, residual_risk (if approve), and optional edits\n    db: Database session\n    current_user: Authenticated user from JWT\n\nReturns:\n    AssessmentResponse: Success status, message, updated status, audit_log_id, and active_record_ids (if approved)\n\nRaises:\n    400: Bad Request (residual_risk missing for approve action)\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (non-BPO user, not assigned to this suggestion, or no tenant)\n    404: Not Found (suggestion doesn't exist or belongs to different tenant)\n    409: Conflict (suggestion status is not \"pending_review\")\n    500: Internal server error",
-        "operationId": "submit_assessment",
+        "operationId": "assessments-submit_assessment",
         "security": [
           {
             "HTTPBearer": []
@@ -2754,7 +3025,7 @@
         ],
         "summary": "Create Mapping",
         "description": "Create a new control-to-requirement mapping.\n\nOnly accessible to Admin users. Validates that both control and requirement\nexist in the user's tenant, prevents duplicate mappings, and logs the action\nto the audit trail.\n\nArgs:\n    payload: MappingCreate with control_id and regulatory_requirement_id\n    db: Database session\n    current_user: Authenticated user from JWT\n\nReturns:\n    MappingDetail: Created mapping with control and requirement names\n\nRaises:\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (non-Admin user)\n    400: Bad Request (invalid control_id or requirement_id)\n    409: Conflict (mapping already exists)",
-        "operationId": "create_mapping",
+        "operationId": "mappings-create_mapping",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2800,7 +3071,7 @@
         ],
         "summary": "Delete Mapping",
         "description": "Delete a control-to-requirement mapping.\n\nOnly accessible to Admin users. Idempotent operation - returns 404 if\nmapping doesn't exist. Logs the deletion to the audit trail.\n\nArgs:\n    payload: MappingDelete with control_id and regulatory_requirement_id\n    db: Database session\n    current_user: Authenticated user from JWT\n\nRaises:\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (non-Admin user)\n    404: Not Found (mapping doesn't exist)",
-        "operationId": "delete_mapping",
+        "operationId": "mappings-delete_mapping",
         "requestBody": {
           "content": {
             "application/json": {
@@ -2841,7 +3112,7 @@
         ],
         "summary": "Get Mappings For Control",
         "description": "Get all regulatory requirements mapped to a specific control.\n\nAccessible to Admin, Executive, and BPO users. Returns list of mappings\nwith requirement names for display.\n\nArgs:\n    control_id: UUID of the control\n    db: Database session\n    current_user: Authenticated user from JWT\n\nReturns:\n    MappingListResponse: List of mappings with total count\n\nRaises:\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (non-Admin/Executive/BPO user)\n    404: Not Found (control doesn't exist or not in user's tenant)",
-        "operationId": "get_mappings_for_control",
+        "operationId": "mappings-get_mappings_for_control",
         "security": [
           {
             "HTTPBearer": []
@@ -2893,7 +3164,7 @@
         ],
         "summary": "Get Mappings For Requirement",
         "description": "Get all controls mapped to a specific regulatory requirement.\n\nAccessible to Admin, Executive, and BPO users. Returns list of mappings\nwith control names for display.\n\nArgs:\n    requirement_id: UUID of the regulatory requirement\n    db: Database session\n    current_user: Authenticated user from JWT\n\nReturns:\n    MappingListResponse: List of mappings with total count\n\nRaises:\n    401: Unauthorized (JWT missing/invalid)\n    403: Forbidden (non-Admin/Executive/BPO user)\n    404: Not Found (requirement doesn't exist or not in user's tenant)",
-        "operationId": "get_mappings_for_requirement",
+        "operationId": "mappings-get_mappings_for_requirement",
         "security": [
           {
             "HTTPBearer": []
@@ -2920,6 +3191,58 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/MappingListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/reports/gap-analysis/{framework_id}": {
+      "get": {
+        "tags": [
+          "reports",
+          "reports"
+        ],
+        "summary": "Generate Gap Analysis Report",
+        "description": "Generate a gap analysis report for a selected regulatory framework.\n\nIdentifies regulatory requirements with no associated controls.\nAccessible to Admin and Executive roles.\n\nArgs:\n    framework_id: UUID of the regulatory framework\n    db: Database session\n    current_user: Authenticated user from JWT\n    \nReturns:\n    GapAnalysisReport: Structured report\n    \nRaises:\n    401: Unauthorized\n    403: Forbidden (non-Admin/Executive)\n    404: Not Found (framework doesn't exist)",
+        "operationId": "reports-generate_gap_analysis_report",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "framework_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "UUID of the regulatory framework",
+              "title": "Framework Id"
+            },
+            "description": "UUID of the regulatory framework"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GapAnalysisReport"
                 }
               }
             }
@@ -3729,6 +4052,54 @@
         ],
         "title": "ErrorModel"
       },
+      "GapAnalysisReport": {
+        "properties": {
+          "framework_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Framework Id"
+          },
+          "framework_name": {
+            "type": "string",
+            "title": "Framework Name"
+          },
+          "total_requirements": {
+            "type": "integer",
+            "title": "Total Requirements"
+          },
+          "mapped_requirements": {
+            "type": "integer",
+            "title": "Mapped Requirements"
+          },
+          "unmapped_requirements": {
+            "type": "integer",
+            "title": "Unmapped Requirements"
+          },
+          "coverage_percentage": {
+            "type": "number",
+            "title": "Coverage Percentage"
+          },
+          "gaps": {
+            "items": {
+              "$ref": "#/components/schemas/UnmappedRequirement"
+            },
+            "type": "array",
+            "title": "Gaps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "framework_id",
+          "framework_name",
+          "total_requirements",
+          "mapped_requirements",
+          "unmapped_requirements",
+          "coverage_percentage",
+          "gaps"
+        ],
+        "title": "GapAnalysisReport",
+        "description": "Structured gap analysis report for a regulatory framework."
+      },
       "HTTPValidationError": {
         "properties": {
           "detail": {
@@ -4201,6 +4572,72 @@
         ],
         "title": "Page[RegulatoryFrameworkRead]"
       },
+      "Page_RegulatoryRequirementRead_": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RegulatoryRequirementRead"
+            },
+            "type": "array",
+            "title": "Items"
+          },
+          "total": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Total"
+          },
+          "page": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Page"
+          },
+          "size": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 1.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Size"
+          },
+          "pages": {
+            "anyOf": [
+              {
+                "type": "integer",
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "items",
+          "page",
+          "size"
+        ],
+        "title": "Page[RegulatoryRequirementRead]"
+      },
       "Page_RiskRead_": {
         "properties": {
           "items": {
@@ -4501,6 +4938,130 @@
         ],
         "title": "RegulatoryFrameworkUpdate"
       },
+      "RegulatoryRequirementCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "framework_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Framework Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "framework_id"
+        ],
+        "title": "RegulatoryRequirementCreate"
+      },
+      "RegulatoryRequirementRead": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "framework_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Framework Id"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "framework_id",
+          "id",
+          "tenant_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "RegulatoryRequirementRead"
+      },
+      "RegulatoryRequirementUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "framework_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Framework Id"
+          }
+        },
+        "type": "object",
+        "title": "RegulatoryRequirementUpdate"
+      },
       "RenameRequest": {
         "properties": {
           "new_filename": {
@@ -4755,9 +5316,46 @@
         "type": "string",
         "enum": [
           "risk",
-          "control"
+          "control",
+          "business_process"
         ],
         "title": "SuggestionType"
+      },
+      "UnmappedRequirement": {
+        "properties": {
+          "requirement_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Requirement Id"
+          },
+          "requirement_name": {
+            "type": "string",
+            "title": "Requirement Name"
+          },
+          "requirement_description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Requirement Description"
+          },
+          "framework_name": {
+            "type": "string",
+            "title": "Framework Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "requirement_id",
+          "requirement_name",
+          "framework_name"
+        ],
+        "title": "UnmappedRequirement",
+        "description": "Represents a regulatory requirement that has no mapped controls."
       },
       "UpdateSuggestionStatusRequest": {
         "properties": {

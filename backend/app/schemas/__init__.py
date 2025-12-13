@@ -8,19 +8,19 @@ from app.models.document import DocumentStatus
 
 
 class UserRead(schemas.BaseUser[uuid.UUID]):
-    role: str
+    roles: list[str]
     tenant_id: UUID
     full_name: str | None = None
 
 
 class UserCreate(schemas.BaseUserCreate):
-    role: str = "general_user"
+    roles: list[str] = ["general_user"]
     tenant_id: UUID | None = None
     full_name: str | None = None
 
 
 class UserUpdate(schemas.BaseUserUpdate):
-    role: str | None = None
+    roles: list[str] | None = None
     tenant_id: UUID | None = None
     full_name: str | None = None
 

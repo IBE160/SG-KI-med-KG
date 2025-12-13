@@ -247,6 +247,19 @@ export type ErrorModel = {
       };
 };
 
+/**
+ * Structured gap analysis report for a regulatory framework.
+ */
+export type GapAnalysisReport = {
+  framework_id: string;
+  framework_name: string;
+  total_requirements: number;
+  mapped_requirements: number;
+  unmapped_requirements: number;
+  coverage_percentage: number;
+  gaps: Array<UnmappedRequirement>;
+};
+
 export type HTTPValidationError = {
   detail?: Array<ValidationError>;
 };
@@ -343,6 +356,14 @@ export type Page_RegulatoryFrameworkRead_ = {
   pages?: number | null;
 };
 
+export type Page_RegulatoryRequirementRead_ = {
+  items: Array<RegulatoryRequirementRead>;
+  total?: number | null;
+  page: number | null;
+  size: number | null;
+  pages?: number | null;
+};
+
 export type Page_RiskRead_ = {
   items: Array<RiskRead>;
   total?: number | null;
@@ -425,6 +446,28 @@ export type RegulatoryFrameworkUpdate = {
   name: string;
   description?: string | null;
   version?: string | null;
+};
+
+export type RegulatoryRequirementCreate = {
+  name: string;
+  description?: string | null;
+  framework_id: string;
+};
+
+export type RegulatoryRequirementRead = {
+  name: string;
+  description?: string | null;
+  framework_id: string;
+  id: string;
+  tenant_id: string;
+  created_at: string;
+  updated_at: string;
+};
+
+export type RegulatoryRequirementUpdate = {
+  name?: string | null;
+  description?: string | null;
+  framework_id?: string | null;
 };
 
 export type RenameRequest = {
@@ -510,7 +553,17 @@ export type SuggestionStatus =
   | "archived"
   | "rejected";
 
-export type SuggestionType = "risk" | "control";
+export type SuggestionType = "risk" | "control" | "business_process";
+
+/**
+ * Represents a regulatory requirement that has no mapped controls.
+ */
+export type UnmappedRequirement = {
+  requirement_id: string;
+  requirement_name: string;
+  requirement_description?: string | null;
+  framework_name: string;
+};
 
 export type UpdateSuggestionStatusRequest = {
   status: SuggestionStatus;
@@ -559,105 +612,108 @@ export type ValidationError = {
   type: string;
 };
 
-export type AuthJwtLoginData = {
+export type AuthAuthJwtLoginData = {
   body: login;
 };
 
-export type AuthJwtLoginResponse = BearerResponse;
+export type AuthAuthJwtLoginResponse = BearerResponse;
 
-export type AuthJwtLoginError = ErrorModel | HTTPValidationError;
+export type AuthAuthJwtLoginError = ErrorModel | HTTPValidationError;
 
-export type AuthJwtLogoutResponse = unknown;
+export type AuthAuthJwtLogoutResponse = unknown;
 
-export type AuthJwtLogoutError = unknown;
+export type AuthAuthJwtLogoutError = unknown;
 
-export type RegisterRegisterData = {
+export type AuthRegisterRegisterData = {
   body: UserCreate;
 };
 
-export type RegisterRegisterResponse = UserRead;
+export type AuthRegisterRegisterResponse = UserRead;
 
-export type RegisterRegisterError = ErrorModel | HTTPValidationError;
+export type AuthRegisterRegisterError = ErrorModel | HTTPValidationError;
 
-export type ResetForgotPasswordData = {
+export type AuthResetForgotPasswordData = {
   body: Body_auth_reset_forgot_password;
 };
 
-export type ResetForgotPasswordResponse = unknown;
+export type AuthResetForgotPasswordResponse = unknown;
 
-export type ResetForgotPasswordError = HTTPValidationError;
+export type AuthResetForgotPasswordError = HTTPValidationError;
 
-export type ResetResetPasswordData = {
+export type AuthResetResetPasswordData = {
   body: Body_auth_reset_reset_password;
 };
 
-export type ResetResetPasswordResponse = unknown;
+export type AuthResetResetPasswordResponse = unknown;
 
-export type ResetResetPasswordError = ErrorModel | HTTPValidationError;
+export type AuthResetResetPasswordError = ErrorModel | HTTPValidationError;
 
-export type VerifyRequestTokenData = {
+export type AuthVerifyRequestTokenData = {
   body: Body_auth_verify_request_token;
 };
 
-export type VerifyRequestTokenResponse = unknown;
+export type AuthVerifyRequestTokenResponse = unknown;
 
-export type VerifyRequestTokenError = HTTPValidationError;
+export type AuthVerifyRequestTokenError = HTTPValidationError;
 
-export type VerifyVerifyData = {
+export type AuthVerifyVerifyData = {
   body: Body_auth_verify_verify;
 };
 
-export type VerifyVerifyResponse = UserRead;
+export type AuthVerifyVerifyResponse = UserRead;
 
-export type VerifyVerifyError = ErrorModel | HTTPValidationError;
+export type AuthVerifyVerifyError = ErrorModel | HTTPValidationError;
 
-export type UsersCurrentUserResponse = UserRead;
+export type UsersUsersCurrentUserResponse = UserRead;
 
-export type UsersCurrentUserError = unknown;
+export type UsersUsersCurrentUserError = unknown;
 
-export type UsersPatchCurrentUserData = {
+export type UsersUsersPatchCurrentUserData = {
   body: UserUpdate;
 };
 
-export type UsersPatchCurrentUserResponse = UserRead;
+export type UsersUsersPatchCurrentUserResponse = UserRead;
 
-export type UsersPatchCurrentUserError =
+export type UsersUsersPatchCurrentUserError =
   | ErrorModel
   | unknown
   | HTTPValidationError;
 
-export type UsersUserData = {
+export type UsersUsersUserData = {
   path: {
     id: string;
   };
 };
 
-export type UsersUserResponse = UserRead;
+export type UsersUsersUserResponse = UserRead;
 
-export type UsersUserError = unknown | HTTPValidationError;
+export type UsersUsersUserError = unknown | HTTPValidationError;
 
-export type UsersPatchUserData = {
+export type UsersUsersPatchUserData = {
   body: UserUpdate;
   path: {
     id: string;
   };
 };
 
-export type UsersPatchUserResponse = UserRead;
+export type UsersUsersPatchUserResponse = UserRead;
 
-export type UsersPatchUserError = ErrorModel | unknown | HTTPValidationError;
+export type UsersUsersPatchUserError =
+  | ErrorModel
+  | unknown
+  | HTTPValidationError;
 
-export type UsersDeleteUserData = {
+export type UsersUsersDeleteUserData = {
   path: {
     id: string;
   };
 };
 
-export type UsersDeleteUserResponse = void;
+export type UsersUsersDeleteUserResponse = void;
 
-export type UsersDeleteUserError = unknown | HTTPValidationError;
+export type UsersUsersDeleteUserError = unknown | HTTPValidationError;
 
-export type ReadItemData = {
+export type ItemReadItemData = {
   query?: {
     /**
      * Page number
@@ -670,37 +726,37 @@ export type ReadItemData = {
   };
 };
 
-export type ReadItemResponse = Page_ItemRead_;
+export type ItemReadItemResponse = Page_ItemRead_;
 
-export type ReadItemError = HTTPValidationError;
+export type ItemReadItemError = HTTPValidationError;
 
-export type CreateItemData = {
+export type ItemCreateItemData = {
   body: ItemCreate;
 };
 
-export type CreateItemResponse = ItemRead;
+export type ItemCreateItemResponse = ItemRead;
 
-export type CreateItemError = HTTPValidationError;
+export type ItemCreateItemError = HTTPValidationError;
 
-export type DeleteItemData = {
+export type ItemDeleteItemData = {
   path: {
     item_id: string;
   };
 };
 
-export type DeleteItemResponse = unknown;
+export type ItemDeleteItemResponse = unknown;
 
-export type DeleteItemError = HTTPValidationError;
+export type ItemDeleteItemError = HTTPValidationError;
 
-export type CreateControlData = {
+export type ControlsCreateControlData = {
   body: ControlCreate;
 };
 
-export type CreateControlResponse = ControlRead;
+export type ControlsCreateControlResponse = ControlRead;
 
-export type CreateControlError = HTTPValidationError;
+export type ControlsCreateControlError = HTTPValidationError;
 
-export type ReadControlsData = {
+export type ControlsReadControlsData = {
   query?: {
     /**
      * Page number
@@ -713,50 +769,50 @@ export type ReadControlsData = {
   };
 };
 
-export type ReadControlsResponse = Page_ControlRead_;
+export type ControlsReadControlsResponse = Page_ControlRead_;
 
-export type ReadControlsError = HTTPValidationError;
+export type ControlsReadControlsError = HTTPValidationError;
 
-export type ReadControlData = {
+export type ControlsReadControlData = {
   path: {
     control_id: string;
   };
 };
 
-export type ReadControlResponse = ControlRead;
+export type ControlsReadControlResponse = ControlRead;
 
-export type ReadControlError = HTTPValidationError;
+export type ControlsReadControlError = HTTPValidationError;
 
-export type UpdateControlData = {
+export type ControlsUpdateControlData = {
   body: ControlUpdate;
   path: {
     control_id: string;
   };
 };
 
-export type UpdateControlResponse = ControlRead;
+export type ControlsUpdateControlResponse = ControlRead;
 
-export type UpdateControlError = HTTPValidationError;
+export type ControlsUpdateControlError = HTTPValidationError;
 
-export type DeleteControlData = {
+export type ControlsDeleteControlData = {
   path: {
     control_id: string;
   };
 };
 
-export type DeleteControlResponse = void;
+export type ControlsDeleteControlResponse = void;
 
-export type DeleteControlError = HTTPValidationError;
+export type ControlsDeleteControlError = HTTPValidationError;
 
-export type CreateRiskData = {
+export type RisksCreateRiskData = {
   body: RiskCreate;
 };
 
-export type CreateRiskResponse = RiskRead;
+export type RisksCreateRiskResponse = RiskRead;
 
-export type CreateRiskError = HTTPValidationError;
+export type RisksCreateRiskError = HTTPValidationError;
 
-export type ReadRisksData = {
+export type RisksReadRisksData = {
   query?: {
     /**
      * Page number
@@ -769,50 +825,51 @@ export type ReadRisksData = {
   };
 };
 
-export type ReadRisksResponse = Page_RiskRead_;
+export type RisksReadRisksResponse = Page_RiskRead_;
 
-export type ReadRisksError = HTTPValidationError;
+export type RisksReadRisksError = HTTPValidationError;
 
-export type ReadRiskData = {
+export type RisksReadRiskData = {
   path: {
     risk_id: string;
   };
 };
 
-export type ReadRiskResponse = RiskRead;
+export type RisksReadRiskResponse = RiskRead;
 
-export type ReadRiskError = HTTPValidationError;
+export type RisksReadRiskError = HTTPValidationError;
 
-export type UpdateRiskData = {
+export type RisksUpdateRiskData = {
   body: RiskUpdate;
   path: {
     risk_id: string;
   };
 };
 
-export type UpdateRiskResponse = RiskRead;
+export type RisksUpdateRiskResponse = RiskRead;
 
-export type UpdateRiskError = HTTPValidationError;
+export type RisksUpdateRiskError = HTTPValidationError;
 
-export type DeleteRiskData = {
+export type RisksDeleteRiskData = {
   path: {
     risk_id: string;
   };
 };
 
-export type DeleteRiskResponse = void;
+export type RisksDeleteRiskResponse = void;
 
-export type DeleteRiskError = HTTPValidationError;
+export type RisksDeleteRiskError = HTTPValidationError;
 
-export type CreateBusinessProcessData = {
+export type BusinessProcessesCreateBusinessProcessData = {
   body: BusinessProcessCreate;
 };
 
-export type CreateBusinessProcessResponse = BusinessProcessRead;
+export type BusinessProcessesCreateBusinessProcessResponse =
+  BusinessProcessRead;
 
-export type CreateBusinessProcessError = HTTPValidationError;
+export type BusinessProcessesCreateBusinessProcessError = HTTPValidationError;
 
-export type ReadBusinessProcessesData = {
+export type BusinessProcessesReadBusinessProcessesData = {
   query?: {
     /**
      * Page number
@@ -825,50 +882,54 @@ export type ReadBusinessProcessesData = {
   };
 };
 
-export type ReadBusinessProcessesResponse = Page_BusinessProcessRead_;
+export type BusinessProcessesReadBusinessProcessesResponse =
+  Page_BusinessProcessRead_;
 
-export type ReadBusinessProcessesError = HTTPValidationError;
+export type BusinessProcessesReadBusinessProcessesError = HTTPValidationError;
 
-export type ReadBusinessProcessData = {
+export type BusinessProcessesReadBusinessProcessData = {
   path: {
     process_id: string;
   };
 };
 
-export type ReadBusinessProcessResponse = BusinessProcessRead;
+export type BusinessProcessesReadBusinessProcessResponse = BusinessProcessRead;
 
-export type ReadBusinessProcessError = HTTPValidationError;
+export type BusinessProcessesReadBusinessProcessError = HTTPValidationError;
 
-export type UpdateBusinessProcessData = {
+export type BusinessProcessesUpdateBusinessProcessData = {
   body: BusinessProcessUpdate;
   path: {
     process_id: string;
   };
 };
 
-export type UpdateBusinessProcessResponse = BusinessProcessRead;
+export type BusinessProcessesUpdateBusinessProcessResponse =
+  BusinessProcessRead;
 
-export type UpdateBusinessProcessError = HTTPValidationError;
+export type BusinessProcessesUpdateBusinessProcessError = HTTPValidationError;
 
-export type DeleteBusinessProcessData = {
+export type BusinessProcessesDeleteBusinessProcessData = {
   path: {
     process_id: string;
   };
 };
 
-export type DeleteBusinessProcessResponse = void;
+export type BusinessProcessesDeleteBusinessProcessResponse = void;
 
-export type DeleteBusinessProcessError = HTTPValidationError;
+export type BusinessProcessesDeleteBusinessProcessError = HTTPValidationError;
 
-export type CreateRegulatoryFrameworkData = {
+export type RegulatoryFrameworksCreateRegulatoryFrameworkData = {
   body: RegulatoryFrameworkCreate;
 };
 
-export type CreateRegulatoryFrameworkResponse = RegulatoryFrameworkRead;
+export type RegulatoryFrameworksCreateRegulatoryFrameworkResponse =
+  RegulatoryFrameworkRead;
 
-export type CreateRegulatoryFrameworkError = HTTPValidationError;
+export type RegulatoryFrameworksCreateRegulatoryFrameworkError =
+  HTTPValidationError;
 
-export type ReadRegulatoryFrameworksData = {
+export type RegulatoryFrameworksReadRegulatoryFrameworksData = {
   query?: {
     /**
      * Page number
@@ -881,128 +942,204 @@ export type ReadRegulatoryFrameworksData = {
   };
 };
 
-export type ReadRegulatoryFrameworksResponse = Page_RegulatoryFrameworkRead_;
+export type RegulatoryFrameworksReadRegulatoryFrameworksResponse =
+  Page_RegulatoryFrameworkRead_;
 
-export type ReadRegulatoryFrameworksError = HTTPValidationError;
+export type RegulatoryFrameworksReadRegulatoryFrameworksError =
+  HTTPValidationError;
 
-export type ReadRegulatoryFrameworkData = {
+export type RegulatoryFrameworksReadRegulatoryFrameworkData = {
   path: {
     framework_id: string;
   };
 };
 
-export type ReadRegulatoryFrameworkResponse = RegulatoryFrameworkRead;
+export type RegulatoryFrameworksReadRegulatoryFrameworkResponse =
+  RegulatoryFrameworkRead;
 
-export type ReadRegulatoryFrameworkError = HTTPValidationError;
+export type RegulatoryFrameworksReadRegulatoryFrameworkError =
+  HTTPValidationError;
 
-export type UpdateRegulatoryFrameworkData = {
+export type RegulatoryFrameworksUpdateRegulatoryFrameworkData = {
   body: RegulatoryFrameworkUpdate;
   path: {
     framework_id: string;
   };
 };
 
-export type UpdateRegulatoryFrameworkResponse = RegulatoryFrameworkRead;
+export type RegulatoryFrameworksUpdateRegulatoryFrameworkResponse =
+  RegulatoryFrameworkRead;
 
-export type UpdateRegulatoryFrameworkError = HTTPValidationError;
+export type RegulatoryFrameworksUpdateRegulatoryFrameworkError =
+  HTTPValidationError;
 
-export type DeleteRegulatoryFrameworkData = {
+export type RegulatoryFrameworksDeleteRegulatoryFrameworkData = {
   path: {
     framework_id: string;
   };
 };
 
-export type DeleteRegulatoryFrameworkResponse = void;
+export type RegulatoryFrameworksDeleteRegulatoryFrameworkResponse = void;
 
-export type DeleteRegulatoryFrameworkError = HTTPValidationError;
+export type RegulatoryFrameworksDeleteRegulatoryFrameworkError =
+  HTTPValidationError;
 
-export type CreateUserData = {
+export type RegulatoryRequirementsCreateRegulatoryRequirementData = {
+  body: RegulatoryRequirementCreate;
+};
+
+export type RegulatoryRequirementsCreateRegulatoryRequirementResponse =
+  RegulatoryRequirementRead;
+
+export type RegulatoryRequirementsCreateRegulatoryRequirementError =
+  HTTPValidationError;
+
+export type RegulatoryRequirementsReadRegulatoryRequirementsData = {
+  query?: {
+    /**
+     * Filter by framework ID
+     */
+    framework_id?: string | null;
+    /**
+     * Page number
+     */
+    page?: number;
+    /**
+     * Page size
+     */
+    size?: number;
+  };
+};
+
+export type RegulatoryRequirementsReadRegulatoryRequirementsResponse =
+  Page_RegulatoryRequirementRead_;
+
+export type RegulatoryRequirementsReadRegulatoryRequirementsError =
+  HTTPValidationError;
+
+export type RegulatoryRequirementsReadRegulatoryRequirementData = {
+  path: {
+    requirement_id: string;
+  };
+};
+
+export type RegulatoryRequirementsReadRegulatoryRequirementResponse =
+  RegulatoryRequirementRead;
+
+export type RegulatoryRequirementsReadRegulatoryRequirementError =
+  HTTPValidationError;
+
+export type RegulatoryRequirementsUpdateRegulatoryRequirementData = {
+  body: RegulatoryRequirementUpdate;
+  path: {
+    requirement_id: string;
+  };
+};
+
+export type RegulatoryRequirementsUpdateRegulatoryRequirementResponse =
+  RegulatoryRequirementRead;
+
+export type RegulatoryRequirementsUpdateRegulatoryRequirementError =
+  HTTPValidationError;
+
+export type RegulatoryRequirementsDeleteRegulatoryRequirementData = {
+  path: {
+    requirement_id: string;
+  };
+};
+
+export type RegulatoryRequirementsDeleteRegulatoryRequirementResponse = void;
+
+export type RegulatoryRequirementsDeleteRegulatoryRequirementError =
+  HTTPValidationError;
+
+export type UsersCreateUserData = {
   body: UserCreate;
 };
 
-export type CreateUserResponse = UserRead;
+export type UsersCreateUserResponse = UserRead;
 
-export type CreateUserError = HTTPValidationError;
+export type UsersCreateUserError = HTTPValidationError;
 
-export type ListUsersData = {
+export type UsersListUsersData = {
   query?: {
     role?: string | null;
   };
 };
 
-export type ListUsersResponse = Array<UserRead>;
+export type UsersListUsersResponse = Array<UserRead>;
 
-export type ListUsersError = HTTPValidationError;
+export type UsersListUsersError = HTTPValidationError;
 
-export type GetCurrentUserResponse = UserRead;
+export type UsersGetCurrentUserResponse = UserRead;
 
-export type GetCurrentUserError = unknown;
+export type UsersGetCurrentUserError = unknown;
 
-export type UpdateUserRoleData = {
+export type UsersUpdateUserRoleData = {
   body: UserUpdate;
   path: {
     user_id: string;
   };
 };
 
-export type UpdateUserRoleResponse = UserRead;
+export type UsersUpdateUserRoleResponse = UserRead;
 
-export type UpdateUserRoleError = HTTPValidationError;
+export type UsersUpdateUserRoleError = HTTPValidationError;
 
-export type UploadDocumentData = {
+export type DocumentsUploadDocumentData = {
   body: Body_documents_upload_document;
 };
 
-export type UploadDocumentResponse = DocumentUploadResponse;
+export type DocumentsUploadDocumentResponse = DocumentUploadResponse;
 
-export type UploadDocumentError = HTTPValidationError;
+export type DocumentsUploadDocumentError = HTTPValidationError;
 
-export type ListDocumentsResponse = Array<DocumentRead>;
+export type DocumentsListDocumentsResponse = Array<DocumentRead>;
 
-export type ListDocumentsError = unknown;
+export type DocumentsListDocumentsError = unknown;
 
-export type GetDocumentData = {
+export type DocumentsGetDocumentData = {
   path: {
     document_id: string;
   };
 };
 
-export type GetDocumentResponse = DocumentRead;
+export type DocumentsGetDocumentResponse = DocumentRead;
 
-export type GetDocumentError = HTTPValidationError;
+export type DocumentsGetDocumentError = HTTPValidationError;
 
-export type DeleteDocumentData = {
+export type DocumentsDeleteDocumentData = {
   path: {
     document_id: string;
   };
 };
 
-export type DeleteDocumentResponse = unknown;
+export type DocumentsDeleteDocumentResponse = unknown;
 
-export type DeleteDocumentError = HTTPValidationError;
+export type DocumentsDeleteDocumentError = HTTPValidationError;
 
-export type RenameDocumentData = {
+export type DocumentsRenameDocumentData = {
   body: RenameRequest;
   path: {
     document_id: string;
   };
 };
 
-export type RenameDocumentResponse = DocumentRead;
+export type DocumentsRenameDocumentResponse = DocumentRead;
 
-export type RenameDocumentError = HTTPValidationError;
+export type DocumentsRenameDocumentError = HTTPValidationError;
 
-export type ManuallyProcessDocumentData = {
+export type DocumentsManuallyProcessDocumentData = {
   path: {
     document_id: string;
   };
 };
 
-export type ManuallyProcessDocumentResponse = unknown;
+export type DocumentsManuallyProcessDocumentResponse = unknown;
 
-export type ManuallyProcessDocumentError = HTTPValidationError;
+export type DocumentsManuallyProcessDocumentError = HTTPValidationError;
 
-export type ListSuggestionsData = {
+export type SuggestionsListSuggestionsData = {
   query?: {
     /**
      * Filter by status
@@ -1011,22 +1148,22 @@ export type ListSuggestionsData = {
   };
 };
 
-export type ListSuggestionsResponse = Array<AISuggestionRead>;
+export type SuggestionsListSuggestionsResponse = Array<AISuggestionRead>;
 
-export type ListSuggestionsError = HTTPValidationError;
+export type SuggestionsListSuggestionsError = HTTPValidationError;
 
-export type UpdateSuggestionStatusData = {
+export type SuggestionsUpdateSuggestionStatusData = {
   body: UpdateSuggestionStatusRequest;
   path: {
     suggestion_id: string;
   };
 };
 
-export type UpdateSuggestionStatusResponse = AISuggestionRead;
+export type SuggestionsUpdateSuggestionStatusResponse = AISuggestionRead;
 
-export type UpdateSuggestionStatusError = HTTPValidationError;
+export type SuggestionsUpdateSuggestionStatusError = HTTPValidationError;
 
-export type ListAuditLogsData = {
+export type AuditLogsListAuditLogsData = {
   query?: {
     /**
      * Filter by actor ID
@@ -1043,15 +1180,15 @@ export type ListAuditLogsData = {
   };
 };
 
-export type ListAuditLogsResponse = Array<AuditLogRead>;
+export type AuditLogsListAuditLogsResponse = Array<AuditLogRead>;
 
-export type ListAuditLogsError = HTTPValidationError;
+export type AuditLogsListAuditLogsError = HTTPValidationError;
 
-export type GetDashboardMetricsResponse = DashboardMetrics;
+export type DashboardGetDashboardMetricsResponse = DashboardMetrics;
 
-export type GetDashboardMetricsError = unknown;
+export type DashboardGetDashboardMetricsError = unknown;
 
-export type GetPendingReviewsData = {
+export type AssessmentsGetPendingReviewsData = {
   query?: {
     /**
      * Page number (1-indexed)
@@ -1064,11 +1201,11 @@ export type GetPendingReviewsData = {
   };
 };
 
-export type GetPendingReviewsResponse = PendingReviewsResponse;
+export type AssessmentsGetPendingReviewsResponse = PendingReviewsResponse;
 
-export type GetPendingReviewsError = HTTPValidationError;
+export type AssessmentsGetPendingReviewsError = HTTPValidationError;
 
-export type GetSuggestionDetailData = {
+export type AssessmentsGetSuggestionDetailData = {
   path: {
     /**
      * ID of the suggestion to retrieve
@@ -1077,11 +1214,11 @@ export type GetSuggestionDetailData = {
   };
 };
 
-export type GetSuggestionDetailResponse = SuggestionDetailResponse;
+export type AssessmentsGetSuggestionDetailResponse = SuggestionDetailResponse;
 
-export type GetSuggestionDetailError = HTTPValidationError;
+export type AssessmentsGetSuggestionDetailError = HTTPValidationError;
 
-export type SubmitAssessmentData = {
+export type AssessmentsSubmitAssessmentData = {
   body: AssessmentRequest;
   path: {
     /**
@@ -1091,27 +1228,27 @@ export type SubmitAssessmentData = {
   };
 };
 
-export type SubmitAssessmentResponse = AssessmentResponse;
+export type AssessmentsSubmitAssessmentResponse = AssessmentResponse;
 
-export type SubmitAssessmentError = HTTPValidationError;
+export type AssessmentsSubmitAssessmentError = HTTPValidationError;
 
-export type CreateMappingData = {
+export type MappingsCreateMappingData = {
   body: MappingCreate;
 };
 
-export type CreateMappingResponse = MappingDetail;
+export type MappingsCreateMappingResponse = MappingDetail;
 
-export type CreateMappingError = HTTPValidationError;
+export type MappingsCreateMappingError = HTTPValidationError;
 
-export type DeleteMappingData = {
+export type MappingsDeleteMappingData = {
   body: MappingDelete;
 };
 
-export type DeleteMappingResponse = void;
+export type MappingsDeleteMappingResponse = void;
 
-export type DeleteMappingError = HTTPValidationError;
+export type MappingsDeleteMappingError = HTTPValidationError;
 
-export type GetMappingsForControlData = {
+export type MappingsGetMappingsForControlData = {
   path: {
     /**
      * UUID of the control
@@ -1120,11 +1257,11 @@ export type GetMappingsForControlData = {
   };
 };
 
-export type GetMappingsForControlResponse = MappingListResponse;
+export type MappingsGetMappingsForControlResponse = MappingListResponse;
 
-export type GetMappingsForControlError = HTTPValidationError;
+export type MappingsGetMappingsForControlError = HTTPValidationError;
 
-export type GetMappingsForRequirementData = {
+export type MappingsGetMappingsForRequirementData = {
   path: {
     /**
      * UUID of the regulatory requirement
@@ -1133,6 +1270,19 @@ export type GetMappingsForRequirementData = {
   };
 };
 
-export type GetMappingsForRequirementResponse = MappingListResponse;
+export type MappingsGetMappingsForRequirementResponse = MappingListResponse;
 
-export type GetMappingsForRequirementError = HTTPValidationError;
+export type MappingsGetMappingsForRequirementError = HTTPValidationError;
+
+export type ReportsGenerateGapAnalysisReportData = {
+  path: {
+    /**
+     * UUID of the regulatory framework
+     */
+    framework_id: string;
+  };
+};
+
+export type ReportsGenerateGapAnalysisReportResponse = GapAnalysisReport;
+
+export type ReportsGenerateGapAnalysisReportError = HTTPValidationError;
