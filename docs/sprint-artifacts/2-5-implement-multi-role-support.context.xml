@@ -1,0 +1,209 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>5</storyId>
+    <title>Implement Multi-Role Support for Non-General Users</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-13</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-5-implement-multi-role-support.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Admin</asA>
+    <iWant>to assign multiple roles (admin, bpo, executive) to a single user</iWant>
+    <soThat>users with overlapping responsibilities can perform multiple functions without switching accounts, while ensuring general_user remains a distinct, entry-level role</soThat>
+    <tasks>
+- Database: Design Multi-Role Schema (AC: 3)
+  - Decide between ARRAY column vs junction table approach
+  - Create Alembic migration to add roles column, migrate data, drop old role column
+  - Update User model in backend/app/models/user.py
+
+- Database: Update Supabase Trigger (AC: 3)
+  - Modify handle_new_user() trigger to assign roles = ["general_user"] instead of role = "general_user"
+  - Update auth.users metadata to store roles as JSON array
+
+- Backend: Refactor RBAC Logic (AC: 2, 5)
+  - Update has_role() in backend/app/core/deps.py to check role arrays with OR logic
+  - Update get_current_admin_user() to check "admin" in current_user.roles
+  - Update all endpoints that reference user.role to use user.roles
+
+- Backend: Role Validation Logic (AC: 1)
+  - Create validation function validate_role_combination(roles: List[str]) -> bool
+  - Add validation to user creation/update endpoints (PUT /users/{id}/roles)
+  - Return 400 Bad Request for invalid combinations
+
+- Backend: Update User Service (AC: 2, 5)
+  - Update UserService methods to handle roles as arrays
+  - Ensure create_user() and update_user_role() work with role arrays
+
+- Frontend: Update Role Components (AC: 4, 5)
+  - Update useRole hook to check user.roles.includes(role)
+  - Update RoleGuard component to work with role arrays
+  - Update all components that check user.role to use user.roles
+
+- Frontend: Multi-Select Role UI (AC: 4)
+  - Replace single-select dropdown with multi-select in Admin User Management
+  - Use Shadcn/UI checkbox group or multi-select component
+  - Implement mutual exclusivity logic for general_user
+  - Display validation error for invalid combinations
+
+- Frontend: Display Multiple Roles (AC: 4)
+  - Update User List table to display multiple role badges per user
+  - Use Badge component with different colors for each role type
+
+- Testing (AC: 1, 2, 3, 4, 5)
+  - Unit test: validate_role_combination() accepts valid, rejects invalid
+  - Unit test: has_role() correctly checks role arrays with OR logic
+  - Integration test: Assign multiple roles via API, verify persisted
+  - Integration test: Attempt ["general_user", "admin"], verify 400 error
+  - Integration test: User with ["admin", "bpo"] can access both endpoints
+  - E2E test: Admin assigns multiple roles via UI, verify badges display
+  - Migration test: Run migration, verify single roles converted to arrays
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Multi-Role Assignment for Non-General Users
+   - A user can be assigned multiple roles from: admin, bpo, executive
+   - Valid combinations: ["admin"], ["bpo"], ["admin", "bpo"], ["admin", "executive"], ["bpo", "executive"], ["admin", "bpo", "executive"]
+   - The general_user role is mutually exclusive with all other roles
+   - If a user has general_user, they cannot have any additional roles
+   - If a user has any other role(s), they cannot have general_user
+
+2. Backend RBAC Updated
+   - The has_role() dependency checks if the user has ANY of the required roles (OR logic, not AND)
+   - Example: has_role(["admin", "bpo"]) passes if user has ["admin"], ["bpo"], or ["admin", "bpo"]
+   - All existing endpoint protections continue to work correctly with the new multi-role logic
+   - API endpoints validate role combinations (reject ["general_user", "admin"])
+
+3. Database Schema Refactored
+   - The user.role column is changed from String(50) to ARRAY (PostgreSQL) or a junction table user_roles
+   - Existing single-role users are migrated to the new multi-role format via Alembic migration
+   - Example: role = "admin" → roles = ["admin"]
+   - Supabase handle_new_user() trigger assigns roles = ["general_user"] by default
+
+4. Frontend Multi-Role UI
+   - Admin User Management page displays multiple role badges per user
+   - Role assignment dialog uses a multi-select dropdown (checkboxes or chips)
+   - Selecting general_user disables all other role options
+   - Selecting any other role disables the general_user option
+   - UI displays clear validation messages when invalid combinations are attempted
+
+5. Backward Compatibility
+   - Existing code that reads user.role (singular) is updated to read user.roles (array)
+   - No breaking changes to authentication flow or session management
+   - Frontend components that check roles (e.g., RoleGuard, useRole) work correctly with role arrays
+</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-2.md" title="Epic 2 Technical Specification" section="Story 2.5">
+        <snippet>Story 2.5 ACs: (13) Users can be assigned multiple roles (admin, bpo, executive) simultaneously. (14) general_user role is mutually exclusive with all other roles. (15) Backend RBAC checks pass if user has ANY required role (OR logic). (16) Admin UI supports multi-select role assignment with validation. (17) Existing single-role users migrated to array format via Alembic migration.</snippet>
+      </doc>
+      <doc path="docs/architecture.md" title="System Architecture" section="Epic 2 IAM">
+        <snippet>Epic 2 (IAM) architecture lives in backend/app/core/security.py, frontend/app/(auth), and Supabase Auth configuration. RBAC enforced via has_role() dependency.</snippet>
+      </doc>
+      <doc path="docs/epics.md" title="Epics" section="Epic 2">
+        <snippet>Epic 2: User Identity & Access Management (IAM). Story 2.2: RBAC with role-based permissions. Admin can manage user roles within tenant.</snippet>
+      </doc>
+      <doc path="docs/PRD.md" title="Product Requirements Document" section="Permissions & Roles">
+        <snippet>FR-1: Role-Based Access Control with four distinct roles (Admin, BPO, Executive, General User) within each tenant. System must enforce permissions defined for each role.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact path="backend/app/models/user.py" kind="model" symbol="User.role" lines="14" reason="Current single-role field: role = Column(String(50), default='general_user'). Story 2.5 changes to roles ARRAY."/>
+      <artifact path="backend/app/core/deps.py" kind="dependency" symbol="has_role" lines="71-76" reason="Current RBAC logic checks single role (current_user.role not in roles). Story 2.5 changes to OR logic for role arrays."/>
+      <artifact path="frontend/lib/role.tsx" kind="hook" symbol="useRole" lines="8-112" reason="Hook fetches single role from backend API and JWT. Returns { role, fullName, email, loading, isAdmin }. Story 2.5 needs to handle role arrays."/>
+      <artifact path="frontend/lib/role.tsx" kind="component" symbol="RoleGuard" lines="114-145" reason="Component checks if user role is in allowedRoles array using includes(). Story 2.5 needs to check if user.roles has ANY allowed role."/>
+      <artifact path="backend/app/services/user_service.py" kind="service" symbol="UserService.create_user, UserService.update_user_role" lines="N/A" reason="From Story 2.3: Service handles user creation and role assignment. Story 2.5 extends to handle role arrays and validation."/>
+      <artifact path="frontend/app/dashboard/admin/users/page.tsx" kind="page" symbol="UsersPage" lines="N/A" reason="Admin user management UI with role assignment. Story 2.5 adds multi-select role UI and validation."/>
+    </code>
+    <dependencies>
+      <python>
+        <package name="fastapi" version=">=0.115.0,&lt;0.116"/>
+        <package name="asyncpg" version=">=0.29.0,&lt;0.30" note="PostgreSQL async driver"/>
+        <package name="fastapi-users[sqlalchemy]" version=">=13.0.0,&lt;14" note="User authentication"/>
+        <package name="sqlalchemy" note="ORM with PostgreSQL ARRAY support"/>
+        <package name="alembic" version=">=1.14.0,&lt;2" note="Database migrations - required for schema change"/>
+        <package name="pydantic" note="Data validation for role arrays"/>
+        <package name="pytest" version=">=8.3.3,&lt;9" note="Testing framework"/>
+      </python>
+      <frontend>
+        <package name="next" note="Next.js framework"/>
+        <package name="react" note="React for UI components"/>
+        <package name="@supabase/supabase-js" version="^2.86.2" note="Supabase client for auth"/>
+        <package name="jwt-decode" note="Decode JWT for role extraction"/>
+        <package name="@tanstack/react-query" version="^5.90.12" note="Data fetching"/>
+        <package name="@radix-ui/react-select" note="Multi-select component base"/>
+      </frontend>
+      <database>
+        <system name="PostgreSQL ARRAY" note="Native array type for roles column"/>
+        <system name="Supabase Auth" note="JWT tokens store role arrays in metadata"/>
+      </database>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Use PostgreSQL ARRAY column for roles (recommended over junction table for fixed role set). Array enables simple queries with '= ANY(roles)' and jsonb metadata in auth.users.</constraint>
+    <constraint type="migration">Alembic migration MUST: (1) Add roles ARRAY column, (2) Populate from existing role column, (3) Make roles NOT NULL, (4) Drop old role column. Include rollback plan.</constraint>
+    <constraint type="validation">Backend MUST validate role combinations. general_user is mutually exclusive with all other roles. API endpoints reject invalid combinations with 400 Bad Request.</constraint>
+    <constraint type="rbac">has_role() RBAC logic changes from equality check to OR logic: pass if user has ANY required role. All endpoint protections must be updated to use user.roles array.</constraint>
+    <constraint type="backward-compatibility">Update ALL code reading user.role (singular) to user.roles (array). Affects: backend endpoints, frontend hooks (useRole), components (RoleGuard), and all role checks.</constraint>
+    <constraint type="ui-validation">Frontend multi-select UI must enforce mutual exclusivity: selecting general_user disables other roles, selecting any other role disables general_user. Client-side validation mirrors backend.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="User.roles Model Field" kind="sqlalchemy-model">
+      <signature>roles = Column(ARRAY(String), nullable=False, server_default='{general_user}')</signature>
+      <path>backend/app/models/user.py</path>
+      <note>Replaces: role = Column(String(50), default="general_user"). PostgreSQL ARRAY type. Migration required.</note>
+    </interface>
+    <interface name="has_role() RBAC Dependency" kind="fastapi-dependency">
+      <signature>def has_role(roles: List[str]) -> Callable: ... if not any(r in current_user.roles for r in roles): raise HTTPException(...)</signature>
+      <path>backend/app/core/deps.py</path>
+      <note>Changes from 'if current_user.role not in roles' to OR logic checking if user has ANY required role.</note>
+    </interface>
+    <interface name="validate_role_combination()" kind="validation-function">
+      <signature>def validate_role_combination(roles: List[str]) -> bool: return not ("general_user" in roles and len(roles) > 1)</signature>
+      <path>backend/app/services/user_service.py (new)</path>
+      <note>Validates role combinations. Returns False if general_user mixed with other roles.</note>
+    </interface>
+    <interface name="useRole Hook" kind="react-hook">
+      <signature>export function useRole(): { roles: string[], fullName, email, loading, isAdmin: boolean }</signature>
+      <path>frontend/lib/role.tsx</path>
+      <note>Returns roles array instead of single role. isAdmin = roles.includes("admin"). Backend API /users/me returns roles array.</note>
+    </interface>
+    <interface name="RoleGuard Component" kind="react-component">
+      <signature>&lt;RoleGuard allowedRoles={["admin", "bpo"]}&gt;...&lt;/RoleGuard&gt;</signature>
+      <path>frontend/lib/role.tsx</path>
+      <note>Checks if user.roles has ANY allowed role: allowedRoles.some(r => user.roles.includes(r)). Replaces single role check.</note>
+    </interface>
+    <interface name="PUT /api/v1/users/{id}/roles" kind="rest-endpoint">
+      <signature>PUT /users/{id}/roles Body: { "roles": ["admin", "bpo"] } Response: UserRead</signature>
+      <path>backend/app/api/v1/endpoints/users.py (modified)</path>
+      <note>Replaces PUT /users/{id}/role. Validates role combination, updates user.roles array. Returns 400 for invalid combinations.</note>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Tests use pytest with pytest-asyncio. Pattern: Mock database session, override dependencies (get_current_active_user), create test users with role arrays. Frontend tests use React Testing Library with role array fixtures. Test files: backend/tests/api/v1/*.py, frontend/__tests__/**/*.test.tsx</standards>
+    <locations>
+      <location>backend/tests/api/v1/*.py (endpoint tests)</location>
+      <location>backend/tests/services/*.py (service tests)</location>
+      <location>backend/tests/unit/*.py (unit tests)</location>
+      <location>frontend/__tests__/lib/role.test.tsx (hook/component tests)</location>
+      <location>frontend/tests/e2e/*.spec.ts (E2E tests)</location>
+    </locations>
+    <ideas>
+      <test ac="1">Unit test: validate_role_combination(["admin", "bpo"]) returns True. validate_role_combination(["general_user", "admin"]) returns False.</test>
+      <test ac="2">Unit test: has_role(["admin", "bpo"]) passes for user with roles=["admin"]. Fails for user with roles=["executive"].</test>
+      <test ac="2">Integration test: User with roles=["admin", "bpo"] can access both admin and bpo endpoints. User with roles=["general_user"] cannot access admin endpoints.</test>
+      <test ac="3">Migration test: Create test users with single roles (admin, bpo). Run Alembic migration. Verify roles column contains ["admin"], ["bpo"] arrays. Verify old role column dropped.</test>
+      <test ac="3">Integration test: POST /users with roles=["admin", "executive"]. Verify persisted correctly. GET /users/{id}, verify response has roles array.</test>
+      <test ac="4">Component test: Render multi-select UI. Select "general_user", verify other checkboxes disabled. Select "admin", verify "general_user" checkbox disabled.</test>
+      <test ac="4">E2E test: Admin logs in, navigates to user management, assigns ["admin", "bpo"] to user. Refresh page, verify both role badges display.</test>
+      <test ac="5">Integration test: Existing code using user.role raises AttributeError after migration. All updated code using user.roles works correctly.</test>
+    </ideas>
+  </tests>
+</story-context>

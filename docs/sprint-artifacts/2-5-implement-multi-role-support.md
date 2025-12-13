@@ -1,6 +1,6 @@
 # Story 2.5: Implement Multi-Role Support for Non-General Users
 
-Status: backlog
+Status: ready-for-dev
 
 ## Story
 
@@ -194,15 +194,17 @@ so that **users with overlapping responsibilities can perform multiple functions
 
 ### References
 
-- [Story 2.2: RBAC](docs/sprint-artifacts/2-2-implement-role-based-access-control-rbac.md) - Original single-role implementation
-- [Epic 2 Tech Spec](docs/sprint-artifacts/tech-spec-epic-2.md) - IAM architecture
+- [Epic 2: User Identity & Access Management](docs/epics.md#epic-2-user-identity--access-management-iam) - Parent epic context for IAM
+- [Epic 2 Tech Spec](docs/sprint-artifacts/tech-spec-epic-2.md) - Story 2.5 ACs 13-17 (multi-role support requirements)
+- [System Architecture](docs/architecture.md) - Epic 2 IAM architecture, RBAC patterns, backend/app/core/security.py patterns
 - [PRD: Permissions & Roles](docs/PRD.md#permissions--roles) - Business requirements for RBAC
+- [Story 2.2: RBAC](docs/sprint-artifacts/2-2-implement-role-based-access-control-rbac.md) - Original single-role implementation
 
 ## Dev Agent Record
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+- docs/sprint-artifacts/2-5-implement-multi-role-support.context.xml
 
 ### Agent Model Used
 

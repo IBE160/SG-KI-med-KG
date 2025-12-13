@@ -48,7 +48,7 @@ development_status:
   2-2-implement-role-based-access-control-rbac: done
   2-3-admin-user-creation-role-assignment: done
   2-4-fix-default-tenant-assignment: ready-for-dev
-  2-5-implement-multi-role-support: drafted
+  2-5-implement-multi-role-support: ready-for-dev
   epic-2-retrospective: optional
 
   epic-3: contexted
