@@ -10,6 +10,7 @@ from app.models.base import Base
 class SuggestionType(str, enum.Enum):
     risk = "risk"
     control = "control"
+    business_process = "business_process"
 
 class SuggestionStatus(str, enum.Enum):
     pending = "pending"

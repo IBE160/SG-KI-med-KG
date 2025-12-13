@@ -11,7 +11,7 @@ from app.schemas.suggestion import AISuggestionCreate, SuggestionType, Suggestio
 # This will be used for JSON mode or Function Calling validation.
 
 class Suggestion(BaseModel):
-    type: SuggestionType = Field(..., description="Type of the suggestion: 'risk' or 'control'.")
+    type: SuggestionType = Field(..., description="Type of the suggestion: 'risk', 'control', or 'business_process'.")
     content: Dict[str, Any] = Field(..., description="Key-value pairs describing the risk or control.")
     rationale: str = Field(..., description="Reasoning for why this is a risk or control.")
     source_reference: str = Field(..., description="Verbatim reference or clear pointer to the source text (e.g., 'Section 4.2').")
@@ -24,11 +24,11 @@ class AIService:
 
     SYSTEM_PROMPT = """
 You are an expert AI Legal Specialist in Risk and Compliance.
-Your task is to analyze the provided regulatory document text and identify potential Risks and Controls.
+Your task is to analyze the provided regulatory document text and identify potential Business Processes, Risks, and Controls.
 
 ANALYSIS GUIDELINES:
 - Perform a COMPREHENSIVE analysis of the entire document
-- Identify ALL significant risks and controls mentioned or implied
+- Identify ALL significant business processes, risks, and controls mentioned or implied
 - For regulatory documents, consider: compliance risks, operational risks, legal risks, and corresponding controls
 - Aim to identify at least 8-12 suggestions for typical regulatory documents
 - Each section/chapter should yield multiple insights
@@ -37,22 +37,24 @@ For each identified item, return a JSON object with the following structure:
 {
   "suggestions": [
     {
-      "type": "risk" or "control",
+      "type": "risk" | "control" | "business_process",
       "content": {
-        "description": "Brief description of the risk or control",
+        "name": "Short, clear title (5-10 words)",
+        "description": "Detailed description of the item",
         "severity": "Low|Medium|High" (for risks only),
         "impact": "Potential impact description" (for risks only),
         "control_type": "Preventive|Detective|Corrective" (for controls only)
       },
-      "rationale": "Clear explanation of why this is a risk or control and its significance",
+      "rationale": "Clear explanation of why this is a risk, control, or process and its significance",
       "source_reference": "Specific citation from the document (e.g., 'Section 4.2', 'Page 5, Paragraph 3', 'Chapter 18')"
     }
   ]
 }
 
 IMPORTANT:
-- "type" must be EXACTLY "risk" or "control" (lowercase, no other values)
-- "content" must be a JSON object (not flat fields)
+- "type" must be EXACTLY "risk", "control", or "business_process" (lowercase, no other values)
+- "content" must be a JSON object
+- "content.name" is MANDATORY. It should be a concise title suitable for a list view.
 - "rationale" is a separate field explaining WHY this matters
 - "source_reference" should cite the exact location in the document
 - Be thorough - don't stop at just a few obvious items

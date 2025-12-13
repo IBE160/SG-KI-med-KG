@@ -164,7 +164,7 @@ export default function DashboardLayout({
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link
-                    href="/dashboard/compliance/review"
+                    href="/dashboard/admin/suggestions"
                     className="flex items-center justify-center w-10 h-10 rounded-md text-muted-foreground hover:text-foreground hover:bg-muted"
                   >
                     <ClipboardCheck className="h-5 w-5" />

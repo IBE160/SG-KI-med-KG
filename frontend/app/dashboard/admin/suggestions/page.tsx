@@ -1,0 +1,281 @@
+"use client";
+
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { listSuggestions } from "@/app/clientService";
+import type { AISuggestionRead, SuggestionType } from "@/app/openapi-client/types.gen";
+import { FileText, AlertCircle, Shield, Briefcase, ArrowUpDown } from "lucide-react";
+import { createClient } from "@/lib/supabase";
+import { ReviewSuggestionDialog } from "@/components/custom/review-suggestion/ReviewSuggestionDialog";
+import React, { useState, useMemo } from "react";
+
+
+export default function AdminSuggestionsPage() {
+  const router = useRouter();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [selectedSuggestion, setSelectedSuggestion] = useState<AISuggestionRead | null>(null);
+  
+  // Sorting and Filtering State
+  const [filterType, setFilterType] = useState<string>("all");
+  const [sortConfig, setSortConfig] = useState<{ key: keyof AISuggestionRead | "name"; direction: "asc" | "desc" } | null>(null);
+
+  const { data: suggestions, isLoading, error, refetch } = useQuery<AISuggestionRead[]>({
+    queryKey: ["/api/v1/suggestions", "pending"],
+    queryFn: async () => {
+      try {
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+        const token = session?.access_token;
+
+        const response = await listSuggestions({
+          query: {
+            status: "pending",
+          },
+          headers: token ? {
+            Authorization: `Bearer ${token}`,
+          } : undefined,
+        });
+        if (response.error) {
+          console.error("API error details:", response.error);
+          throw new Error(`API Error: ${JSON.stringify(response.error)}`);
+        }
+        return response.data || [];
+      } catch (err) {
+        console.error("Fetch error:", err);
+        throw err;
+      }
+    },
+    retry: false,
+    refetchOnWindowFocus: false,
+  });
+
+  const handleReviewClick = (suggestion: AISuggestionRead) => {
+    setSelectedSuggestion(suggestion);
+    setIsDialogOpen(true);
+  };
+
+  const handleDialogSuccess = () => {
+    refetch(); // Re-fetch suggestions after an action
+    setSelectedSuggestion(null);
+  };
+
+  const handleSort = (key: keyof AISuggestionRead | "name") => {
+    let direction: "asc" | "desc" = "asc";
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
+      direction = "desc";
+    }
+    setSortConfig({ key, direction });
+  };
+
+  const getContentSummary = (content: { [key: string]: unknown }, type: string): string => {
+    // Standardize name extraction
+    return (content.name as string) || 
+           (content.risk_name as string) || 
+           (content.control_name as string) || 
+           (content.process_name as string) ||
+           `Unnamed ${type}`;
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch (type) {
+      case "risk":
+        return <AlertCircle className="h-4 w-4 text-orange-600" />;
+      case "control":
+        return <Shield className="h-4 w-4 text-blue-600" />;
+      case "business_process":
+        return <Briefcase className="h-4 w-4 text-purple-600" />;
+      default:
+        return <FileText className="h-4 w-4 text-gray-600" />;
+    }
+  };
+
+  const getTypeBadge = (type: string) => {
+    switch (type) {
+      case "risk":
+        return <Badge variant="destructive">Risk</Badge>;
+      case "control":
+        return <Badge variant="default">Control</Badge>; // Default implies primary/blue-ish
+      case "business_process":
+        return <Badge variant="outline" className="border-purple-500 text-purple-600">Process</Badge>;
+      default:
+        return <Badge variant="secondary">{type}</Badge>;
+    }
+  };
+
+  const processedSuggestions = useMemo(() => {
+    if (!suggestions) return [];
+    
+    let result = [...suggestions];
+
+    // Filter
+    if (filterType !== "all") {
+      result = result.filter((s) => s.type === filterType);
+    }
+
+    // Sort
+    if (sortConfig) {
+      result.sort((a, b) => {
+        let aValue: any = "";
+        let bValue: any = "";
+
+        if (sortConfig.key === "name") {
+            aValue = getContentSummary(a.content, a.type).toLowerCase();
+            bValue = getContentSummary(b.content, b.type).toLowerCase();
+        } else {
+            aValue = a[sortConfig.key];
+            bValue = b[sortConfig.key];
+        }
+
+        if (aValue < bValue) return sortConfig.direction === "asc" ? -1 : 1;
+        if (aValue > bValue) return sortConfig.direction === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return result;
+  }, [suggestions, filterType, sortConfig]);
+
+  if (isLoading) {
+    return (
+      <div className="p-8">
+        <h1 className="text-2xl font-bold mb-6">Pending AI Suggestions</h1>
+        <div className="space-y-4">
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+          <Skeleton className="h-12 w-full" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="p-8">
+        <h1 className="text-2xl font-bold mb-6">Pending AI Suggestions</h1>
+        <div className="p-4 border border-red-500 bg-red-50 text-red-900 rounded">
+          <p className="font-semibold mb-2">Failed to load suggestions:</p>
+          <pre className="text-sm overflow-auto">
+            {error instanceof Error ? error.message : JSON.stringify(error, null, 2)}
+          </pre>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="p-8">
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-2xl font-bold">Pending AI Suggestions</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Review and manage AI-generated suggestions from document analysis
+          </p>
+        </div>
+        <div className="flex items-center gap-4">
+             <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-[180px]">
+                  <SelectValue placeholder="Filter by Type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Types</SelectItem>
+                  <SelectItem value="risk">Risk</SelectItem>
+                  <SelectItem value="control">Control</SelectItem>
+                  <SelectItem value="business_process">Business Process</SelectItem>
+                </SelectContent>
+              </Select>
+          <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
+             <FileText className="h-5 w-5 text-muted-foreground" />
+             <span>{suggestions?.length || 0} pending</span>
+          </div>
+        </div>
+      </div>
+
+      {Array.isArray(processedSuggestions) && processedSuggestions.length > 0 ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[120px] cursor-pointer hover:bg-muted/50" onClick={() => handleSort("type")}>
+                  Type <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
+              <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort("name")}>
+                  Name <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
+              <TableHead>Rationale</TableHead>
+              <TableHead>Source Reference</TableHead>
+              <TableHead className="text-right">Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {processedSuggestions.map((suggestion) => (
+              <TableRow
+                key={suggestion.id}
+                className="cursor-pointer hover:bg-gray-50"
+              >
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    {getTypeIcon(suggestion.type)}
+                    {getTypeBadge(suggestion.type)}
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium max-w-xs">
+                  <div className="truncate">
+                    {getContentSummary(suggestion.content, suggestion.type)}
+                  </div>
+                </TableCell>
+                <TableCell className="max-w-md">
+                  <div className="text-sm text-gray-600 line-clamp-2">
+                    {suggestion.rationale}
+                  </div>
+                </TableCell>
+                <TableCell className="max-w-xs">
+                  <div className="text-sm text-gray-500 truncate">
+                    {suggestion.source_reference}
+                  </div>
+                </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleReviewClick(suggestion)}
+                  >
+                    Review
+                  </Button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <div className="p-12 text-center border-2 border-dashed border-gray-300 rounded-lg">
+          <FileText className="h-12 w-12 mx-auto text-gray-400 mb-4" />
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            No pending suggestions matching criteria
+          </h3>
+          <p className="text-sm text-gray-600">
+            Clear filters or upload a new document to generate suggestions.
+          </p>
+        </div>
+      )}
+
+      {selectedSuggestion && (
+        <ReviewSuggestionDialog
+          suggestion={selectedSuggestion}
+          isOpen={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+          onSuccess={handleDialogSuccess}
+        />
+      )}
+    </div>
+  );
+}
