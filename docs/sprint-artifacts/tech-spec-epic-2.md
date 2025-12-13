@@ -109,25 +109,41 @@ CREATE TABLE users (
 
 ## Acceptance Criteria (Authoritative)
 
+**Story 2.1: User Registration & Login**
 1.  A new user can successfully register, verify their email, and log in.
 2.  Upon successful login, the user is assigned the "General User" role by default.
+
+**Story 2.2: Role-Based Access Control (RBAC)**
 3.  An Admin user can access a user management interface.
 4.  An Admin can change a user's role to Admin, BPO, Executive, or General User.
 5.  Users can only access features and data appropriate for their assigned role (e.g., General User cannot access Admin functions, BPO cannot access Executive dashboards unless explicitly permitted).
 6.  Frontend UI dynamically renders elements based on the logged-in user's role.
+
+**Story 2.3: Admin User Creation & Role Assignment**
+7.  Admin can create new users and assign them roles directly from the admin interface.
+8.  Created users appear in the user list with their assigned roles.
+
+**Story 2.4: Fix Default Tenant Assignment** _(Post-MVP fix)_
+9.  All new user registrations are assigned to the default tenant (095b5d35-992e-482b-ac1b-d9ec10ac1425).
+10. No new tenants are created during user registration.
+11. All existing users are consolidated into the default tenant.
+12. Users within the default tenant can collaborate and see shared compliance data.
 
 ## Traceability Mapping
 
 | AC | Spec Section(s) | Component(s)/API(s) | Test Idea |
 | :- | :--- | :--- | :--- |
 | 1-2| Story 2.1 | `frontend/(auth)`, `backend/api/v1/auth`, `Supabase Auth` | E2E registration/login tests |
-| 3-4| Story 2.2 | `frontend/(dashboard)/admin/users`, `backend/api/v1/users` | E2E role management tests |
-| 5-6| Story 2.2 | `backend/core/security`, `frontend/(dashboard)` | Unit/Integration tests on API middleware, E2E UI rendering tests |
+| 3-6| Story 2.2 | `frontend/(dashboard)/admin/users`, `backend/api/v1/users`, `backend/core/security` | E2E role management tests, middleware tests |
+| 7-8| Story 2.3 | `frontend/(dashboard)/admin/users`, `backend/api/v1/users` | Admin user creation flow tests |
+| 9-12| Story 2.4 | Supabase `handle_new_user()` trigger, `backend/scripts/consolidate_tenant.py` | Database query verification, multi-user collaboration test |
 
 ## Risks, Assumptions, Open Questions
 
 *   **Risk:** Overly complex RBAC implementation. **Mitigation:** Start with a simple role hierarchy and expand as needed.
+*   **Risk:** Tenant isolation prevents user collaboration. **Resolution:** Story 2.4 fixes this by consolidating to a single default tenant for MVP.
 *   **Assumption:** Supabase Auth is sufficient for all MVP authentication needs.
+*   **Assumption:** Single-tenant approach is acceptable for MVP/school project. Multi-tenant invitation system will be implemented post-MVP if commercialized.
 *   **Question:** What are the exact screens/UI for the Admin user management? (Defer to UX Design)
 
 ## Test Strategy Summary
