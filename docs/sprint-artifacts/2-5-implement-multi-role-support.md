@@ -43,24 +43,24 @@ so that **users with overlapping responsibilities can perform multiple functions
 
 ## Tasks / Subtasks
 
-- [ ] **Database: Design Multi-Role Schema** (AC: 3)
-  - [ ] Decide between ARRAY column vs junction table approach.
+- [x] **Database: Design Multi-Role Schema** (AC: 3)
+  - [x] Decide between ARRAY column vs junction table approach.
     - **Recommendation**: PostgreSQL ARRAY for simplicity (roles are fixed, no additional metadata needed).
-  - [ ] Create Alembic migration to:
+  - [x] Create Alembic migration to:
     - Add new `roles` column as `ARRAY` (or create `user_roles` table).
     - Migrate existing `role` data to `roles` (e.g., `"admin"` → `["admin"]`).
     - Drop old `role` column (or deprecate).
-  - [ ] Update `User` model in `backend/app/models/user.py`.
+  - [x] Update `User` model in `backend/app/models/user.py`.
 
-- [ ] **Database: Update Supabase Trigger** (AC: 3)
-  - [ ] Modify `handle_new_user()` trigger to assign `roles = ["general_user"]` instead of `role = "general_user"`.
-  - [ ] Update `auth.users` metadata to store roles as JSON array.
+- [x] **Database: Update Supabase Trigger** (AC: 3)
+  - [x] Modify `handle_new_user()` trigger to assign `roles = ["general_user"]` instead of `role = "general_user"`.
+  - [x] Update `auth.users` metadata to store roles as JSON array.
 
-- [ ] **Backend: Refactor RBAC Logic** (AC: 2, 5)
-  - [ ] Update `has_role()` in `backend/app/core/deps.py`:
+- [x] **Backend: Refactor RBAC Logic** (AC: 2, 5)
+  - [x] Update `has_role()` in `backend/app/core/deps.py`:
     - Change from `current_user.role not in roles` to `not any(r in current_user.roles for r in roles)`.
-  - [ ] Update `get_current_admin_user()` to check `"admin" in current_user.roles`.
-  - [ ] Update all endpoints that reference `user.role` to use `user.roles`.
+  - [x] Update `get_current_admin_user()` to check `"admin" in current_user.roles`.
+  - [x] Update all endpoints that reference `user.role` to use `user.roles`.
 
 - [ ] **Backend: Role Validation Logic** (AC: 1)
   - [ ] Create validation function `validate_role_combination(roles: List[str]) -> bool`:
@@ -69,9 +69,9 @@ so that **users with overlapping responsibilities can perform multiple functions
   - [ ] Add validation to user creation/update endpoints (`PUT /users/{id}/role` → `PUT /users/{id}/roles`).
   - [ ] Return 400 Bad Request with clear error message for invalid combinations.
 
-- [ ] **Backend: Update User Service** (AC: 2, 5)
-  - [ ] Update `UserService` methods to handle roles as arrays.
-  - [ ] Ensure `create_user()` and `update_user_role()` work with role arrays.
+- [x] **Backend: Update User Service** (AC: 2, 5)
+  - [x] Update `UserService` methods to handle roles as arrays.
+  - [x] Ensure `create_user()` and `update_user_role()` work with role arrays.
 
 - [ ] **Frontend: Update Role Components** (AC: 4, 5)
   - [ ] Update `useRole` hook to check `user.roles.includes(role)` instead of `user.role === role`.
