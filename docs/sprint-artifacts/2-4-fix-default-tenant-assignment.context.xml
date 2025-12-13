@@ -1,0 +1,171 @@
+<story-context id=".bmad/bmm/workflows/4-implementation/story-context/template" v="1.0">
+  <metadata>
+    <epicId>2</epicId>
+    <storyId>4</storyId>
+    <title>Fix Default Tenant Assignment for New Users</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-13</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/2-4-fix-default-tenant-assignment.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>system administrator</asA>
+    <iWant>all new user registrations to be assigned to a single default tenant instead of creating isolated tenants</iWant>
+    <soThat>users can collaborate on the same organizational data without manual database interventions</soThat>
+    <tasks>
+- Database: Consolidate Existing Users (AC: 2)
+  - Run backend/scripts/consolidate_tenant.py to move all existing users to default tenant
+  - Verify all users have tenant_id = 095b5d35-992e-482b-ac1b-d9ec10ac1425 in both tables
+  - Document the consolidation results (number of users updated)
+
+- Database: Modify Supabase Trigger (AC: 1)
+  - Update handle_new_user() function in Supabase SQL Editor
+  - Replace gen_random_uuid() with hardcoded default tenant UUID
+  - Remove tenant creation logic (no longer creates new tenants table entries if it exists)
+  - Ensure trigger still assigns default role ("general_user")
+
+- Testing: User Registration Flow (AC: 1, 3)
+  - Create a new test user via the registration page
+  - Verify the user is assigned to the default tenant (095b5d35...)
+  - Log in as the new user and verify they can see existing compliance data
+  - Verify no new tenant was created in the database
+
+- Testing: Multi-User Collaboration (AC: 3)
+  - Log in as two different users (e.g., kjamtli@hotmail.com and test user)
+  - Create a Risk as User 1
+  - Verify User 2 can see the same Risk in their dashboard
+  - Verify RLS policies correctly filter by shared tenant_id
+
+- Testing: Verify Consolidation Script (AC: 2)
+  - Run backend/scripts/consolidate_tenant.py script
+  - Query database to verify all users have tenant_id = 095b5d35-992e-482b-ac1b-d9ec10ac1425
+  - Verify both public.user and auth.users tables are synchronized
+  - Document the consolidation results (number of users updated)
+
+- Testing: Verify Default Role Assignment (AC: 4)
+  - Create a new test user via registration page
+  - Verify the user is assigned "general_user" role by default
+  - Log in as admin and verify role change functionality still works (Story 2.3 preserved)
+  - Verify trigger still sets role = "general_user" for new users
+
+- Documentation: Update User Registration Guide (AC: 1)
+  - Update docs/user-registration-guide.md to reflect single-tenant behavior
+  - Remove references to multi-tenant isolation for MVP
+  - Add note about future invitation system (post-MVP)
+</tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. Default Tenant Assignment
+   - When a new user registers via Supabase Auth, they are automatically assigned to a predefined default tenant
+   - The default tenant ID is: 095b5d35-992e-482b-ac1b-d9ec10ac1425 (kjamtli@hotmail.com's tenant)
+   - No new tenant is created during user registration
+   - The handle_new_user() database trigger no longer generates random tenant IDs via gen_random_uuid()
+
+2. Existing Users Consolidated
+   - All existing users in the database are consolidated into the default tenant
+   - Both public.user and auth.users tables reflect the same tenant_id
+   - The consolidation script (backend/scripts/consolidate_tenant.py) is executed before trigger modification
+
+3. User Collaboration Verified
+   - Multiple users can log in and see the same compliance data (risks, controls, frameworks)
+   - Row-Level Security (RLS) policies correctly filter data by the shared tenant_id
+   - No data isolation between users within the default tenant
+
+4. Default Role Assignment
+   - New users are assigned the "general_user" role by default (existing behavior maintained)
+   - Admins can still change user roles via the admin interface (Story 2.3 functionality preserved)
+</acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-2.md" title="Epic 2 Technical Specification" section="Story 2.4">
+        <snippet>Story 2.4 ACs: (9) All new user registrations are assigned to the default tenant (095b5d35-992e-482b-ac1b-d9ec10ac1425). (10) No new tenants are created during user registration. (11) All existing users are consolidated into the default tenant. (12) Users within the default tenant can collaborate and see shared compliance data.</snippet>
+      </doc>
+      <doc path="docs/tenant-management-design.md" title="Tenant Management Design" section="Current State and Solution">
+        <snippet>Current problem: Every user registration creates a new isolated tenant via gen_random_uuid() in handle_new_user() trigger. Result: Users cannot collaborate. Solution for MVP: Consolidate all users to single default tenant (095b5d35-992e-482b-ac1b-d9ec10ac1425).</snippet>
+      </doc>
+      <doc path="docs/architecture.md" title="System Architecture" section="Epic 2 IAM">
+        <snippet>Epic 2 (IAM) architecture lives in backend/app/core/security.py, frontend/app/(auth), and Supabase Auth configuration. Multi-tenant SaaS with RLS enforcement.</snippet>
+      </doc>
+      <doc path="docs/epics.md" title="Epics" section="Epic 2">
+        <snippet>Epic 2: User Identity & Access Management (IAM). Goal: Enable secure user access and enforce role-based permissions. Story 2.1: User registration with default "General User" role assigned within a tenant.</snippet>
+      </doc>
+      <doc path="docs/PRD.md" title="Product Requirements Document" section="Multi-Tenancy & RBAC">
+        <snippet>FR-1: Role-Based Access Control with four distinct roles (Admin, BPO, Executive, General User) within each tenant. Multi-tenancy with RLS ensures data isolation, but Story 2.4 consolidates to single tenant for MVP.</snippet>
+      </doc>
+    </docs>
+    <code>
+      <artifact path="backend/scripts/consolidate_tenant.py" kind="script" symbol="consolidate_tenants" lines="17-108" reason="Existing script to consolidate all users to main tenant. Updates both public.user and auth.users tables. Verified migration pattern."/>
+      <artifact path="backend/app/models/user.py" kind="model" symbol="User.tenant_id" lines="20" reason="User model has tenant_id column with UUID(as_uuid=True), currently defaults to uuid.uuid4 on app-side, but trigger controls database assignment."/>
+      <artifact path="backend/app/config.py" kind="config" symbol="SUPABASE_URL, SUPABASE_JWT_SECRET, SUPABASE_SERVICE_KEY" lines="17-20" reason="Supabase configuration settings. Note: Trigger modification happens in Supabase SQL Editor, not in this codebase."/>
+      <artifact path="backend/app/core/deps.py" kind="dependency" symbol="get_current_active_user, has_role" lines="N/A" reason="Auth dependencies that verify JWT tokens and enforce RBAC. RLS policies use tenant_id from JWT to filter data."/>
+      <artifact path="backend/app/services/user_service.py" kind="service" symbol="UserService.create_user" lines="N/A" reason="From Story 2.3: Service uses Supabase Admin API to create users. Trigger assigns tenant_id during creation. Story 2.4 changes trigger logic."/>
+    </code>
+    <dependencies>
+      <python>
+        <package name="fastapi" version=">=0.115.0,&lt;0.116"/>
+        <package name="asyncpg" version=">=0.29.0,&lt;0.30" note="PostgreSQL async driver"/>
+        <package name="fastapi-users[sqlalchemy]" version=">=13.0.0,&lt;14" note="User authentication"/>
+        <package name="supabase" version=">=2.16.0" note="Supabase client for Auth and Storage"/>
+        <package name="python-jose[cryptography]" version=">=3.5.0" note="JWT handling"/>
+        <package name="alembic" version=">=1.14.0,&lt;2" note="Database migrations (dev)"/>
+        <package name="pytest" version=">=8.3.3,&lt;9" note="Testing framework (dev)"/>
+      </python>
+      <frontend>
+        <package name="@supabase/supabase-js" version="^2.86.2" note="Supabase client"/>
+        <package name="@supabase/ssr" version="^0.8.0" note="Server-side rendering support"/>
+        <package name="next" note="Next.js framework"/>
+        <package name="@tanstack/react-query" version="^5.90.12" note="Data fetching and caching"/>
+      </frontend>
+      <database>
+        <system name="Supabase PostgreSQL" note="Hosted PostgreSQL with RLS"/>
+        <system name="Supabase Auth" note="Authentication service with triggers"/>
+      </database>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint type="architecture">Single-tenant MVP approach: All users share one tenant for school project. Multi-tenant invitation system deferred to post-MVP.</constraint>
+    <constraint type="database">Trigger modification MUST be done via Supabase SQL Editor web console, NOT in local codebase. No Docker environment for trigger deployment.</constraint>
+    <constraint type="migration">Run consolidate_tenant.py script BEFORE modifying trigger to ensure existing users are migrated first.</constraint>
+    <constraint type="security">RLS policies filter by tenant_id from JWT. Changing tenant assignment affects data visibility across all users.</constraint>
+    <constraint type="pattern">Maintain existing role assignment logic (default: "general_user"). Story 2.3 admin functionality must be preserved.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface name="handle_new_user() Trigger" kind="database-trigger">
+      <signature>CREATE OR REPLACE FUNCTION public.handle_new_user() RETURNS trigger AS $$ ... $$ LANGUAGE plpgsql SECURITY DEFINER;</signature>
+      <path>Supabase SQL Editor (web console)</path>
+      <note>Trigger fires on auth.users INSERT. Currently generates gen_random_uuid() for tenant_id. Story 2.4 changes to hardcoded UUID: 095b5d35-992e-482b-ac1b-d9ec10ac1425</note>
+    </interface>
+    <interface name="consolidate_tenant.py" kind="python-script">
+      <signature>async def consolidate_tenants() -> None</signature>
+      <path>backend/scripts/consolidate_tenant.py</path>
+      <note>Updates public.user and auth.users.raw_user_meta_data to set tenant_id. Includes verification queries.</note>
+    </interface>
+    <interface name="User Model" kind="sqlalchemy-model">
+      <signature>class User(SQLAlchemyBaseUserTableUUID, Base): tenant_id = Column(UUID(as_uuid=True), default=uuid.uuid4, nullable=False)</signature>
+      <path>backend/app/models/user.py</path>
+      <note>Application-side model. Database assignment controlled by trigger, not this default.</note>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>Tests use pytest with pytest-asyncio for async tests. Pattern: Create test client with AsyncClient, override dependencies (get_current_active_user, get_async_session) to bypass auth and use test database. Mock Supabase services when needed. Test files located in backend/tests/ with structure mirroring app/ (e.g., backend/tests/api/v1/test_create_user.py).</standards>
+    <locations>
+      <location>backend/tests/api/v1/*.py</location>
+      <location>backend/tests/services/*.py</location>
+      <location>backend/tests/unit/*.py</location>
+      <location>backend/tests/conftest.py (fixtures)</location>
+    </locations>
+    <ideas>
+      <test ac="1,2">Integration test: Run consolidate_tenant.py, query database to verify all users have tenant_id = 095b5d35-992e-482b-ac1b-d9ec10ac1425 in both public.user and auth.users tables.</test>
+      <test ac="1">Database test: Verify handle_new_user() trigger no longer calls gen_random_uuid(). Mock user registration, check tenant_id matches default.</test>
+      <test ac="3">E2E test: Create test user 1, create Risk as user 1, log in as test user 2, verify user 2 can see the Risk. Confirms RLS allows shared tenant data visibility.</test>
+      <test ac="4">Integration test: Register new user, verify role = "general_user" by default. Log in as admin, change user role, verify Story 2.3 functionality preserved.</test>
+      <test ac="2">Database verification: Count distinct tenant_ids in public.user table. Should be 1 (the default tenant) after consolidation.</test>
+    </ideas>
+  </tests>
+</story-context>

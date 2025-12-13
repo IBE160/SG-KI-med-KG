@@ -1,6 +1,6 @@
 # Story 2.4: Fix Default Tenant Assignment for New Users
 
-Status: backlog
+Status: ready-for-dev
 
 ## Story
 
@@ -55,6 +55,18 @@ so that **users can collaborate on the same organizational data without manual d
   - [ ] Verify User 2 can see the same Risk in their dashboard.
   - [ ] Verify RLS policies correctly filter by shared tenant_id.
 
+- [ ] **Testing: Verify Consolidation Script** (AC: 2)
+  - [ ] Run `backend/scripts/consolidate_tenant.py` script.
+  - [ ] Query database to verify all users have `tenant_id = 095b5d35-992e-482b-ac1b-d9ec10ac1425`.
+  - [ ] Verify both `public.user` and `auth.users` tables are synchronized.
+  - [ ] Document the consolidation results (number of users updated).
+
+- [ ] **Testing: Verify Default Role Assignment** (AC: 4)
+  - [ ] Create a new test user via registration page.
+  - [ ] Verify the user is assigned "general_user" role by default.
+  - [ ] Log in as admin and verify role change functionality still works (Story 2.3 preserved).
+  - [ ] Verify trigger still sets `role = "general_user"` for new users.
+
 - [ ] **Documentation: Update User Registration Guide** (AC: 1)
   - [ ] Update `docs/user-registration-guide.md` to reflect single-tenant behavior.
   - [ ] Remove references to multi-tenant isolation for MVP.
@@ -94,9 +106,21 @@ so that **users can collaborate on the same organizational data without manual d
 - The `handle_new_user()` trigger creates a `public.user` record when a new user registers via Supabase Auth.
 - The trigger currently generates a unique tenant for each user, causing isolation.
 
-**From Story 2-3 (Admin User Creation):**
-- Admins can assign roles, but tenant assignment is fixed at registration time.
-- This story ensures all users share the same tenant from the start.
+**From Story 2-3 (Admin User Creation - Status: done):**
+- **New Components Created:**
+  - `backend/app/services/user_service.py` - User creation service logic with Supabase Admin API integration
+  - `backend/app/api/v1/endpoints/users.py` - POST /users endpoint for admin user creation
+  - `backend/tests/api/v1/test_create_user.py` - Tests for user creation endpoint
+  - `frontend/components/admin/CreateUserDialog.tsx` - User creation UI dialog
+  - `frontend/app/dashboard/admin/users/page.tsx` - Updated with Create User button
+- **Completion Notes:**
+  - `createUser` function in `clientService.ts` was deferred pending client regeneration (requires `npm run generate-client`)
+  - JWT Secret issue in tests resolved by overriding `get_current_active_user` dependency with mocks
+- **Context for This Story:**
+  - Admins can assign roles, but tenant assignment is fixed at registration time via the trigger
+  - This story ensures all users share the same tenant from the start, enabling collaboration
+
+[Source: docs/sprint-artifacts/2-3-admin-user-creation-role-assignment.md]
 
 ### Current Trigger Function (To Be Modified)
 
@@ -152,7 +176,11 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 ### References
 
-- [Tenant Management Design](docs/tenant-management-design.md) - Full analysis of the multi-tenant issue
+- [Epic 2 Tech Spec](docs/sprint-artifacts/tech-spec-epic-2.md) - Story 2.4 ACs 9-12 (tenant consolidation requirements)
+- [Epic 2: User Identity & Access Management](docs/epics.md#epic-2-user-identity--access-management-iam) - Parent epic context for IAM
+- [Product Requirements Document](docs/PRD.md) - Multi-tenancy architecture and RBAC requirements
+- [System Architecture](docs/architecture.md) - Supabase Auth patterns, RLS policies, and multi-tenant architecture
+- [Tenant Management Design](docs/tenant-management-design.md) - Full analysis of the multi-tenant issue and proposed solution
 - [Story 2.1: User Registration & Login](docs/sprint-artifacts/2-1-implement-user-registration-login-email-password.md) - Original registration implementation
 - [Story 2.3: Admin User Creation](docs/sprint-artifacts/2-3-admin-user-creation-role-assignment.md) - Role management context
 
@@ -160,7 +188,7 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+- docs/sprint-artifacts/2-4-fix-default-tenant-assignment.context.xml
 
 ### Agent Model Used
 
