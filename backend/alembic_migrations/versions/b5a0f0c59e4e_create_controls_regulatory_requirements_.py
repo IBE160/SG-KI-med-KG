@@ -94,8 +94,8 @@ def upgrade() -> None:
         op.execute("""
             CREATE POLICY "Tenant Access" ON controls_regulatory_requirements
             FOR ALL
-            USING (tenant_id = auth.uid()::uuid)
-            WITH CHECK (tenant_id = auth.uid()::uuid);
+            USING (tenant_id = auth.uid())
+            WITH CHECK (tenant_id = auth.uid());
         """)
 
 

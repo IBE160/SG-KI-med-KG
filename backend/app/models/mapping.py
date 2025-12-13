@@ -15,7 +15,7 @@ class ControlRegulatoryRequirement(Base):
     )
     regulatory_requirement_id = Column(
         UUID(as_uuid=True),
-        ForeignKey("regulatory_frameworks.id", ondelete="CASCADE"),
+        ForeignKey("regulatory_requirements.id", ondelete="CASCADE"),
         nullable=False,
     )
     tenant_id = Column(UUID(as_uuid=True), nullable=False)
@@ -27,7 +27,7 @@ class ControlRegulatoryRequirement(Base):
     # Relationships
     control = relationship("Control", back_populates="regulatory_mappings")
     regulatory_requirement = relationship(
-        "RegulatoryFramework", back_populates="control_mappings"
+        "RegulatoryRequirement", back_populates="control_mappings"
     )
 
     __table_args__ = (

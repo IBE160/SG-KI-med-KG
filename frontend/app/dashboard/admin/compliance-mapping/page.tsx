@@ -79,12 +79,12 @@ export default function ComplianceMappingPage() {
 
     if (viewMode === "control") {
       // Mapping Requirements to a Control
-      allItems = requirementsData?.map((r) => ({ id: r.id, name: r.name })) || [];
-      mappedIds = controlMappingsData?.mappings?.map((m) => m.regulatory_requirement_id) || [];
+      allItems = requirementsData?.items?.map((r: { id: string; name: string }) => ({ id: r.id, name: r.name })) || [];
+      mappedIds = controlMappingsData?.mappings?.map((m: { regulatory_requirement_id: string }) => m.regulatory_requirement_id) || [];
     } else {
       // Mapping Controls to a Requirement
-      allItems = controlsData?.map((c) => ({ id: c.id, name: c.name })) || [];
-      mappedIds = requirementMappingsData?.mappings?.map((m) => m.control_id) || [];
+      allItems = controlsData?.items?.map((c: { id: string; name: string }) => ({ id: c.id, name: c.name })) || [];
+      mappedIds = requirementMappingsData?.mappings?.map((m: { control_id: string }) => m.control_id) || [];
     }
 
     const selected = allItems.filter((item) => mappedIds.includes(item.id));
@@ -198,12 +198,12 @@ export default function ComplianceMappingPage() {
                 </SelectTrigger>
                 <SelectContent>
                   {viewMode === "control"
-                    ? controlsData?.map((control) => (
+                    ? controlsData?.items?.map((control: { id: string; name: string }) => (
                         <SelectItem key={control.id} value={control.id}>
                           {control.name}
                         </SelectItem>
                       ))
-                    : requirementsData?.map((req) => (
+                    : requirementsData?.items?.map((req: { id: string; name: string }) => (
                         <SelectItem key={req.id} value={req.id}>
                           {req.name}
                         </SelectItem>

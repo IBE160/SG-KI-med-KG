@@ -1,10 +1,9 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, and_, func, case
-from sqlalchemy.orm import aliased
+from sqlalchemy import select, and_, func
 from fastapi import HTTPException, status
 
-from app.models.compliance import RegulatoryFramework
+from app.models.compliance import RegulatoryFramework, RegulatoryRequirement
 from app.models.mapping import ControlRegulatoryRequirement
 from app.schemas.reports import GapAnalysisReport, UnmappedRequirement
 
@@ -15,16 +14,19 @@ class GapAnalysisService:
         db: AsyncSession, framework_id: UUID, tenant_id: UUID
     ) -> GapAnalysisReport:
         """
-        Generate a gap analysis report for a specific regulatory framework.
-        
+        Generate a gap analysis report for a regulatory framework.
+
+        Identifies all requirements within the framework and determines which
+        have no associated controls (unmapped requirements).
+
         Args:
             db: Database session
-            framework_id: UUID of the regulatory framework
+            framework_id: UUID of the regulatory framework (parent entity)
             tenant_id: UUID of the tenant
-            
+
         Returns:
-            GapAnalysisReport: Structured report with metrics and gap details
-            
+            GapAnalysisReport: Structured report with coverage metrics and unmapped requirements
+
         Raises:
             HTTPException 404: If framework not found in tenant
         """
@@ -37,57 +39,70 @@ class GapAnalysisService:
         )
         framework_result = await db.execute(framework_query)
         framework = framework_result.scalar_one_or_none()
-        
+
         if not framework:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail="Regulatory framework not found"
             )
-            
-        # 2. Identify unmapped requirements
-        # Based on AC logic, we query for THIS specific framework item and check if it has mappings.
-        # However, to support the "Report" concept (which implies multiple items), 
-        # we might need to check if there are OTHER items that belong to the same "Framework Family".
-        # But without a grouping ID, we can only report on this specific ID.
-        #
-        # Query: LEFT JOIN to find if mappings exist for this ID
-        
-        # Subquery to count mappings for this specific framework ID
-        # We need to know if it is mapped or not.
-        
-        mapping_query = select(func.count(ControlRegulatoryRequirement.id)).where(
+
+        # 2. Query all requirements in this framework
+        requirements_query = select(RegulatoryRequirement).where(
             and_(
-                ControlRegulatoryRequirement.regulatory_requirement_id == framework_id,
-                ControlRegulatoryRequirement.tenant_id == tenant_id
+                RegulatoryRequirement.framework_id == framework_id,
+                RegulatoryRequirement.tenant_id == tenant_id
             )
         )
-        mapping_result = await db.execute(mapping_query)
-        mapping_count = mapping_result.scalar() or 0
-        
-        is_mapped = mapping_count > 0
-        
-        total_requirements = 1
-        mapped_requirements = 1 if is_mapped else 0
-        unmapped_requirements = 0 if is_mapped else 1
-        coverage_percentage = 100.0 if is_mapped else 0.0
-        
-        gaps = []
-        if not is_mapped:
-            gaps.append(
-                UnmappedRequirement(
-                    requirement_id=framework.id,
-                    requirement_name=framework.name,
-                    requirement_description=framework.description,
-                    framework_name=framework.name # Using name as framework name
+        requirements_result = await db.execute(requirements_query)
+        all_requirements = requirements_result.scalars().all()
+
+        # 3. Identify unmapped requirements using LEFT JOIN
+        # Query to find requirements with no associated controls
+        unmapped_query = (
+            select(RegulatoryRequirement)
+            .outerjoin(
+                ControlRegulatoryRequirement,
+                and_(
+                    ControlRegulatoryRequirement.regulatory_requirement_id == RegulatoryRequirement.id,
+                    ControlRegulatoryRequirement.tenant_id == tenant_id
                 )
             )
-            
+            .where(
+                and_(
+                    RegulatoryRequirement.framework_id == framework_id,
+                    RegulatoryRequirement.tenant_id == tenant_id,
+                    ControlRegulatoryRequirement.id.is_(None)  # No mapping exists
+                )
+            )
+        )
+        unmapped_result = await db.execute(unmapped_query)
+        unmapped_requirements = unmapped_result.scalars().all()
+
+        # 4. Calculate metrics
+        total_requirements = len(all_requirements)
+        unmapped_count = len(unmapped_requirements)
+        mapped_count = total_requirements - unmapped_count
+        coverage_percentage = (
+            (mapped_count / total_requirements * 100.0) if total_requirements > 0 else 0.0
+        )
+
+        # 5. Build gaps list
+        gaps = [
+            UnmappedRequirement(
+                requirement_id=req.id,
+                requirement_name=req.name,
+                requirement_description=req.description,
+                framework_name=framework.name
+            )
+            for req in unmapped_requirements
+        ]
+
         return GapAnalysisReport(
             framework_id=framework.id,
             framework_name=framework.name,
             total_requirements=total_requirements,
-            mapped_requirements=mapped_requirements,
-            unmapped_requirements=unmapped_requirements,
-            coverage_percentage=coverage_percentage,
+            mapped_requirements=mapped_count,
+            unmapped_requirements=unmapped_count,
+            coverage_percentage=round(coverage_percentage, 2),
             gaps=gaps
         )

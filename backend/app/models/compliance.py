@@ -89,6 +89,33 @@ class RegulatoryFramework(Base):
     )
 
     # Relationships
+    requirements = relationship(
+        "RegulatoryRequirement", back_populates="framework", cascade="all, delete-orphan"
+    )
+
+
+class RegulatoryRequirement(Base):
+    __tablename__ = "regulatory_requirements"
+
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    tenant_id = Column(UUID(as_uuid=True), nullable=False)
+    framework_id = Column(
+        UUID(as_uuid=True), ForeignKey("regulatory_frameworks.id", ondelete="CASCADE"), nullable=False
+    )
+    name = Column(String(255), nullable=False)  # e.g., "Article 5.1"
+    description = Column(Text, nullable=True)  # e.g., "Requirement text..."
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    # Relationships
+    framework = relationship("RegulatoryFramework", back_populates="requirements")
     control_mappings = relationship(
         "ControlRegulatoryRequirement", back_populates="regulatory_requirement", cascade="all, delete-orphan"
     )

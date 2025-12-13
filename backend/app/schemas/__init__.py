@@ -140,6 +140,32 @@ class RegulatoryFrameworkRead(RegulatoryFrameworkBase):
     model_config = {"from_attributes": True}
 
 
+# --- Regulatory Requirements ---
+class RegulatoryRequirementBase(BaseModel):
+    name: str
+    description: str | None = None
+    framework_id: UUID
+
+
+class RegulatoryRequirementCreate(RegulatoryRequirementBase):
+    pass
+
+
+class RegulatoryRequirementUpdate(BaseModel):
+    name: str | None = None
+    description: str | None = None
+    framework_id: UUID | None = None
+
+
+class RegulatoryRequirementRead(RegulatoryRequirementBase):
+    id: UUID
+    tenant_id: UUID
+    created_at: datetime
+    updated_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
 # --- Documents ---
 class DocumentBase(BaseModel):
     """Base document schema."""

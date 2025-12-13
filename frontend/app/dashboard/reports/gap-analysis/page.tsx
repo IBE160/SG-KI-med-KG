@@ -83,7 +83,7 @@ export default function GapAnalysisPage() {
                   <SelectValue placeholder="Select a regulatory framework..." />
                 </SelectTrigger>
                 <SelectContent>
-                  {frameworks?.map((fw) => (
+                  {frameworks?.items?.map((fw: { id: string; name: string }) => (
                     <SelectItem key={fw.id} value={fw.id}>
                       {fw.name}
                     </SelectItem>
@@ -184,7 +184,7 @@ export default function GapAnalysisPage() {
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {report.gaps.map((gap) => (
+                          {report.gaps.map((gap: { requirement_id: string; requirement_name: string; requirement_description: string }) => (
                             <TableRow key={gap.requirement_id}>
                               <TableCell className="font-medium">
                                 {gap.requirement_name}

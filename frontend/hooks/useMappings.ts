@@ -1,14 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { client } from "@/app/clientService";
 import {
+  client,
+  readControls,
+  readRegulatoryFrameworks,
   createMapping,
   deleteMapping,
   getMappingsForControl,
   getMappingsForRequirement,
-  getControls,
-  getRegulatoryFrameworks,
-} from "@/app/openapi-client";
+} from "@/app/clientService";
 
 // Cache keys
 export const MAPPING_KEYS = {
@@ -23,7 +23,7 @@ export function useControls() {
   return useQuery({
     queryKey: MAPPING_KEYS.controls,
     queryFn: async () => {
-      const response = await getControls({ client });
+      const response = await readControls({ client });
       return response.data;
     },
   });
@@ -33,7 +33,7 @@ export function useRegulatoryFrameworks() {
   return useQuery({
     queryKey: MAPPING_KEYS.frameworks,
     queryFn: async () => {
-      const response = await getRegulatoryFrameworks({ client });
+      const response = await readRegulatoryFrameworks({ client });
       return response.data;
     },
   });

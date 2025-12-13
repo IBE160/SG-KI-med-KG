@@ -6,7 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
 from app.database import User, get_async_session
-from app.models.compliance import Control, Risk, BusinessProcess, RegulatoryFramework
+from app.models.compliance import Control, Risk, BusinessProcess, RegulatoryFramework, RegulatoryRequirement
 from app.schemas import (
     ControlCreate,
     ControlUpdate,
@@ -20,6 +20,9 @@ from app.schemas import (
     RegulatoryFrameworkCreate,
     RegulatoryFrameworkUpdate,
     RegulatoryFrameworkRead,
+    RegulatoryRequirementCreate,
+    RegulatoryRequirementUpdate,
+    RegulatoryRequirementRead,
 )
 from app.users import current_active_user
 
@@ -461,5 +464,159 @@ async def delete_regulatory_framework(
         )
 
     await db.delete(framework)
+    await db.commit()
+    return
+
+
+# --- Regulatory Requirements ---
+
+
+@router.post(
+    "/regulatory-requirements",
+    response_model=RegulatoryRequirementRead,
+    tags=["regulatory-requirements"],
+    status_code=201,
+)
+async def create_regulatory_requirement(
+    requirement: RegulatoryRequirementCreate,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_active_user),
+):
+    tenant_id = user.id
+    # Verify framework exists and belongs to tenant
+    framework_result = await db.execute(
+        select(RegulatoryFramework).filter(
+            RegulatoryFramework.id == requirement.framework_id,
+            RegulatoryFramework.tenant_id == tenant_id,
+        )
+    )
+    if not framework_result.scalars().first():
+        raise HTTPException(
+            status_code=404, detail="Regulatory Framework not found or access denied"
+        )
+
+    db_requirement = RegulatoryRequirement(**requirement.model_dump(), tenant_id=tenant_id)
+    db.add(db_requirement)
+    await db.commit()
+    await db.refresh(db_requirement)
+    return db_requirement
+
+
+@router.get(
+    "/regulatory-requirements",
+    response_model=Page[RegulatoryRequirementRead],
+    tags=["regulatory-requirements"],
+)
+async def read_regulatory_requirements(
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_active_user),
+    framework_id: UUID | None = Query(None, description="Filter by framework ID"),
+    page: int = Query(1, ge=1, description="Page number"),
+    size: int = Query(10, ge=1, le=100, description="Page size"),
+):
+    tenant_id = user.id
+    params = Params(page=page, size=size)
+    query = select(RegulatoryRequirement).filter(
+        RegulatoryRequirement.tenant_id == tenant_id
+    )
+    if framework_id:
+        query = query.filter(RegulatoryRequirement.framework_id == framework_id)
+    return await apaginate(db, query, params)
+
+
+@router.get(
+    "/regulatory-requirements/{requirement_id}",
+    response_model=RegulatoryRequirementRead,
+    tags=["regulatory-requirements"],
+)
+async def read_regulatory_requirement(
+    requirement_id: UUID,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_active_user),
+):
+    tenant_id = user.id
+    result = await db.execute(
+        select(RegulatoryRequirement).filter(
+            RegulatoryRequirement.id == requirement_id,
+            RegulatoryRequirement.tenant_id == tenant_id,
+        )
+    )
+    requirement = result.scalars().first()
+    if not requirement:
+        raise HTTPException(
+            status_code=404, detail="Regulatory Requirement not found or access denied"
+        )
+    return requirement
+
+
+@router.put(
+    "/regulatory-requirements/{requirement_id}",
+    response_model=RegulatoryRequirementRead,
+    tags=["regulatory-requirements"],
+)
+async def update_regulatory_requirement(
+    requirement_id: UUID,
+    requirement_update: RegulatoryRequirementUpdate,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_active_user),
+):
+    tenant_id = user.id
+    result = await db.execute(
+        select(RegulatoryRequirement).filter(
+            RegulatoryRequirement.id == requirement_id,
+            RegulatoryRequirement.tenant_id == tenant_id,
+        )
+    )
+    requirement = result.scalars().first()
+    if not requirement:
+        raise HTTPException(
+            status_code=404, detail="Regulatory Requirement not found or access denied"
+        )
+
+    # If framework_id is being updated, verify new framework exists and belongs to tenant
+    if requirement_update.framework_id and requirement_update.framework_id != requirement.framework_id:
+        framework_result = await db.execute(
+            select(RegulatoryFramework).filter(
+                RegulatoryFramework.id == requirement_update.framework_id,
+                RegulatoryFramework.tenant_id == tenant_id,
+            )
+        )
+        if not framework_result.scalars().first():
+            raise HTTPException(
+                status_code=404, detail="Regulatory Framework not found or access denied"
+            )
+
+    for key, value in requirement_update.model_dump(exclude_unset=True).items():
+        setattr(requirement, key, value)
+
+    await db.commit()
+    await db.refresh(requirement)
+    return requirement
+
+
+@router.delete(
+    "/regulatory-requirements/{requirement_id}",
+    status_code=204,
+    tags=["regulatory-requirements"],
+)
+async def delete_regulatory_requirement(
+    requirement_id: UUID,
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_active_user),
+):
+    tenant_id = user.id
+    result = await db.execute(
+        select(RegulatoryRequirement).filter(
+            RegulatoryRequirement.id == requirement_id,
+            RegulatoryRequirement.tenant_id == tenant_id,
+        )
+    )
+    requirement = result.scalars().first()
+    if not requirement:
+        raise HTTPException(
+            status_code=404, detail="Regulatory Requirement not found or access denied"
+        )
+
+    await db.delete(requirement)
     await db.commit()
     return

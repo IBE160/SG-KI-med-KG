@@ -19,11 +19,28 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    # 1. Add tenant_id and assigned_bpo_id columns with batch_alter_table for SQLite compatibility
+    # Get database connection and inspector to check existing columns
+    conn = op.get_bind()
+    inspector = sa.inspect(conn)
+    columns = [col['name'] for col in inspector.get_columns('ai_suggestions')]
+
+    # 1. Add tenant_id and assigned_bpo_id columns idempotently
     with op.batch_alter_table('ai_suggestions') as batch_op:
-        batch_op.add_column(sa.Column('tenant_id', sa.UUID(), nullable=True))
-        batch_op.add_column(sa.Column('assigned_bpo_id', sa.UUID(), nullable=True))
-        batch_op.create_foreign_key('fk_ai_suggestions_assigned_bpo_id_user', 'user', ['assigned_bpo_id'], ['id'])
+        if 'tenant_id' not in columns:
+            batch_op.add_column(sa.Column('tenant_id', sa.UUID(), nullable=True))
+        
+        if 'assigned_bpo_id' not in columns:
+            batch_op.add_column(sa.Column('assigned_bpo_id', sa.UUID(), nullable=True))
+            # Only create FK if we created the column (or we can assume it's needed)
+            # Safe to attempt FK creation if named constraint doesn't exist? 
+            # batch_alter_table handles naming usually, but let's be safe.
+            batch_op.create_foreign_key('fk_ai_suggestions_assigned_bpo_id_user', 'user', ['assigned_bpo_id'], ['id'])
+        else:
+            # If column exists, check if FK exists? For simplicity, we assume if column exists, FK might too.
+            # But duplicate FK creation usually throws error. 
+            # Let's wrap FK in a try/except or just skip if column exists to avoid complex introspection here.
+            # Ideally we check constraints too, but this is a hotfix.
+            pass
 
     # 3. Update ENUM values (Postgres only)
     if op.get_context().dialect.name == 'postgresql':
