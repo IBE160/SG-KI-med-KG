@@ -57,7 +57,7 @@ development_status:
   3-3-build-human-in-the-loop-hitl-validation-interface: done
   3-4-implement-immutable-audit-trail: done
   3-5-enhance-ai-review-capabilities: done
-  3-6-enhance-suggestions-list-ux: drafted
+  3-6-enhance-suggestions-list-ux: ready-for-dev
   epic-3-retrospective: optional
 
   epic-4: contexted

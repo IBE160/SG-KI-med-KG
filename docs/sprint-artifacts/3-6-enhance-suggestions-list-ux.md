@@ -1,6 +1,6 @@
 # Story 3.6: Enhance Suggestions List UX
 
-Status: backlog
+Status: ready-for-dev
 
 ## Story
 
@@ -108,23 +108,32 @@ so that **I can quickly identify which suggestions are assigned, to whom, and fi
 
 **From Story 3-5-enhance-ai-review-capabilities (Status: done)**
 
-- **Filter Implementation**: Story 3.5 implemented basic type filtering with a Select dropdown. Story 3.6 will replace this with a more modern chip-based UI.
+- **New Components/Modifications:**
+  - `frontend/app/dashboard/admin/suggestions/page.tsx` - Added sort (Type, Name, Date) and filter (Type dropdown) functionality. **Story 3.6 will replace the filter dropdown (lines 186-196) with chips.**
+  - `backend/app/schemas/suggestion.py` - Extended schema with BPO assignment fields (`assigned_bpo_id`)
+  - `backend/app/api/v1/endpoints/suggestions.py` - Added BPO validation on accept (requires `assigned_bpo_id`)
+  - `frontend/components/custom/ai-review-mode/SuggestionList.tsx` - Integrated sort/filter UI
+  - `backend/app/models/suggestion.py` - Extended `SuggestionType` enum with `business_process`
+- **Filter Implementation**: Story 3.5 implemented basic type filtering with a Select dropdown (lines 186-196 in `page.tsx`). Story 3.6 will replace this with filter chips.
 - **Sort/Filter Logic**: The `processedSuggestions` useMemo pattern works well. Extend it to handle name search without performance issues.
 - **State Management**: Using local `useState` for filter/sort state is appropriate for this page. No need for global state.
+- **BPO Assignment**: Story 3.5 made BPO assignment mandatory on acceptance. Story 3.6 displays this assignment in the "Assigned To" column.
 
 [Source: docs/sprint-artifacts/3-5-enhance-ai-review-capabilities.md]
 
 ### References
 
+- [Epic 3: AI-Powered Gap Analysis & Auditing](docs/epics.md#epic-3-ai-powered-gap-analysis--auditing) - Parent epic context
+- [Epic Tech Spec: Epic 3](docs/sprint-artifacts/tech-spec-epic-3.md) - AI Review Mode context and Story 3.6 requirements
+- [UX Design Specification](docs/ux-design-specification.md) - UI patterns for filters, search inputs, table enhancements, and visual indicators
 - [Story 3.3: HITL Validation Interface](docs/sprint-artifacts/3-3-build-human-in-the-loop-hitl-validation-interface.md) - Original AI Review Mode implementation
 - [Story 3.5: Enhance AI Review Capabilities](docs/sprint-artifacts/3-5-enhance-ai-review-capabilities.md) - Sorting and type filtering foundation
-- [Epic Tech Spec: Epic 3](docs/sprint-artifacts/tech-spec-epic-3.md) - AI Review Mode context
 
 ## Dev Agent Record
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+- [Story Context](3-6-enhance-suggestions-list-ux.context.xml)
 
 ### Agent Model Used
 
