@@ -18,8 +18,9 @@ This is the standard and most common method for users to create an account.
 3.  **Supabase `signUp`:** The frontend (via `frontend/app/(auth)/register/page.tsx`) calls `supabase.auth.signUp()` with the provided credentials.
 4.  **Email Verification:** Supabase creates an entry in its `auth.users` table and automatically sends a verification email to the user (configured via Supabase Dashboard).
 5.  **Email Confirmation:** The user clicks the link in the verification email, confirming their account.
-6.  **Automatic Database Sync:** **(NEWLY IMPLEMENTED)** A database trigger (`public.handle_new_user()`) in Supabase automatically creates a corresponding entry in our `public.user` table (`id`, `email`, `role='general_user'`, `tenant_id='00000000-0000-0000-0000-000000000000'`) whenever a new user is created in `auth.users`. This ensures data consistency with our application's `User` model.
+6.  **Automatic Database Sync:** **(NEWLY IMPLEMENTED)** A database trigger (`public.handle_new_user()`) in Supabase automatically creates a corresponding entry in our `public.user` table (`id`, `email`, `role='general_user'`, `tenant_id='095b5d35-992e-482b-ac1b-d9ec10ac1425'`) whenever a new user is created in `auth.users`. This ensures data consistency with our application's `User` model.
 7.  **Login:** The user can now log in via the `/login` page.
+8.  **Shared Tenancy:** All users are assigned to the same default tenant (`095b5d35...`) for the MVP, allowing collaboration on shared data (Risk Control Matrix).
 
 **Use Case:** Ideal for new users discovering the application, allowing them to create an account independently.
 
@@ -33,7 +34,7 @@ Administrators can manually create user accounts directly through the Supabase D
 3.  **Add User:** Click the "Users" tab and then "Add User".
 4.  **Enter Details:** Provide the email and password for the new user.
 5.  **Email Verification (Optional):** You can choose whether to send a verification email or instantly verify the user.
-6.  **Automatic Database Sync:** Similar to self-registration, the `public.handle_new_user()` trigger will automatically create a corresponding entry in our `public.user` table.
+6.  **Automatic Database Sync:** Similar to self-registration, the `public.handle_new_user()` trigger will automatically create a corresponding entry in our `public.user` table with the default tenant assignment.
 
 **Use Case:** Manual onboarding of specific users, internal testing, or when a user needs to be created without going through the frontend flow.
 
@@ -49,14 +50,12 @@ To manage user roles (especially making other users Admins) using the applicatio
         ```sql
         SELECT id, email FROM auth.users WHERE email = 'your_registered_email@example.com';
         ```
-    *   Then, update the `role` and `tenant_id` in your `public.user` table. (The `handle_new_user` trigger will have created a `public.user` entry for you already). Replace `YOUR_UUID_HERE` with the ID from the previous step.
+    *   Then, update the `role` in your `public.user` table. The `tenant_id` is already correctly assigned by the trigger. Replace `YOUR_UUID_HERE` with the ID from the previous step.
         ```sql
         UPDATE public.user
-        SET role = 'admin',
-            tenant_id = '00000000-0000-0000-0000-000000000000' -- Use the fixed placeholder or a specific tenant ID if available
+        SET role = 'admin'
         WHERE id = 'YOUR_UUID_HERE';
         ```
-    *   **Note on `tenant_id`:** The trigger currently defaults `tenant_id` to `00000000-0000-0000-0000-000000000000`. You might need to update this to a real tenant ID later if multi-tenancy involves different tenant UUIDs.
 
 **Use Case:** Setting up the initial administrator account after a fresh deployment.
 
@@ -72,4 +71,7 @@ Once you have at least one Admin user (bootstrapped via Method 3), you can manag
 
 **Use Case:** Day-to-day management of user roles and permissions by an application administrator.
 
-This comprehensive approach ensures flexible and secure user management throughout the application's lifecycle.
+---
+
+**Note on Multi-Tenancy:**
+For the current MVP, the application uses a single-tenant model where all registered users share the same workspace (`tenant_id='095b5d35-992e-482b-ac1b-d9ec10ac1425'`). Future versions will introduce an invitation-based system to support multiple isolated tenants, as described in `docs/tenant-management-design.md`.

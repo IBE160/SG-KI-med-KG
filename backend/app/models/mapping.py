@@ -1,5 +1,5 @@
 from sqlalchemy import Column, ForeignKey, DateTime, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID
+from app.models.guid import GUID
 from sqlalchemy.orm import relationship
 from sqlalchemy.sql import func
 from uuid import uuid4
@@ -9,17 +9,17 @@ from .base import Base
 class ControlRegulatoryRequirement(Base):
     __tablename__ = "controls_regulatory_requirements"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid4)
+    id = Column(GUID, primary_key=True, default=uuid4)
     control_id = Column(
-        UUID(as_uuid=True), ForeignKey("controls.id", ondelete="CASCADE"), nullable=False
+        GUID, ForeignKey("controls.id", ondelete="CASCADE"), nullable=False
     )
     regulatory_requirement_id = Column(
-        UUID(as_uuid=True),
+        GUID,
         ForeignKey("regulatory_requirements.id", ondelete="CASCADE"),
         nullable=False,
     )
-    tenant_id = Column(UUID(as_uuid=True), nullable=False)
-    created_by = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
+    tenant_id = Column(GUID, nullable=False)
+    created_by = Column(GUID, ForeignKey("user.id"), nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

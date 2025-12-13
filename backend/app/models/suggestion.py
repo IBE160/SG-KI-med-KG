@@ -1,6 +1,6 @@
 from sqlalchemy import Column, String, ForeignKey, Enum as SQLAlchemyEnum, Text
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID
+from app.models.guid import GUID
 from sqlalchemy.types import JSON
 import uuid
 import enum
@@ -22,15 +22,15 @@ class SuggestionStatus(str, enum.Enum):
 class AISuggestion(Base):
     __tablename__ = "ai_suggestions"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    tenant_id = Column(UUID(as_uuid=True), nullable=False)  # Multi-tenancy
-    document_id = Column(UUID(as_uuid=True), ForeignKey("documents.id"), nullable=False)
+    id = Column(GUID, primary_key=True, default=uuid.uuid4)
+    tenant_id = Column(GUID, nullable=False)  # Multi-tenancy
+    document_id = Column(GUID, ForeignKey("documents.id"), nullable=False)
     type = Column(SQLAlchemyEnum(SuggestionType), nullable=False)
     content = Column(JSON, nullable=False)
     rationale = Column(Text, nullable=False)
     source_reference = Column(Text, nullable=False)
     status = Column(SQLAlchemyEnum(SuggestionStatus), default=SuggestionStatus.pending, nullable=False)
-    assigned_bpo_id = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=True)  # BPO assigned to review
+    assigned_bpo_id = Column(GUID, ForeignKey("user.id"), nullable=True)  # BPO assigned to review
     
     # Timestamps are handled by Base model if configured, but Base usually only has id/uuid.
     # Adding created_at manually if Base doesn't provide it or if it is not a TimestampMixin

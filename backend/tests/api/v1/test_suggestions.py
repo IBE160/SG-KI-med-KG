@@ -56,14 +56,14 @@ async def test_update_suggestion_status_transition():
             # Test Accept
             response = await ac.patch(
                 f"/api/v1/suggestions/{suggestion_id}/status", 
-                json={"status": "awaiting_bpo_approval", "bpo_id": str(uuid4())}
+                json={"status": "pending_review", "bpo_id": str(uuid4())}
             )
             assert response.status_code == 200
-            assert mock_suggestion.status == SuggestionStatus.awaiting_bpo_approval
+            assert mock_suggestion.status == SuggestionStatus.pending_review
             
-            # Test invalid transition (from awaiting_bpo_approval to something else, if restricted)
+            # Test invalid transition (from pending_review to something else, if restricted)
             # The endpoint check: if suggestion.status != SuggestionStatus.pending -> 400
-            mock_suggestion.status = SuggestionStatus.awaiting_bpo_approval
+            mock_suggestion.status = SuggestionStatus.pending_review
             response = await ac.patch(
                 f"/api/v1/suggestions/{suggestion_id}/status", 
                 json={"status": "rejected"}

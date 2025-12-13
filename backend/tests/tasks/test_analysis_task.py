@@ -17,9 +17,20 @@ async def test_process_document_success():
         uploaded_by=uuid.uuid4() # Add missing field
     )
     
+    mock_user = MagicMock()
+    mock_user.tenant_id = uuid.uuid4()
+    
     # Mock DB session
     mock_db = AsyncMock()
-    mock_db.get.return_value = mock_document
+    
+    async def get_side_effect(model, id):
+        if model.__name__ == "Document":
+            return mock_document
+        if model.__name__ == "User":
+            return mock_user
+        return None
+        
+    mock_db.get.side_effect = get_side_effect
     
     # Mock async_session_maker context manager
     mock_session_maker = MagicMock()
@@ -82,8 +93,19 @@ async def test_process_document_failure():
         uploaded_by=uuid.uuid4() # Add missing field
     )
     
+    mock_user = MagicMock()
+    mock_user.tenant_id = uuid.uuid4()
+    
     mock_db = AsyncMock()
-    mock_db.get.return_value = mock_document
+    
+    async def get_side_effect(model, id):
+        if model.__name__ == "Document":
+            return mock_document
+        if model.__name__ == "User":
+            return mock_user
+        return None
+        
+    mock_db.get.side_effect = get_side_effect
     
     mock_session_maker = MagicMock()
     mock_session_maker.__aenter__.return_value = mock_db

@@ -1,6 +1,6 @@
 from fastapi_users.db import SQLAlchemyBaseUserTableUUID
 from sqlalchemy import String, Column
-from sqlalchemy.dialects.postgresql import UUID
+from app.models.guid import GUID
 from sqlalchemy.orm import relationship
 from .base import Base
 import uuid
@@ -17,4 +17,4 @@ class User(SQLAlchemyBaseUserTableUUID, Base):
     # For MVP/dev, allowing null might be safer during migration, but spec says NOT NULL.
     # We will default to a random UUID for now if not provided, or leave nullable=True temporarily
     # until tenant creation logic is solid.
-    tenant_id = Column(UUID(as_uuid=True), default=uuid.uuid4, nullable=False)
+    tenant_id = Column(GUID, default=uuid.uuid4, nullable=False)
