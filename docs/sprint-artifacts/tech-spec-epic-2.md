@@ -129,6 +129,13 @@ CREATE TABLE users (
 11. All existing users are consolidated into the default tenant.
 12. Users within the default tenant can collaborate and see shared compliance data.
 
+**Story 2.5: Implement Multi-Role Support** _(Post-MVP enhancement)_
+13. Users can be assigned multiple roles (admin, bpo, executive) simultaneously.
+14. The `general_user` role is mutually exclusive with all other roles.
+15. Backend RBAC checks pass if user has ANY required role (OR logic).
+16. Admin UI supports multi-select role assignment with validation.
+17. Existing single-role users are migrated to array format via Alembic migration.
+
 ## Traceability Mapping
 
 | AC | Spec Section(s) | Component(s)/API(s) | Test Idea |
@@ -137,6 +144,7 @@ CREATE TABLE users (
 | 3-6| Story 2.2 | `frontend/(dashboard)/admin/users`, `backend/api/v1/users`, `backend/core/security` | E2E role management tests, middleware tests |
 | 7-8| Story 2.3 | `frontend/(dashboard)/admin/users`, `backend/api/v1/users` | Admin user creation flow tests |
 | 9-12| Story 2.4 | Supabase `handle_new_user()` trigger, `backend/scripts/consolidate_tenant.py` | Database query verification, multi-user collaboration test |
+| 13-17| Story 2.5 | `backend/app/models/user.py`, `backend/app/core/deps.py`, `frontend/app/dashboard/admin/users` | Multi-role assignment test, RBAC OR logic verification, UI multi-select test |
 
 ## Risks, Assumptions, Open Questions
 
