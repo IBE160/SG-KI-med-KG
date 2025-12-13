@@ -171,6 +171,12 @@ This epic leverages the **AI & Vector Database** and **Background Jobs** archite
 *   Enforce mandatory BPO assignment when accepting suggestions.
 *   Ensure AI generates clear "Name" field for all suggestions.
 
+**Story 3.6: Enhance Suggestions List UX** _(Post-MVP enhancement)_
+*   Add "Assigned To" column displaying BPO assignment status and name.
+*   Implement name/title search filter with real-time filtering.
+*   Replace type filter dropdown with integrated filter chips/tabs.
+*   Ensure filter state persists during session (after refetch).
+
 ## Traceability Mapping
 
 | AC ID | Spec Section | Component | Test Idea |
@@ -182,6 +188,10 @@ This epic leverages the **AI & Vector Database** and **Background Jobs** archite
 | AC-3.5.1 | Data Models | Suggestion Enum | Create `business_process` suggestion, verify DB persistence |
 | AC-3.5.2 | Detailed Design | Review UI | Sort suggestions by Type, verify correct ordering |
 | AC-3.5.3 | APIs/Interfaces | Suggestions Endpoint | Accept suggestion without BPO, verify 400 error |
+| AC-3.6.1 | APIs/Interfaces | Suggestions Endpoint | Fetch suggestions, verify `assigned_bpo` data included |
+| AC-3.6.2 | Detailed Design | Review UI | Search by name, verify filtered results |
+| AC-3.6.3 | Detailed Design | Review UI | Click filter chip, verify type filter applied |
+| AC-3.6.4 | Detailed Design | Review UI | Review suggestion, verify filters persist after refetch |
 
 ## Risks, Assumptions, Open Questions
 
