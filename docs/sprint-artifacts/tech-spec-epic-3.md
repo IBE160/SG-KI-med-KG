@@ -68,11 +68,12 @@ This epic leverages the **AI & Vector Database** and **Background Jobs** archite
 *   **`ai_suggestions`**:
     *   `id`: UUID (PK)
     *   `document_id`: UUID (FK to documents)
-    *   `type`: Enum (risk, control)
+    *   `type`: Enum (risk, control, business_process) _[business_process added in Story 3.5]_
     *   `content`: JSONB (Structured suggestion data)
     *   `rationale`: Text
     *   `source_reference`: Text (Clause/Section)
     *   `status`: Enum (pending, accepted, rejected)
+    *   `assigned_bpo_id`: UUID (FK to users) _[Made mandatory on acceptance in Story 3.5]_
     *   `created_at`: Timestamp
 
 *   **`audit_logs`**:
@@ -163,6 +164,13 @@ This epic leverages the **AI & Vector Database** and **Background Jobs** archite
 *   Log entry includes Actor, Timestamp, Action, and Diff.
 *   Logs are immutable (enforced by DB policy or application logic).
 
+**Story 3.5: Enhance AI Review Capabilities** _(Added during implementation)_
+*   Support Business Process suggestions (extend `SuggestionType` enum).
+*   Implement suggestion list sorting (by Type, Name, Date).
+*   Implement suggestion list filtering (by Type).
+*   Enforce mandatory BPO assignment when accepting suggestions.
+*   Ensure AI generates clear "Name" field for all suggestions.
+
 ## Traceability Mapping
 
 | AC ID | Spec Section | Component | Test Idea |
@@ -171,6 +179,9 @@ This epic leverages the **AI & Vector Database** and **Background Jobs** archite
 | AC-3.2.1 | Services/AI | Analysis Task | Mock OpenAI, verify text extraction & prompt construction |
 | AC-3.3.1 | Detailed Design | Review UI | Click "Accept", verify API call & list update |
 | AC-3.4.1 | Data Models | Audit Service | Perform DB update, verify `audit_logs` entry exists |
+| AC-3.5.1 | Data Models | Suggestion Enum | Create `business_process` suggestion, verify DB persistence |
+| AC-3.5.2 | Detailed Design | Review UI | Sort suggestions by Type, verify correct ordering |
+| AC-3.5.3 | APIs/Interfaces | Suggestions Endpoint | Accept suggestion without BPO, verify 400 error |
 
 ## Risks, Assumptions, Open Questions
 
