@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { v4 as uuidv4 } from "uuid"; // For generating temporary unique keys if needed
 import {
   Dialog,
   DialogContent,
@@ -32,17 +31,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { AISuggestionRead, SuggestionStatus } from "@/app/openapi-client/types.gen";
+import { AISuggestionRead } from "@/app/openapi-client/types.gen";
 import { listUsers, updateSuggestionStatus } from "@/app/clientService";
 import { useRole } from "@/lib/role"; // Assuming useRole provides current user's role and tenant info
-import { useToast } from "@/components/ui/use-toast";
-import { UUID } from "crypto";
 
 interface User {
-  id: UUID;
-  full_name: string;
+  id: string;
+  full_name: string | null;
   email: string;
-  role: string;
+  roles: string[];
+  tenant_id: string;
 }
 
 const formSchema = z.object({
@@ -70,7 +68,78 @@ export function ReviewSuggestionDialog({
   onOpenChange,
   onSuccess,
 }: ReviewSuggestionDialogProps) {
-  // ... existing code
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [bpos, setBpos] = useState<User[]>([]);
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: suggestion.content.name as string || "",
+      description: suggestion.content.description as string || "",
+      rationale: suggestion.rationale || "",
+      bpoId: "",
+    },
+  });
+
+  useEffect(() => {
+    async function fetchBPOs() {
+      try {
+        const response = await listUsers({});
+        if (response.data) {
+          const bpoUsers = response.data.filter((user: any) =>
+            user.roles?.includes("business_process_owner")
+          );
+          setBpos(bpoUsers as User[]);
+        }
+      } catch (error) {
+        console.error("Failed to load BPOs:", error);
+      }
+    }
+    if (isOpen) {
+      fetchBPOs();
+    }
+  }, [isOpen]);
+
+  const onSubmitAccept = async (values: z.infer<typeof formSchema>) => {
+    setIsSubmitting(true);
+    try {
+      await updateSuggestionStatus({
+        path: { suggestion_id: suggestion.id },
+        body: {
+          status: "pending_review",
+          updated_content: {
+            name: values.name,
+            description: values.description,
+          },
+          bpo_id: values.bpoId,
+        },
+      });
+      onSuccess();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Failed to accept suggestion:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const onSubmitReject = async () => {
+    setIsSubmitting(true);
+    try {
+      await updateSuggestionStatus({
+        path: { suggestion_id: suggestion.id },
+        body: {
+          status: "rejected",
+        },
+      });
+      onSuccess();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Failed to reject suggestion:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const getTypeBadge = (type: string) => {
     switch (type) {
