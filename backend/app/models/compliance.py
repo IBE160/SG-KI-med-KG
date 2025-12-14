@@ -13,7 +13,7 @@ class BusinessProcess(Base):
     tenant_id = Column(GUID, nullable=False)
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
-    owner_id = Column(GUID, ForeignKey("user.id"), nullable=True)
+    owner_id = Column(GUID, ForeignKey("user.id"), nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -33,7 +33,7 @@ class Risk(Base):
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     category = Column(String(100), nullable=True)
-    owner_id = Column(GUID, ForeignKey("user.id"), nullable=True)
+    owner_id = Column(GUID, ForeignKey("user.id"), nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -53,7 +53,7 @@ class Control(Base):
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     type = Column(String(100), nullable=True)  # e.g., Preventive, Detective
-    owner_id = Column(GUID, ForeignKey("user.id"), nullable=True)
+    owner_id = Column(GUID, ForeignKey("user.id"), nullable=False)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )

@@ -1,10 +1,11 @@
-# ============================================================================
+# This Docker configuration is deferred until commercialization phase. Do not use for current development.
+# ============================================================================ 
 # FRONTEND DOCKERFILE - OPTIONAL
-# ============================================================================
+# ============================================================================ 
 # This Dockerfile is part of the optional Docker setup for local testing.
 # The application primarily runs with cloud-hosted Supabase.
 # See docker-compose.yml header and docs/decision-docker-deferred.md for details.
-# ============================================================================
+# ============================================================================ 
 
 FROM node:20-bookworm
 

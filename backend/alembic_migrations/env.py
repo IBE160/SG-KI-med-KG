@@ -34,6 +34,12 @@ target_metadata = Base.metadata
 # Use the database URL from app.config.settings
 database_url = settings.DATABASE_URL 
 
+# Force override from env var if present (to fix local migration issues)
+if os.environ.get("DATABASE_URL"):
+    database_url = os.environ.get("DATABASE_URL")
+
+print(f"Alembic using database URL: {database_url}")
+
 # No need to check for empty database_url, as settings will provide a default
 # if it's not set in .env or via environment variables for the app.
 

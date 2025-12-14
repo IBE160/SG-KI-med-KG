@@ -1,0 +1,10 @@
+name: dev-story
+description: "Implement a user story"
+config_source: "{project-root}/.bmad/bmm/config.yaml"
+installed_path: "{project-root}/.bmad/bmm/workflows/4-implementation/dev-story"
+instructions: "{installed_path}/instructions.md"
+input_file_patterns:
+  epics: "{output_folder}/epics.md"
+  architecture: "{output_folder}/architecture.md"
+  prd: "{output_folder}/PRD.md"
+  story_location: "{project-root}/docs/sprint-artifacts"

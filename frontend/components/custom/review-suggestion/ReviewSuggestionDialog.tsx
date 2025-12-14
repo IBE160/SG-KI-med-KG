@@ -147,9 +147,12 @@ export function ReviewSuggestionDialog({
     }
   }, [isOpen]);
 
-  const onSubmitAccept = async (values: z.infer<typeof formSchemaWithBPO>) => {
+  const onSubmitAccept = async (values: FormValues) => {
+    // We know values has bpoId when calling this because of the isPendingReview check in render
+    const formValues = values as z.infer<typeof formSchemaWithBPO>;
+    
     // Validate BPO is selected before accepting
-    if (!values.bpoId) {
+    if (!formValues.bpoId) {
       form.setError("bpoId" as any, {
         type: "manual",
         message: "BPO assignment is required for acceptance",
@@ -171,7 +174,7 @@ export function ReviewSuggestionDialog({
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const url = `${apiUrl}/api/v1/suggestions/${suggestion.id}/status`;
 
-      console.log("Accepting suggestion:", { url, bpoId: values.bpoId });
+      console.log("Accepting suggestion:", { url, bpoId: formValues.bpoId });
 
       const response = await fetch(url, {
         method: "PATCH",
@@ -182,10 +185,10 @@ export function ReviewSuggestionDialog({
         body: JSON.stringify({
           status: "pending_review",
           updated_content: {
-            name: values.name,
-            description: values.description,
+            name: formValues.name,
+            description: formValues.description,
           },
-          bpo_id: values.bpoId,
+          bpo_id: formValues.bpoId,
         }),
       });
 
@@ -196,7 +199,7 @@ export function ReviewSuggestionDialog({
         throw new Error(`Failed to accept suggestion: ${response.status}`);
       }
 
-      console.log("✅ Suggestion accepted and routed to BPO:", values.bpoId);
+      console.log("✅ Suggestion accepted and routed to BPO:", formValues.bpoId);
       onSuccess();
       onOpenChange(false);
     } catch (error) {
@@ -257,7 +260,8 @@ export function ReviewSuggestionDialog({
     }
   };
 
-  const onSubmitApprove = async (values: z.infer<typeof formSchemaWithoutBPO>) => {
+  const onSubmitApprove = async (values: FormValues) => {
+    const formValues = values as z.infer<typeof formSchemaWithoutBPO>;
     setIsSubmitting(true);
     try {
       const supabase = createClient();
@@ -272,7 +276,7 @@ export function ReviewSuggestionDialog({
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const url = `${apiUrl}/api/v1/suggestions/${suggestion.id}/approve`;
 
-      console.log("Approving suggestion:", { url, values });
+      console.log("Approving suggestion:", { url, values: formValues });
 
       const response = await fetch(url, {
         method: "POST",
@@ -281,8 +285,8 @@ export function ReviewSuggestionDialog({
           "Authorization": `Bearer ${session.access_token}`,
         },
         body: JSON.stringify({
-          name: values.name,
-          description: values.description,
+          name: formValues.name,
+          description: formValues.description,
         }),
       });
 

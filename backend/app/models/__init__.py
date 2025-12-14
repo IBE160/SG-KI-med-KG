@@ -11,3 +11,5 @@ from .compliance import (
 from .mapping import (
     ControlRegulatoryRequirement as ControlRegulatoryRequirement,
 )
+from .suggestion import AISuggestion as AISuggestion, SuggestionStatus as SuggestionStatus, SuggestionType as SuggestionType
+from .audit_log import AuditLog as AuditLog

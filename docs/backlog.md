@@ -18,3 +18,4 @@
 | 2025-12-12 | 5.2 | 5 | TechDebt | High | TBD | Open | **Fix Tests:** Remove mocks in `test_reports.py` and use real DB seed data to verify report counts. [file: `backend/tests/api/v1/test_reports.py`] |
 | 2025-12-12 | 5.2 | 5 | UX | Med | TBD | Open | **Update UI:** Ensure `useRegulatoryFrameworks` returns Standards (Groups) for the dropdown, not individual requirements. [file: `frontend/app/dashboard/reports/gap-analysis/page.tsx`] |
 | 2025-12-12 | 5.2 | 5 | TechDebt | Low | TBD | Open | **Move File:** Move `backend/app/routes/compliance.py` to `backend/app/api/v1/endpoints/compliance.py` for consistency. |
+| 2025-12-14 | 4.5 | 4 | TechDebt | Low | TBD | Open | **Fix RuntimeWarning:** Fix RuntimeWarning in `test_update_suggestion_status_transition` (unawaited coroutine). [file: `backend/tests/api/v1/test_suggestions.py`] |

@@ -24,7 +24,7 @@ from app.schemas import (
     RegulatoryRequirementUpdate,
     RegulatoryRequirementRead,
 )
-from app.users import current_active_user
+from app.core.deps import get_current_active_user as current_active_user
 
 router = APIRouter()
 

@@ -43,9 +43,13 @@ async def test_update_suggestion_status_transition():
     mock_suggestion.document_id = uuid4()
     mock_suggestion.assigned_bpo = None
 
+    # Mock Result
+    mock_result = MagicMock()
+    mock_result.scalar_one_or_none.return_value = mock_suggestion
+
     # Mock DB Session
     mock_db = AsyncMock()
-    mock_db.get.return_value = mock_suggestion
+    mock_db.execute.return_value = mock_result
     
     # Override dependencies
     app.dependency_overrides[get_current_active_user] = lambda: mock_admin_user
@@ -78,8 +82,14 @@ async def test_update_suggestion_status_transition():
 async def test_update_suggestion_not_found():
     """Test update for non-existent suggestion."""
     mock_admin_user = UserModel(id=uuid4(), email="admin@example.com", hashed_password="mock", is_active=True, is_superuser=True, is_verified=True, roles=["admin"], tenant_id=uuid4())
+    
+    # Mock Result
+    mock_result = MagicMock()
+    mock_result.scalar_one_or_none.return_value = None
+
+    # Mock DB Session
     mock_db = AsyncMock()
-    mock_db.get.return_value = None
+    mock_db.execute.return_value = mock_result
     
     app.dependency_overrides[get_current_active_user] = lambda: mock_admin_user
     from app.database import get_async_session

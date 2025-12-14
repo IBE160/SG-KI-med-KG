@@ -153,12 +153,16 @@ async def approve_suggestion(
 
     # Create the appropriate entity based on suggestion type
     entity_id = None
+    # Determine owner: prefer assigned BPO, fallback to current user (approver)
+    owner_id = suggestion.assigned_bpo_id or current_user.id
+
     try:
         if suggestion.type == SuggestionType.risk:
             new_entity = Risk(
                 name=request.name,
                 description=request.description or "",
                 tenant_id=current_user.tenant_id,
+                owner_id=owner_id,
             )
             db.add(new_entity)
             await db.flush()
@@ -169,6 +173,7 @@ async def approve_suggestion(
                 name=request.name,
                 description=request.description or "",
                 tenant_id=current_user.tenant_id,
+                owner_id=owner_id,
             )
             db.add(new_entity)
             await db.flush()
@@ -179,6 +184,7 @@ async def approve_suggestion(
                 name=request.name,
                 description=request.description or "",
                 tenant_id=current_user.tenant_id,
+                owner_id=owner_id,
             )
             db.add(new_entity)
             await db.flush()

@@ -1,10 +1,11 @@
-# ============================================================================
+# This Docker configuration is deferred until commercialization phase. Do not use for current development.
+# ============================================================================ 
 # BACKEND DOCKERFILE - OPTIONAL
-# ============================================================================
+# ============================================================================ 
 # This Dockerfile is part of the optional Docker setup for local testing.
 # The application primarily runs with cloud-hosted Supabase.
 # See docker-compose.yml header and docs/decision-docker-deferred.md for details.
-# ============================================================================
+# ============================================================================ 
 
 FROM python:3.12-bookworm
 

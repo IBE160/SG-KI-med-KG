@@ -65,7 +65,7 @@ development_status:
   4-2-implement-real-time-status-updates: done
   4-3-develop-streamlined-control-assessment-workflow-for-bpos: done
   4-4-dashboard-ux-enhancements: done
-  4-5-defect-controls-visibility: ready-for-dev
+  4-5-defect-controls-visibility: done
   epic-4-retrospective: optional
 
   epic-5: contexted
