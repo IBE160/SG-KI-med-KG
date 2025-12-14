@@ -1,0 +1,199 @@
+<story-context id="docs/sprint-artifacts/4-6-overview-page.context.xml" v="1.0">
+  <metadata>
+    <epicId>4</epicId>
+    <storyId>4-6</storyId>
+    <title>Overview Page</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/4-6-overview-page.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>user</asA>
+    <iWant>to view all accepted risks, controls, and business processes in a unified hierarchical overview page</iWant>
+    <soThat>I can see the complete compliance framework in one place with processes as parent items linking to their associated controls and risks</soThat>
+    <tasks>
+- [ ] **Backend: Update Dashboard Metrics** (AC: #2)
+  - [ ] Modify `backend/app/services/dashboard_service.py` to replace "System Health" card with "Overview" card
+  - [ ] Update metric calculation to include processes count: `total_risks + total_controls + total_processes`
+  - [ ] Change `action_link` from `/dashboard/admin/system` to `/dashboard/overview`
+  - [ ] Update `card_id` to "overview" and title to "Overview"
+
+- [ ] **Backend: Create Overview API Endpoint** (AC: #1, #3, #6)
+  - [ ] Create `GET /api/v1/dashboard/overview` endpoint in `backend/app/api/v1/endpoints/`
+  - [ ] Fetch all accepted Controls, Risks, and BusinessProcesses for current tenant
+  - [ ] Include relationship data (process → controls/risks mappings)
+  - [ ] Return hierarchical JSON structure with processes as parents
+  - [ ] Apply RLS (tenant filtering) and RBAC (all authenticated users can read)
+
+- [ ] **Frontend: Create Overview Page Component** (AC: #1, #3, #4, #5, #6)
+  - [ ] Create `frontend/app/dashboard/overview/page.tsx`
+  - [ ] Implement data fetching using React Query from `/api/v1/dashboard/overview`
+  - [ ] Build tree component (using Shadcn/UI Collapsible or custom tree)
+  - [ ] Implement tabbed interface (All | Processes | Controls | Risks)
+  - [ ] Add expand/collapse functionality for tree nodes
+  - [ ] Show appropriate icons for each entity type (process, control, risk)
+
+- [ ] **Frontend: Implement Modal Edit/Delete** (AC: #5)
+  - [ ] Create reusable edit modal component accepting entity type and data
+  - [ ] Load appropriate form based on entity type (Control/Risk/BusinessProcess)
+  - [ ] Implement inline form submission with optimistic updates
+  - [ ] Create delete confirmation modal with entity name display
+  - [ ] Handle success/error states with toast notifications
+
+- [ ] **Frontend: Role-Based UI Rendering** (AC: #5, #6)
+  - [ ] Use `useRole()` hook to check if current user is Admin
+  - [ ] Conditionally render Edit/Delete buttons only for Admin
+  - [ ] Ensure read-only view for BPO, Executive, General User roles
+
+- [ ] **Update Routing & Navigation** (AC: #1, #2)
+  - [ ] Verify `/dashboard/overview` route is accessible
+  - [ ] Update Dashboard card click handler to navigate to `/dashboard/overview`
+
+- [ ] **Testing** (All ACs)
+  - [ ] Backend: Test overview API endpoint with multiple tenants (RLS verification)
+  - [ ] Backend: Test hierarchical data structure includes all relationships
+  - [ ] Frontend: Test tree expand/collapse functionality
+  - [ ] Frontend: Test tab switching behavior
+  - [ ] Frontend: Test modal edit/delete flows (Admin only)
+  - [ ] E2E: Test complete flow from dashboard card click → overview page → edit item
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+1. **Navigation &amp; Access**
+   - Given I am any authenticated user,
+   - When I navigate to `/dashboard/overview`,
+   - Then the page loads and displays all accepted compliance items.
+
+2. **Dashboard Card**
+   - Given I am on the dashboard,
+   - When I view dashboard cards,
+   - Then I see an "Overview" card showing the total count of accepted items (risks + controls + processes) with a "View" button.
+   - And clicking "View" navigates to `/dashboard/overview`.
+
+3. **Hierarchical Tree View**
+   - Given I am on the Overview page,
+   - When I view the content,
+   - Then I see an expandable tree structure with processes as parent nodes.
+   - And each process expands to show its associated controls and risks as child nodes.
+   - And tree nodes can be collapsed/expanded independently.
+
+4. **Tabbed Views**
+   - Given I am on the Overview page,
+   - When I want to filter by entity type,
+   - Then I can toggle between tabs: "All" (tree view), "Processes", "Controls", "Risks".
+   - And each tab shows the relevant filtered list.
+
+5. **Admin Edit/Delete (Modal)**
+   - Given I am logged in as Admin,
+   - When I click "Edit" on any item in the tree,
+   - Then a modal dialog opens with the item's editable form pre-populated.
+   - And I can save changes or cancel without leaving the page.
+   - And clicking "Delete" shows a confirmation modal before deletion.
+
+6. **Read-Only for Non-Admin**
+   - Given I am logged in as a non-Admin user (BPO, Executive, General User),
+   - When I view the Overview page,
+   - Then I can see all items but cannot edit or delete them (no action buttons visible).
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <artifact>
+        <path>docs/epics.md</path>
+        <title>Epic Breakdown</title>
+        <section>Story 4.6: Overview Page</section>
+        <snippet>As a user, I want to view all accepted risks, controls, and business processes in a unified hierarchical overview page.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/PRD.md</path>
+        <title>Product Requirements Document</title>
+        <section>Basic Dashboard</section>
+        <snippet>High-level overview of risk posture.</snippet>
+      </artifact>
+      <artifact>
+        <path>docs/architecture.md</path>
+        <title>System Architecture</title>
+        <section>Data Persistence</section>
+        <snippet>Supabase PostgreSQL with RLS.</snippet>
+      </artifact>
+    </docs>
+    <code>
+      <artifact>
+        <path>frontend/app/dashboard/page.tsx</path>
+        <kind>component</kind>
+        <symbol>DashboardPage</symbol>
+        <reason>Main dashboard entry point where the Overview card will be displayed.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/services/dashboard_service.py</path>
+        <kind>service</kind>
+        <symbol>DashboardService</symbol>
+        <reason>Service responsible for aggregating dashboard metrics and cards.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/schemas/dashboard.py</path>
+        <kind>schema</kind>
+        <symbol>DashboardMetrics</symbol>
+        <reason>Data model for dashboard responses.</reason>
+      </artifact>
+      <artifact>
+        <path>backend/app/api/v1/endpoints/dashboard.py</path>
+        <kind>endpoint</kind>
+        <symbol>get_dashboard_metrics</symbol>
+        <reason>Existing API endpoint for dashboard metrics.</reason>
+      </artifact>
+    </code>
+    <dependencies>
+      <ecosystem name="frontend">
+        <package name="shadcn-ui">Existing</package>
+        <package name="@tanstack/react-query">^5.x</package>
+      </ecosystem>
+      <ecosystem name="backend">
+        <package name="fastapi">Existing</package>
+        <package name="sqlalchemy">Existing</package>
+      </ecosystem>
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Use existing Shadcn/UI theme and patterns for consistency.</constraint>
+    <constraint>Use `useRole()` hook in frontend for role-based rendering (Admin vs. others).</constraint>
+    <constraint>Backend endpoint must apply RLS (tenant filtering) to ensure data isolation.</constraint>
+    <constraint>Hierarchical relationship: `business_processes` (parent) → `controls`/`risks` (children).</constraint>
+    <constraint>Use existing foreign key relationships: `controls.process_id` and `risks.process_id`.</constraint>
+  </constraints>
+
+  <interfaces>
+    <interface>
+      <name>Get Dashboard Metrics</name>
+      <kind>REST Endpoint</kind>
+      <signature>GET /api/v1/dashboard/metrics</signature>
+      <path>backend/app/api/v1/endpoints/dashboard.py</path>
+    </interface>
+    <interface>
+      <name>Get Overview Data</name>
+      <kind>REST Endpoint</kind>
+      <signature>GET /api/v1/dashboard/overview</signature>
+      <path>(New)</path>
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Backend tests should verify RLS isolation (multi-tenant) and correct data hierarchy. Frontend tests should cover tree interaction (expand/collapse), tab switching, and role-based access control (Admin edit/delete).</standards>
+    <locations>
+      <location>frontend/__tests__/app/dashboard</location>
+      <location>backend/tests/api/v1</location>
+    </locations>
+    <ideas>
+      <idea ac="1">Test GET /api/v1/dashboard/overview returns hierarchy with process as root.</idea>
+      <idea ac="2">Test Overview card appears on Dashboard and links correctly.</idea>
+      <idea ac="3">Test tree expand/collapse maintains state.</idea>
+      <idea ac="5">Test Edit button only visible for Admin role.</idea>
+      <idea ac="6">Test non-Admin users cannot access edit functionality.</idea>
+    </ideas>
+  </tests>
+</story-context>

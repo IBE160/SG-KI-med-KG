@@ -312,6 +312,24 @@ So that **the interface feels personalized and I can verify my identity at a gla
 **Prerequisites:** Epic 4.1.
 **Technical Notes:** Ensure the `users` table has `first_name` / `last_name` or `full_name` fields, or derive from email if necessary (though name is preferred). Update the `UserNav` or `Avatar` component.
 
+### Story 4.6: Overview Page
+As a **user**,
+I want **to view all accepted risks, controls, and business processes in a unified hierarchical overview page**,
+So that **I can see the complete compliance framework in one place with processes as parent items linking to their associated controls and risks**.
+
+**Acceptance Criteria:**
+**Given** risks, controls, and processes have been accepted from the AI Review workflow,
+**When** I navigate to the Overview page (`/dashboard/overview`),
+**Then** I see all accepted items displayed in an expandable tree structure with processes as parent nodes.
+**And** each process expands to show its associated controls and risks as child nodes.
+**And** I can toggle between tree view and tabbed views (Processes | Controls | Risks).
+**And** as an Admin, I can edit or delete items inline using modal dialogs without leaving the page.
+**And** as a non-Admin user, I have read-only access to view all items.
+**And** the Dashboard card titled "Overview" shows the total count of accepted items (risks + controls + processes) and links to this page.
+
+**Prerequisites:** Epic 3 (AI Review workflow), Epic 4.1 (Dashboard cards).
+**Technical Notes:** Replace the "System Health" card in Admin dashboard with "Overview" card. Implement `/dashboard/overview` page with tree component and modal edit/delete forms. All roles can access the page (read), but only Admin can edit/delete. Update dashboard_service.py to calculate metric including processes count.
+
 ---
 
 ## Epic 5: Advanced Compliance Mapping & Reporting
@@ -347,6 +365,24 @@ So that **I can understand areas of non-compliance and prioritize remediation ef
 
 **Prerequisites:** Story 5.1.
 **Technical Notes:** Backend service to query the database for unmapped regulatory requirements. Frontend to display and format the report.
+
+### Story 5.3: Regulatory Frameworks Enhancement
+As an **Admin**,
+I want **uploaded regulatory documents to be automatically classified as Main Laws or Regulations by AI, with Regulations linked to parent Laws in a hierarchical structure**,
+So that **I can maintain an organized regulatory framework that reflects the actual legal structure (laws → regulations)**.
+
+**Acceptance Criteria:**
+**Given** I upload a regulatory document and click "Process Now",
+**When** the AI analyzes the document,
+**Then** the AI automatically determines if the document is a Main Law or a Regulation.
+**And** if it's a Regulation, the AI identifies and links it to the appropriate parent Law (creating the Law if it doesn't exist).
+**And** the Regulatory Frameworks page (`/dashboard/regulatory-frameworks`) displays a hierarchical tree view showing Laws as parent nodes with their associated Regulations as children.
+**And** each framework item shows its linked source document(s).
+**And** one document can only be linked to one law or regulation (not multiple).
+**And** users can manually override the AI classification if needed (future enhancement - note in Dev Notes).
+
+**Prerequisites:** Epic 3 (Document upload and AI analysis).
+**Technical Notes:** Modify `regulatory_frameworks` table to include `parent_id` (self-referencing foreign key) and `type` field (enum: 'law' or 'regulation'). Update AI prompt in document processing to classify document type and identify parent Law. Enhance `/dashboard/regulatory-frameworks` page with tree component. Add document_id foreign key to link frameworks to source documents. This uses hierarchical single-table design (Option B from planning discussion).
 
 ---
 
