@@ -180,7 +180,7 @@ async def test_upload_document_success(test_client):
         is_active=True,
         is_superuser=True,
         is_verified=True,
-        role="admin",
+        roles=["admin"],
         tenant_id=uuid4()
     )
     # Temporarily override the get_current_active_user dependency

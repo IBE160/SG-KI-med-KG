@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase";
 import { jwtDecode } from "jwt-decode";
 
 export function useRole() {
-  const [role, setRole] = useState<string | null>(null);
+  const [roles, setRoles] = useState<string[]>([]);
   const [fullName, setFullName] = useState<string | null>(null);
   const [email, setEmail] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -19,11 +19,11 @@ export function useRole() {
       } = await supabase.auth.getSession();
       if (session?.access_token) {
         try {
-          // Fetch role from backend API for authoritative source
+          // Fetch roles from backend API for authoritative source
           // IMPORTANT: Must use absolute URL to avoid Next.js routing to /app/api
           const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
           const apiUrl = `${backendUrl}/api/v1/users/me`;
-          console.log("Fetching user role from:", apiUrl);
+          console.log("Fetching user roles from:", apiUrl);
           console.log("Backend URL env var:", process.env.NEXT_PUBLIC_API_BASE_URL);
 
           const response = await fetch(apiUrl, {
@@ -38,7 +38,7 @@ export function useRole() {
           if (response.ok) {
             const userData = await response.json();
             console.log("User data from backend:", userData);
-            setRole(userData.role || "general_user");
+            setRoles(userData.roles || ["general_user"]);
             setFullName(userData.full_name || null);
             setEmail(userData.email || null);
           } else {
@@ -46,15 +46,15 @@ export function useRole() {
             console.error("Failed to fetch from backend:", response.status, errorText);
             // Fallback to JWT if backend fetch fails
             const decoded: any = jwtDecode(session.access_token);
-            const appRole = decoded.app_metadata?.role;
-            console.log("Falling back to JWT role:", appRole);
-            setRole(appRole || "general_user");
+            const appRoles = decoded.app_metadata?.roles;
+            console.log("Falling back to JWT roles:", appRoles);
+            setRoles(appRoles || ["general_user"]);
             setFullName(null);
             setEmail(decoded.email || null);
           }
         } catch (e) {
-          console.error("Failed to get user role", e);
-          setRole("general_user");
+          console.error("Failed to get user roles", e);
+          setRoles(["general_user"]);
           setFullName(null);
           setEmail(null);
         }
@@ -69,7 +69,7 @@ export function useRole() {
     } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.access_token) {
         try {
-          // Fetch updated role from backend
+          // Fetch updated roles from backend
           const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
           const apiUrl = `${backendUrl}/api/v1/users/me`;
           const response = await fetch(apiUrl, {
@@ -81,25 +81,25 @@ export function useRole() {
           if (response.ok) {
             const userData = await response.json();
             console.log("Auth state change - User data:", userData);
-            setRole(userData.role || "general_user");
+            setRoles(userData.roles || ["general_user"]);
             setFullName(userData.full_name || null);
             setEmail(userData.email || null);
           } else {
             console.log("Auth state change - Backend fetch failed, using JWT");
             const decoded: any = jwtDecode(session.access_token);
-            setRole(decoded.app_metadata?.role || "general_user");
+            setRoles(decoded.app_metadata?.roles || ["general_user"]);
             setFullName(null);
             setEmail(decoded.email || null);
           }
         } catch (e) {
           console.error("Auth state change error:", e);
           const decoded: any = jwtDecode(session.access_token);
-          setRole(decoded.app_metadata?.role || "general_user");
+          setRoles(decoded.app_metadata?.roles || ["general_user"]);
           setFullName(null);
           setEmail(decoded.email || null);
         }
       } else {
-        setRole(null);
+        setRoles([]);
         setFullName(null);
         setEmail(null);
       }
@@ -108,7 +108,7 @@ export function useRole() {
     return () => subscription.unsubscribe();
   }, [supabase.auth]);
 
-  return { role, fullName, email, loading, isAdmin: role === "admin" };
+  return { roles, fullName, email, loading, isAdmin: roles.includes("admin") };
 }
 
 export function RoleGuard({
@@ -118,26 +118,30 @@ export function RoleGuard({
   children: React.ReactNode;
   allowedRoles: string[];
 }) {
-  const { role, loading } = useRole();
+  const { roles, loading } = useRole();
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
     if (!loading) {
-      if (!role || !allowedRoles.includes(role)) {
+      // Check if user has ANY of the allowed roles (OR logic)
+      const hasAccess = roles.length > 0 && allowedRoles.some(r => roles.includes(r));
+      if (!hasAccess) {
         // Redirect to dashboard if authorized but wrong role, or login if not auth
-        if (role) {
+        if (roles.length > 0) {
           router.push("/dashboard");
         } else {
           router.push("/login");
         }
       }
     }
-  }, [role, loading, router, allowedRoles]);
+  }, [roles, loading, router, allowedRoles]);
 
   if (loading) return <div className="p-4">Checking permissions...</div>; // Or a spinner
 
-  if (!role || !allowedRoles.includes(role)) {
+  // Check if user has ANY of the allowed roles (OR logic)
+  const hasAccess = roles.length > 0 && allowedRoles.some(r => roles.includes(r));
+  if (!hasAccess) {
     return null; // Will redirect in useEffect
   }
 

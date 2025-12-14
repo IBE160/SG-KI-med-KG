@@ -25,7 +25,7 @@ async def test_list_audit_logs_success():
         is_active=True,
         is_superuser=True,
         is_verified=True,
-        role="admin",
+        roles=["admin"],
         tenant_id=uuid4()
     )
     

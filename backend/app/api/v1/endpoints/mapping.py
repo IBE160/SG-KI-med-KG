@@ -27,7 +27,7 @@ def verify_admin_role(current_user: User) -> None:
     Raises:
         HTTPException: 403 Forbidden if user is not Admin
     """
-    if current_user.role != "admin":
+    if "admin" not in current_user.roles:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied. This endpoint requires Admin role.",
@@ -43,7 +43,7 @@ def verify_read_access(current_user: User) -> None:
     Raises:
         HTTPException: 403 Forbidden if user doesn't have read access
     """
-    if current_user.role not in ["admin", "executive", "bpo"]:
+    if not any(role in current_user.roles for role in ["admin", "executive", "bpo"]):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied. This endpoint requires Admin, Executive, or BPO role.",

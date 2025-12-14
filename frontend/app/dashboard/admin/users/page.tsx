@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
 import { RoleGuard } from "@/lib/role";
 import { CreateUserDialog } from "@/components/admin/CreateUserDialog";
@@ -38,8 +39,9 @@ export default function UsersPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedUser, setSelectedUser] = useState<UserRead | null>(null);
-  const [newRole, setNewRole] = useState<string>("");
+  const [newRoles, setNewRoles] = useState<string[]>([]);
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const supabase = createClient();
 
   useEffect(() => {
@@ -77,8 +79,14 @@ export default function UsersPage() {
     }
   };
 
-  const handleUpdateRole = async () => {
-    if (!selectedUser || !newRole) return;
+  const handleUpdateRoles = async () => {
+    if (!selectedUser || newRoles.length === 0) return;
+
+    // Validate role combination (AC 1)
+    if (newRoles.includes("general_user") && newRoles.length > 1) {
+      setValidationError("general_user cannot be combined with other roles");
+      return;
+    }
 
     try {
       const {
@@ -87,31 +95,32 @@ export default function UsersPage() {
       if (!session) return;
 
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${selectedUser.id}/role`,
+        `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${selectedUser.id}/roles`,
         {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${session.access_token}`,
           },
-          body: JSON.stringify({ role: newRole }),
+          body: JSON.stringify({ roles: newRoles }),
         },
       );
 
       if (!res.ok) {
         const errData = await res.json();
-        throw new Error(errData.detail || "Failed to update role");
+        throw new Error(errData.detail || "Failed to update roles");
       }
 
       // Update local state
       setUsers(
         users.map((u) =>
-          u.id === selectedUser.id ? { ...u, role: newRole } : u,
+          u.id === selectedUser.id ? { ...u, roles: newRoles } : u,
         ),
       );
       setDialogOpen(false);
       setSelectedUser(null);
-      setNewRole("");
+      setNewRoles([]);
+      setValidationError(null);
     } catch (err: any) {
       setError(err.message);
     }
@@ -157,7 +166,30 @@ export default function UsersPage() {
                     {user.id}
                   </TableCell>
                   <TableCell>{user.email}</TableCell>
-                  <TableCell className="capitalize">{user.role}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-1 flex-wrap">
+                      {user.roles && user.roles.length > 0 ? (
+                        user.roles.map((role) => (
+                          <Badge
+                            key={role}
+                            variant={
+                              role === "admin" ? "default" :
+                              role === "bpo" ? "secondary" :
+                              role === "executive" ? "outline" :
+                              "destructive"
+                            }
+                            className="capitalize"
+                          >
+                            {role === "general_user" ? "General" : role}
+                          </Badge>
+                        ))
+                      ) : (
+                        <Badge variant="destructive" className="capitalize">
+                          unknown
+                        </Badge>
+                      )}
+                    </div>
+                  </TableCell>
                   <TableCell>{user.is_active ? "Yes" : "No"}</TableCell>
                   <TableCell className="text-right">
                     <Dialog
@@ -165,9 +197,11 @@ export default function UsersPage() {
                       onOpenChange={(open) => {
                         if (open) {
                           setSelectedUser(user);
-                          setNewRole(user.role || "general_user");
+                          setNewRoles(user.roles || ["general_user"]);
+                          setValidationError(null);
                         } else {
                           setSelectedUser(null);
+                          setValidationError(null);
                         }
                         setDialogOpen(open);
                       }}
@@ -179,30 +213,59 @@ export default function UsersPage() {
                       </DialogTrigger>
                       <DialogContent>
                         <DialogHeader>
-                          <DialogTitle>Edit Role for {user.email}</DialogTitle>
+                          <DialogTitle>Edit Roles for {user.email}</DialogTitle>
                           <DialogDescription>
-                            Select a new role for this user. This will update
-                            their permissions immediately.
+                            Select one or more roles for this user. Note: general_user cannot be combined with other roles.
                           </DialogDescription>
                         </DialogHeader>
                         <div className="grid gap-4 py-4">
-                          <Select value={newRole} onValueChange={setNewRole}>
-                            <SelectTrigger>
-                              <SelectValue placeholder="Select a role" />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="general_user">
-                                General User
-                              </SelectItem>
-                              <SelectItem value="bpo">
-                                Business Process Owner
-                              </SelectItem>
-                              <SelectItem value="executive">
-                                Executive
-                              </SelectItem>
-                              <SelectItem value="admin">Admin</SelectItem>
-                            </SelectContent>
-                          </Select>
+                          {validationError && (
+                            <Alert variant="destructive">
+                              <ExclamationTriangleIcon className="h-4 w-4" />
+                              <AlertDescription>{validationError}</AlertDescription>
+                            </Alert>
+                          )}
+                          <div className="space-y-3">
+                            {[
+                              { value: "general_user", label: "General User" },
+                              { value: "bpo", label: "Business Process Owner" },
+                              { value: "executive", label: "Executive" },
+                              { value: "admin", label: "Admin" },
+                            ].map((role) => {
+                              const isGeneralUser = role.value === "general_user";
+                              const hasGeneralUser = newRoles.includes("general_user");
+                              const hasOtherRoles = newRoles.some(r => r !== "general_user");
+
+                              // Disable general_user if other roles selected
+                              // Disable other roles if general_user selected
+                              const isDisabled = isGeneralUser
+                                ? hasOtherRoles
+                                : hasGeneralUser;
+
+                              return (
+                                <label
+                                  key={role.value}
+                                  className={`flex items-center space-x-2 cursor-pointer ${isDisabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    checked={newRoles.includes(role.value)}
+                                    disabled={isDisabled}
+                                    onChange={(e) => {
+                                      if (e.target.checked) {
+                                        setNewRoles([...newRoles, role.value]);
+                                      } else {
+                                        setNewRoles(newRoles.filter(r => r !== role.value));
+                                      }
+                                      setValidationError(null);
+                                    }}
+                                    className="w-4 h-4 rounded border-gray-300"
+                                  />
+                                  <span className="text-sm">{role.label}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
                         </div>
                         <DialogFooter>
                           <Button
@@ -211,7 +274,7 @@ export default function UsersPage() {
                           >
                             Cancel
                           </Button>
-                          <Button onClick={handleUpdateRole}>
+                          <Button onClick={handleUpdateRoles}>
                             Save Changes
                           </Button>
                         </DialogFooter>

@@ -34,7 +34,7 @@ async def test_approve_suggestion(db_session: AsyncSession):
 
         is_verified=True,
 
-        role="bpo",
+        roles=["bpo"],
 
         tenant_id=tenant_id
 
@@ -184,7 +184,7 @@ async def test_discard_suggestion(db_session: AsyncSession):
 
     tenant_id = uuid4()
 
-    bpo_user = User(id=uuid4(), email="bpo2@example.com", hashed_password="hashed", role="bpo", tenant_id=tenant_id)
+    bpo_user = User(id=uuid4(), email="bpo2@example.com", hashed_password="hashed", roles=["bpo"], tenant_id=tenant_id)
 
     db_session.add(bpo_user)
 

@@ -32,7 +32,7 @@ def verify_bpo_role(current_user: User) -> None:
     Raises:
         HTTPException: 403 Forbidden if user is not BPO
     """
-    if current_user.role != "bpo":
+    if "bpo" not in current_user.roles:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied. This endpoint requires BPO role."

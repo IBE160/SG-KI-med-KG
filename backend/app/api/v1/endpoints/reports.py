@@ -13,7 +13,7 @@ router = APIRouter()
 
 def verify_admin_or_executive_role(current_user: User) -> None:
     """Verify that the current user has Admin or Executive role."""
-    if current_user.role not in ["admin", "executive"]:
+    if not any(role in current_user.roles for role in ["admin", "executive"]):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access denied. This endpoint requires Admin or Executive role.",

@@ -43,10 +43,10 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { role, fullName, email, isAdmin } = useRole();
+  const { roles, fullName, email, isAdmin } = useRole();
   const router = useRouter();
 
-  const isComplianceOfficer = role === "compliance_officer";
+  const isComplianceOfficer = roles.includes("compliance_officer");
 
   const getInitials = (name: string | null, emailAddress: string | null) => {
     if (!name) {
@@ -240,7 +240,7 @@ export default function DashboardLayout({
                 <div className="px-4 py-2 text-sm border-b">
                   <div className="font-semibold text-lg">{fullName || "User"}</div>
                   <div className="text-muted-foreground text-xs capitalize">
-                    {role ? role.replace("_", " ") : "Loading..."}
+                    {roles.length > 0 ? roles.map(r => r.replace("_", " ")).join(", ") : "Loading..."}
                   </div>
                 </div>
                 <DropdownMenuItem asChild>

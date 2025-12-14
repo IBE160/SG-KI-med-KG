@@ -579,7 +579,7 @@ export type UserCreate = {
   is_active?: boolean | null;
   is_superuser?: boolean | null;
   is_verified?: boolean | null;
-  role?: string;
+  roles?: string[];
   tenant_id?: string | null;
   full_name?: string | null;
 };
@@ -590,7 +590,7 @@ export type UserRead = {
   is_active?: boolean;
   is_superuser?: boolean;
   is_verified?: boolean;
-  role: string;
+  roles: string[];
   tenant_id: string;
   full_name?: string | null;
 };
@@ -601,7 +601,7 @@ export type UserUpdate = {
   is_active?: boolean | null;
   is_superuser?: boolean | null;
   is_verified?: boolean | null;
-  role?: string | null;
+  roles?: string[] | null;
   tenant_id?: string | null;
   full_name?: string | null;
 };

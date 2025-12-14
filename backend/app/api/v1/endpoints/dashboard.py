@@ -33,7 +33,8 @@ async def get_dashboard_metrics(
         # Extract user info from JWT (already validated by get_current_active_user)
         user_id = current_user.id
         tenant_id = current_user.tenant_id
-        role = current_user.role
+        # Use first role as primary role for dashboard display
+        role = current_user.roles[0] if current_user.roles else "general_user"
 
         # Validate tenant_id exists (should be set during user creation)
         if not tenant_id:

@@ -25,7 +25,7 @@ async def test_get_me_returns_full_name_when_set(test_client, db_session):
         is_active=True,
         is_verified=True,
         full_name="John Doe",
-        role="general_user"
+        roles=["general_user"]
     )
     db_session.add(user)
     await db_session.commit()

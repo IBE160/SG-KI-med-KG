@@ -151,7 +151,7 @@ async def superuser_token_headers(test_client, db_session):
         "is_active": True,
         "is_superuser": True,
         "is_verified": True,
-        "role": "admin",
+        "roles": ["admin"],
         "tenant_id": uuid.uuid4(),
     }
 
@@ -172,7 +172,7 @@ async def superuser_token_headers(test_client, db_session):
         "iat": now,
         "exp": now + timedelta(hours=1),
         "app_metadata": {
-            "role": user.role,
+            "roles": user.roles,
             "tenant_id": str(user.tenant_id)
         }
     }
@@ -191,7 +191,7 @@ async def admin_user(db_session):
         is_active=True,
         is_superuser=False,
         is_verified=True,
-        role="admin",
+        roles=["admin"],
         tenant_id=uuid.uuid4()
     )
     db_session.add(user)
@@ -212,7 +212,7 @@ async def admin_token_headers(admin_user):
         "iat": now,
         "exp": now + timedelta(hours=1),
         "app_metadata": {
-            "role": admin_user.role,
+            "roles": admin_user.roles,
             "tenant_id": str(admin_user.tenant_id)
         }
     }
@@ -230,7 +230,7 @@ async def executive_user(db_session):
         is_active=True,
         is_superuser=False,
         is_verified=True,
-        role="executive",
+        roles=["executive"],
         tenant_id=uuid.uuid4()
     )
     db_session.add(user)
@@ -251,7 +251,7 @@ async def executive_token_headers(executive_user):
         "iat": now,
         "exp": now + timedelta(hours=1),
         "app_metadata": {
-            "role": executive_user.role,
+            "roles": executive_user.roles,
             "tenant_id": str(executive_user.tenant_id)
         }
     }
@@ -269,7 +269,7 @@ async def bpo_user(db_session):
         is_active=True,
         is_superuser=False,
         is_verified=True,
-        role="bpo",
+        roles=["bpo"],
         tenant_id=uuid.uuid4()
     )
     db_session.add(user)
@@ -290,7 +290,7 @@ async def bpo_token_headers(bpo_user):
         "iat": now,
         "exp": now + timedelta(hours=1),
         "app_metadata": {
-            "role": bpo_user.role,
+            "roles": bpo_user.roles,
             "tenant_id": str(bpo_user.tenant_id)
         }
     }
@@ -308,7 +308,7 @@ async def general_user(db_session):
         is_active=True,
         is_superuser=False,
         is_verified=True,
-        role="general_user",
+        roles=["general_user"],
         tenant_id=uuid.uuid4()
     )
     db_session.add(user)
@@ -329,7 +329,7 @@ async def user_token_headers(general_user):
         "iat": now,
         "exp": now + timedelta(hours=1),
         "app_metadata": {
-            "role": general_user.role,
+            "roles": general_user.roles,
             "tenant_id": str(general_user.tenant_id)
         }
     }

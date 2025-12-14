@@ -28,7 +28,7 @@ async def test_update_suggestion_status_transition():
         is_active=True,
         is_superuser=True,
         is_verified=True,
-        role="admin",
+        roles=["admin"],
         tenant_id=uuid4()
     )
     
@@ -76,7 +76,7 @@ async def test_update_suggestion_status_transition():
 @pytest.mark.asyncio
 async def test_update_suggestion_not_found():
     """Test update for non-existent suggestion."""
-    mock_admin_user = UserModel(id=uuid4(), email="admin@example.com", hashed_password="mock", is_active=True, is_superuser=True, is_verified=True, role="admin", tenant_id=uuid4())
+    mock_admin_user = UserModel(id=uuid4(), email="admin@example.com", hashed_password="mock", is_active=True, is_superuser=True, is_verified=True, roles=["admin"], tenant_id=uuid4())
     mock_db = AsyncMock()
     mock_db.get.return_value = None
     

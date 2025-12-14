@@ -41,6 +41,13 @@ const createUserSchema = z.object({
 
 type CreateUserFormValues = z.infer<typeof createUserSchema>;
 
+// Backend expects roles as array
+interface CreateUserPayload {
+  email: string;
+  password: string;
+  roles: string[];
+}
+
 interface CreateUserDialogProps {
   onUserCreated: () => void;
 }
@@ -66,45 +73,20 @@ export function CreateUserDialog({ onUserCreated }: CreateUserDialogProps) {
         return;
       }
 
-      // Check if API URL ends with /api/v1 or just host. 
-      // Existing code used `${process.env.NEXT_PUBLIC_API_URL}/users` for list, and `/api/v1/users/${id}/role` for update.
-      // This suggests NEXT_PUBLIC_API_URL might include /api/v1 or be inconsistent.
-      // Let's assume consistent with create: /api/v1/users.
-      // If NEXT_PUBLIC_API_URL is "http://localhost:8000/api/v1", then we append "/users".
-      // If it is "http://localhost:8000", we append "/api/v1/users".
-      
-      // Let's check how the existing page uses it: 
-      // fetch(`${process.env.NEXT_PUBLIC_API_URL}/users` ...
-      // fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${selectedUser.id}/role` ...
-      
-      // This is confusing. 
-      // If /users works, then base URL likely ends in /api/v1?
-      // But /api/v1/users/... works too? Maybe /api/v1 is doubled?
-      // Or maybe there are two routers: /users and /api/v1/users.
-      
-      // I defined the new endpoint in `backend/app/api/v1/endpoints/users.py` which is mounted usually at `/api/v1/users`.
-      // So the correct path is likely `/api/v1/users`.
-      
-      // Safest bet: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users` if API_URL is root.
-      // But if API_URL is /api/v1, then `${process.env.NEXT_PUBLIC_API_URL}/users` would be correct.
-      
-      // Let's look at `frontend/app/dashboard/admin/users/page.tsx` again.
-      // list: `${process.env.NEXT_PUBLIC_API_URL}/users`
-      // update: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users/${selectedUser.id}/role`
-      
-      // If list works at /users, and update works at /api/v1/users/..., it implies inconsistent mounting or proxy.
-      // I will trust my new endpoint is at `/api/v1/users`.
-      
-      // I'll use a relative path /api/v1/users if I can, but I need the base URL.
-      // I'll try to follow the update pattern: `${process.env.NEXT_PUBLIC_API_URL}/api/v1/users`
-      
+      // Backend expects roles as array
+      const payload: CreateUserPayload = {
+        email: data.email,
+        password: data.password,
+        roles: [data.role],
+      };
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/users`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${session.access_token}`,
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {

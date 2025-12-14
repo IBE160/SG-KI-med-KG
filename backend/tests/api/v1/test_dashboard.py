@@ -27,7 +27,7 @@ async def test_get_dashboard_metrics_admin_success():
         is_active=True,
         is_superuser=True,
         is_verified=True,
-        role="admin",
+        roles=["admin"],
         tenant_id=uuid4()
     )
 
@@ -73,7 +73,7 @@ async def test_get_dashboard_metrics_bpo_success():
         is_active=True,
         is_superuser=False,
         is_verified=True,
-        role="bpo",
+        roles=["bpo"],
         tenant_id=uuid4()
     )
 
@@ -123,7 +123,7 @@ async def test_get_dashboard_metrics_executive_success():
         is_active=True,
         is_superuser=False,
         is_verified=True,
-        role="executive",
+        roles=["executive"],
         tenant_id=uuid4()
     )
 
@@ -168,7 +168,7 @@ async def test_get_dashboard_metrics_no_tenant():
         is_active=True,
         is_superuser=False,
         is_verified=True,
-        role="general",
+        roles=["general_user"],
         tenant_id=None  # No tenant assigned
     )
 
@@ -198,7 +198,7 @@ async def test_get_dashboard_metrics_tenant_isolation():
         is_active=True,
         is_superuser=False,
         is_verified=True,
-        role="general",
+        roles=["general_user"],
         tenant_id=tenant_a_id
     )
 

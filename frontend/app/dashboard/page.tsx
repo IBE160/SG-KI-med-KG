@@ -37,7 +37,7 @@ async function fetchDashboardMetrics(accessToken: string): Promise<DashboardMetr
 }
 
 export default function DashboardPage() {
-  const { role, loading: roleLoading } = useRole();
+  const { roles, loading: roleLoading } = useRole();
   const supabase = createClient();
 
   const { data: metricsData, isLoading: metricsLoading, error } = useQuery({
@@ -55,7 +55,7 @@ export default function DashboardPage() {
     },
     // Refetch every 30 seconds for real-time data
     refetchInterval: 30000,
-    enabled: !!role && !roleLoading,
+    enabled: roles.length > 0 && !roleLoading,
   });
 
   if (roleLoading || metricsLoading) {
@@ -111,10 +111,13 @@ export default function DashboardPage() {
     bpo: "Business Process Owner",
     compliance_officer: "Compliance Officer",
     executive: "Executive",
-    general: "User",
+    general_user: "User",
   };
 
-  const roleLabel = roleLabels[role || "general"] || "User";
+  // Display primary role (first in array) or combine multiple roles
+  const roleLabel = roles.length > 0
+    ? roles.map(r => roleLabels[r] || r).join(" & ")
+    : "User";
 
   return (
     <div>
