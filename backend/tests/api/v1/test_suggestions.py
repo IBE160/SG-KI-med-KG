@@ -41,6 +41,7 @@ async def test_update_suggestion_status_transition():
     mock_suggestion.rationale = "test"
     mock_suggestion.source_reference = "ref"
     mock_suggestion.document_id = uuid4()
+    mock_suggestion.assigned_bpo = None
 
     # Mock DB Session
     mock_db = AsyncMock()

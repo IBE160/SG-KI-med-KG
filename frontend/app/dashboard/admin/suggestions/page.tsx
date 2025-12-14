@@ -6,16 +6,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { listSuggestions } from "@/app/clientService";
 import type { AISuggestionRead, SuggestionType } from "@/app/openapi-client/types.gen";
-import { FileText, AlertCircle, Shield, Briefcase, ArrowUpDown } from "lucide-react";
+import { FileText, AlertCircle, Shield, Briefcase, ArrowUpDown, Search, X } from "lucide-react";
 import { createClient } from "@/lib/supabase";
 import { ReviewSuggestionDialog } from "@/components/custom/review-suggestion/ReviewSuggestionDialog";
 import React, { useState, useMemo } from "react";
@@ -28,7 +22,8 @@ export default function AdminSuggestionsPage() {
   
   // Sorting and Filtering State
   const [filterType, setFilterType] = useState<string>("all");
-  const [sortConfig, setSortConfig] = useState<{ key: keyof AISuggestionRead | "name"; direction: "asc" | "desc" } | null>(null);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [sortConfig, setSortConfig] = useState<{ key: keyof AISuggestionRead | "name" | "assigned_to"; direction: "asc" | "desc" } | null>(null);
 
   const { data: suggestions, isLoading, error, refetch } = useQuery<AISuggestionRead[]>({
     queryKey: ["/api/v1/suggestions", "pending"],
@@ -70,7 +65,7 @@ export default function AdminSuggestionsPage() {
     setSelectedSuggestion(null);
   };
 
-  const handleSort = (key: keyof AISuggestionRead | "name") => {
+  const handleSort = (key: keyof AISuggestionRead | "name" | "assigned_to") => {
     let direction: "asc" | "desc" = "asc";
     if (sortConfig && sortConfig.key === key && sortConfig.direction === "asc") {
       direction = "desc";
@@ -115,12 +110,21 @@ export default function AdminSuggestionsPage() {
 
   const processedSuggestions = useMemo(() => {
     if (!suggestions) return [];
-    
+
     let result = [...suggestions];
 
-    // Filter
+    // Filter by type
     if (filterType !== "all") {
       result = result.filter((s) => s.type === filterType);
+    }
+
+    // Filter by name/title search
+    if (searchTerm.trim()) {
+      const lowerSearch = searchTerm.toLowerCase();
+      result = result.filter((s) => {
+        const name = getContentSummary(s.content, s.type).toLowerCase();
+        return name.includes(lowerSearch);
+      });
     }
 
     // Sort
@@ -132,6 +136,9 @@ export default function AdminSuggestionsPage() {
         if (sortConfig.key === "name") {
             aValue = getContentSummary(a.content, a.type).toLowerCase();
             bValue = getContentSummary(b.content, b.type).toLowerCase();
+        } else if (sortConfig.key === "assigned_to") {
+            aValue = a.assigned_bpo?.full_name || a.assigned_bpo?.email || "zzz_unassigned";
+            bValue = b.assigned_bpo?.full_name || b.assigned_bpo?.email || "zzz_unassigned";
         } else {
             aValue = a[sortConfig.key];
             bValue = b[sortConfig.key];
@@ -144,7 +151,7 @@ export default function AdminSuggestionsPage() {
     }
 
     return result;
-  }, [suggestions, filterType, sortConfig]);
+  }, [suggestions, filterType, searchTerm, sortConfig]);
 
   if (isLoading) {
     return (
@@ -175,30 +182,91 @@ export default function AdminSuggestionsPage() {
 
   return (
     <div className="p-8">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">Pending AI Suggestions</h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Review and manage AI-generated suggestions from document analysis
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-             <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Filter by Type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="risk">Risk</SelectItem>
-                  <SelectItem value="control">Control</SelectItem>
-                  <SelectItem value="business_process">Business Process</SelectItem>
-                </SelectContent>
-              </Select>
+      <div className="mb-6">
+        <div className="flex justify-between items-center mb-4">
+          <div>
+            <h1 className="text-2xl font-bold">Pending AI Suggestions</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Review and manage AI-generated suggestions from document analysis
+            </p>
+          </div>
           <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
-             <FileText className="h-5 w-5 text-muted-foreground" />
-             <span>{suggestions?.length || 0} pending</span>
+            <FileText className="h-5 w-5 text-muted-foreground" />
+            <span>{suggestions?.length || 0} total</span>
+            <span className="text-muted-foreground">•</span>
+            <span>{processedSuggestions.length} shown</span>
           </div>
         </div>
+
+        {/* Filter and Search Toolbar */}
+        <div className="flex items-center gap-4 mb-4">
+          {/* Search Input */}
+          <div className="relative flex-1 max-w-md">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Search by name or title..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-9 pr-9"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm("")}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            )}
+          </div>
+
+          {/* Type Filter Chips */}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-muted-foreground">Type:</span>
+            <div className="flex gap-2">
+              <Button
+                variant={filterType === "all" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterType("all")}
+              >
+                All
+              </Button>
+              <Button
+                variant={filterType === "risk" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterType(filterType === "risk" ? "all" : "risk")}
+              >
+                Risk
+              </Button>
+              <Button
+                variant={filterType === "control" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterType(filterType === "control" ? "all" : "control")}
+              >
+                Control
+              </Button>
+              <Button
+                variant={filterType === "business_process" ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilterType(filterType === "business_process" ? "all" : "business_process")}
+              >
+                Process
+              </Button>
+            </div>
+          </div>
+        </div>
+
+        {/* Active Filters Badge */}
+        {searchTerm && (
+          <div className="flex items-center gap-2 mb-2">
+            <Badge variant="secondary" className="flex items-center gap-1">
+              Searching for: "{searchTerm}"
+              <button onClick={() => setSearchTerm("")} className="ml-1 hover:text-foreground">
+                <X className="h-3 w-3" />
+              </button>
+            </Badge>
+          </div>
+        )}
       </div>
 
       {Array.isArray(processedSuggestions) && processedSuggestions.length > 0 ? (
@@ -213,6 +281,9 @@ export default function AdminSuggestionsPage() {
               </TableHead>
               <TableHead>Rationale</TableHead>
               <TableHead>Source Reference</TableHead>
+              <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort("assigned_to")}>
+                  Assigned To <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
               <TableHead className="text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
@@ -242,6 +313,17 @@ export default function AdminSuggestionsPage() {
                   <div className="text-sm text-gray-500 truncate">
                     {suggestion.source_reference}
                   </div>
+                </TableCell>
+                <TableCell>
+                  {suggestion.assigned_bpo ? (
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-medium">
+                        {suggestion.assigned_bpo.full_name || suggestion.assigned_bpo.email}
+                      </span>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-muted-foreground italic">Unassigned</span>
+                  )}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button

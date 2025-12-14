@@ -2,6 +2,7 @@ from typing import Any, Optional, List
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import joinedload
 from uuid import UUID
 from pydantic import BaseModel
 
@@ -34,6 +35,7 @@ async def list_suggestions(
         .join(Document, AISuggestion.document_id == Document.id)
         .join(UserModel, Document.uploaded_by == UserModel.id)
         .filter(UserModel.tenant_id == current_user.tenant_id)
+        .options(joinedload(AISuggestion.assigned_bpo))
     )
 
     if status:
@@ -44,7 +46,7 @@ async def list_suggestions(
     query = query.order_by(AISuggestion.id.desc())
 
     result = await db.execute(query)
-    return result.scalars().all()
+    return result.unique().scalars().all()
 
 from app.services.audit_service import AuditService
 

@@ -48,7 +48,7 @@ development_status:
   2-2-implement-role-based-access-control-rbac: done
   2-3-admin-user-creation-role-assignment: done
   2-4-fix-default-tenant-assignment: done
-  2-5-implement-multi-role-support: in-progress
+  2-5-implement-multi-role-support: done
   epic-2-retrospective: optional
 
   epic-3: contexted
@@ -57,7 +57,7 @@ development_status:
   3-3-build-human-in-the-loop-hitl-validation-interface: done
   3-4-implement-immutable-audit-trail: done
   3-5-enhance-ai-review-capabilities: done
-  3-6-enhance-suggestions-list-ux: ready-for-dev
+  3-6-enhance-suggestions-list-ux: in-progress  # Code review complete - requires changes (4 blocking issues)
   epic-3-retrospective: optional
 
   epic-4: contexted

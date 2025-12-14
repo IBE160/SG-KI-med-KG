@@ -38,5 +38,6 @@ class AISuggestion(Base):
     # Assuming Base is declarative_base() and doesn't imply fields.
     # Adding created_at if not present in Base (safest to check first, but will add for now)
     
-    # Relationship
+    # Relationships
     document = relationship("Document", backref="suggestions")
+    assigned_bpo = relationship("User", foreign_keys=[assigned_bpo_id])

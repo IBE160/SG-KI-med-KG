@@ -1,6 +1,6 @@
 from uuid import UUID
-from typing import Dict, Any
-from pydantic import BaseModel, Field
+from typing import Dict, Any, Optional
+from pydantic import BaseModel, Field, ConfigDict
 from app.models.suggestion import SuggestionType, SuggestionStatus
 
 class AISuggestionBase(BaseModel):
@@ -12,13 +12,21 @@ class AISuggestionBase(BaseModel):
 class AISuggestionCreate(AISuggestionBase):
     document_id: UUID
 
+# Define a minimal UserRead schema here to avoid circular import
+class UserReadMinimal(BaseModel):
+    id: UUID
+    email: str
+    full_name: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
 class AISuggestionRead(AISuggestionBase):
     id: UUID
     status: SuggestionStatus
     document_id: UUID
+    assigned_bpo: Optional[UserReadMinimal] = None
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(from_attributes=True)
 
 class AnalysisResult(BaseModel):
     suggestions: list[AISuggestionBase]
