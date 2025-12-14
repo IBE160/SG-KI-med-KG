@@ -11,7 +11,7 @@ import {
 } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Upload, FileText, MoreVertical, Trash2, Edit2, Download, Info, RefreshCw, X } from "lucide-react";
+import { Upload, FileText, MoreVertical, Trash2, Edit2, Download, Info, RefreshCw, X, Play, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { createClient } from "@/lib/supabase";
 import {
@@ -39,6 +39,7 @@ export default function DocumentsPage() {
   const [renameDialogOpen, setRenameDialogOpen] = useState(false);
   const [documentToRename, setDocumentToRename] = useState<Document | null>(null);
   const [newFilename, setNewFilename] = useState("");
+  const [processingDocId, setProcessingDocId] = useState<string | null>(null);
   const supabase = createClient();
 
   const fetchDocuments = async () => {
@@ -317,6 +318,46 @@ export default function DocumentsPage() {
     }
   };
 
+  const handleProcess = async (doc: Document) => {
+    try {
+      setProcessingDocId(doc.id);
+
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error("Not authenticated");
+        return;
+      }
+
+      toast.info("Processing document... This may take a minute.");
+
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+      const response = await fetch(`${backendUrl}/api/v1/documents/${doc.id}/process`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${session.access_token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.detail || "Failed to process document");
+      }
+
+      const result = await response.json();
+      toast.success(result.message || "Document processed successfully");
+
+      // Update document status in state
+      setDocuments(prevDocs =>
+        prevDocs.map(d => (d.id === doc.id ? { ...d, status: result.status || "completed" } : d))
+      );
+    } catch (err) {
+      console.error("Process failed:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to process document");
+    } finally {
+      setProcessingDocId(null);
+    }
+  };
+
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     const day = String(date.getDate()).padStart(2, '0');
@@ -465,10 +506,17 @@ export default function DocumentsPage() {
                           <Edit2 className="mr-2 h-4 w-4" />
                           Rename
                         </DropdownMenuItem>
-                        {doc.status === "failed" && (
-                          <DropdownMenuItem onClick={() => handleReprocess(doc)}>
-                            <RefreshCw className="mr-2 h-4 w-4" />
-                            Reprocess
+                        {(doc.status === "pending" || doc.status === "failed") && (
+                          <DropdownMenuItem
+                            onClick={() => handleProcess(doc)}
+                            disabled={processingDocId === doc.id}
+                          >
+                            {processingDocId === doc.id ? (
+                              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                            ) : (
+                              <Play className="mr-2 h-4 w-4" />
+                            )}
+                            {processingDocId === doc.id ? "Processing..." : "Process Now"}
                           </DropdownMenuItem>
                         )}
                         <DropdownMenuSeparator />
