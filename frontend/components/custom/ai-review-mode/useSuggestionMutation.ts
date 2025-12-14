@@ -20,7 +20,7 @@ export function useUpdateSuggestionStatus() {
       const { data: { session } } = await supabase.auth.getSession();
       if (!session?.access_token) throw new Error("Not authenticated");
 
-      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       
       const response = await fetch(`${backendUrl}/api/v1/suggestions/${suggestionId}/status`, {
         method: "PATCH",

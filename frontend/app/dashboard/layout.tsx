@@ -47,6 +47,7 @@ export default function DashboardLayout({
   const router = useRouter();
 
   const isComplianceOfficer = roles.includes("compliance_officer");
+  const isBPO = roles.includes("bpo");
 
   const getInitials = (name: string | null, emailAddress: string | null) => {
     if (!name) {
@@ -160,7 +161,7 @@ export default function DashboardLayout({
               </TooltipContent>
             </Tooltip>
 
-            {(isAdmin || isComplianceOfficer) && (
+            {(isAdmin || isComplianceOfficer || isBPO) && (
               <Tooltip>
                 <TooltipTrigger asChild>
                   <Link

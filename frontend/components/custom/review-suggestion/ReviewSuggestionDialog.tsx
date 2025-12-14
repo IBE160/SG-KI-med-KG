@@ -32,8 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { AISuggestionRead } from "@/app/openapi-client/types.gen";
-import { listUsers, updateSuggestionStatus } from "@/app/clientService";
-import { useRole } from "@/lib/role"; // Assuming useRole provides current user's role and tenant info
+import { createClient } from "@/lib/supabase";
 
 interface User {
   id: string;
@@ -43,11 +42,17 @@ interface User {
   tenant_id: string;
 }
 
-const formSchema = z.object({
+const formSchemaWithBPO = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
   rationale: z.string().optional(),
-  bpoId: z.string().uuid().optional(), // BPO ID is optional for some actions
+  bpoId: z.union([z.string().uuid(), z.literal("")]), // Allow empty string or valid UUID
+});
+
+const formSchemaWithoutBPO = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  rationale: z.string().optional(),
 });
 
 interface ReviewSuggestionDialogProps {
@@ -71,26 +76,68 @@ export function ReviewSuggestionDialog({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [bpos, setBpos] = useState<User[]>([]);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const isPendingReview = suggestion.status === "pending_review";
+  const formSchema = isPendingReview ? formSchemaWithoutBPO : formSchemaWithBPO;
+
+  type FormValues = z.infer<typeof formSchemaWithBPO> | z.infer<typeof formSchemaWithoutBPO>;
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema) as any,
     defaultValues: {
       name: suggestion.content.name as string || "",
       description: suggestion.content.description as string || "",
       rationale: suggestion.rationale || "",
-      bpoId: "",
+      ...(!isPendingReview && { bpoId: suggestion.assigned_bpo?.id || "" }),
     },
   });
 
   useEffect(() => {
     async function fetchBPOs() {
       try {
-        const response = await listUsers({});
-        if (response.data) {
-          const bpoUsers = response.data.filter((user: any) =>
-            user.roles?.includes("business_process_owner")
-          );
-          setBpos(bpoUsers as User[]);
+        const supabase = createClient();
+        const { data: { session } } = await supabase.auth.getSession();
+
+        if (!session) {
+          console.error("No session found - user not logged in");
+          return;
         }
+
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+        const url = `${apiUrl}/api/v1/users`;
+
+        console.log("Fetching users with auth token from:", url);
+
+        // Call API directly with auth header
+        const response = await fetch(url, {
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+          },
+        });
+
+        console.log("API Response status:", response.status);
+
+        if (!response.ok) {
+          if (response.status === 403) {
+            console.error("403 Forbidden: Current user does not have admin role");
+            console.error("Current user email:", session.user?.email);
+          }
+          const errorText = await response.text();
+          console.error("API Error:", errorText);
+          return;
+        }
+
+        const data = await response.json();
+        console.log("All users:", data);
+
+        // Handle both paginated and non-paginated responses
+        const users = Array.isArray(data) ? data : (data.items || data.data || []);
+
+        const bpoUsers = users.filter((user: any) =>
+          user.roles?.includes("bpo")
+        );
+        console.log("Filtered BPO users:", bpoUsers);
+        setBpos(bpoUsers as User[]);
+
       } catch (error) {
         console.error("Failed to load BPOs:", error);
       }
@@ -100,24 +147,63 @@ export function ReviewSuggestionDialog({
     }
   }, [isOpen]);
 
-  const onSubmitAccept = async (values: z.infer<typeof formSchema>) => {
+  const onSubmitAccept = async (values: z.infer<typeof formSchemaWithBPO>) => {
+    // Validate BPO is selected before accepting
+    if (!values.bpoId) {
+      form.setError("bpoId" as any, {
+        type: "manual",
+        message: "BPO assignment is required for acceptance",
+      });
+      return;
+    }
+
     setIsSubmitting(true);
     try {
-      await updateSuggestionStatus({
-        path: { suggestion_id: suggestion.id },
-        body: {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        console.error("No session found - user not logged in");
+        alert("Session expired. Please refresh the page and try again.");
+        return;
+      }
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const url = `${apiUrl}/api/v1/suggestions/${suggestion.id}/status`;
+
+      console.log("Accepting suggestion:", { url, bpoId: values.bpoId });
+
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
           status: "pending_review",
           updated_content: {
             name: values.name,
             description: values.description,
           },
           bpo_id: values.bpoId,
-        },
+        }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("API Error:", errorText);
+        alert(`Failed to accept suggestion: ${response.status} - ${errorText}`);
+        throw new Error(`Failed to accept suggestion: ${response.status}`);
+      }
+
+      console.log("✅ Suggestion accepted and routed to BPO:", values.bpoId);
       onSuccess();
       onOpenChange(false);
     } catch (error) {
       console.error("Failed to accept suggestion:", error);
+      if (error instanceof Error && error.message.includes("fetch")) {
+        alert("Network error: Cannot connect to API. Is the backend running?");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -126,16 +212,95 @@ export function ReviewSuggestionDialog({
   const onSubmitReject = async () => {
     setIsSubmitting(true);
     try {
-      await updateSuggestionStatus({
-        path: { suggestion_id: suggestion.id },
-        body: {
-          status: "rejected",
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        console.error("No session found - user not logged in");
+        alert("Session expired. Please refresh the page and try again.");
+        return;
+      }
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const url = `${apiUrl}/api/v1/suggestions/${suggestion.id}/status`;
+
+      console.log("Rejecting suggestion:", url);
+
+      const response = await fetch(url, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
         },
+        body: JSON.stringify({
+          status: isPendingReview ? "archived" : "rejected",
+        }),
       });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("API Error:", errorText);
+        alert(`Failed to reject suggestion: ${response.status} - ${errorText}`);
+        throw new Error(`Failed to reject suggestion: ${response.status}`);
+      }
+
+      console.log("✅ Suggestion rejected");
       onSuccess();
       onOpenChange(false);
     } catch (error) {
       console.error("Failed to reject suggestion:", error);
+      if (error instanceof Error && error.message.includes("fetch")) {
+        alert("Network error: Cannot connect to API. Is the backend running?");
+      }
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const onSubmitApprove = async (values: z.infer<typeof formSchemaWithoutBPO>) => {
+    setIsSubmitting(true);
+    try {
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+
+      if (!session) {
+        console.error("No session found - user not logged in");
+        alert("Session expired. Please refresh the page and try again.");
+        return;
+      }
+
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const url = `${apiUrl}/api/v1/suggestions/${suggestion.id}/approve`;
+
+      console.log("Approving suggestion:", { url, values });
+
+      const response = await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`,
+        },
+        body: JSON.stringify({
+          name: values.name,
+          description: values.description,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("API Error:", errorText);
+        alert(`Failed to approve suggestion: ${response.status} - ${errorText}`);
+        throw new Error(`Failed to approve suggestion: ${response.status}`);
+      }
+
+      console.log("✅ Suggestion approved and entity created");
+      onSuccess();
+      onOpenChange(false);
+    } catch (error) {
+      console.error("Failed to approve suggestion:", error);
+      if (error instanceof Error && error.message.includes("fetch")) {
+        alert("Network error: Cannot connect to API. Is the backend running?");
+      }
     } finally {
       setIsSubmitting(false);
     }
@@ -171,12 +336,13 @@ export function ReviewSuggestionDialog({
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
           <DialogTitle className="flex items-center">
-            Review AI Suggestion
+            {isPendingReview ? "Approve AI Suggestion" : "Review AI Suggestion"}
             {getTypeBadge(suggestion.type)}
           </DialogTitle>
           <DialogDescription>
-            Review and optionally edit the AI-generated suggestion before accepting or rejecting it.
-            Accepting routes the suggestion to a BPO for final approval.
+            {isPendingReview
+              ? "Review the suggestion and approve to create the entity, or reject to discard it."
+              : "Review and optionally edit the AI-generated suggestion before accepting or rejecting it. Accepting routes the suggestion to a BPO for final approval."}
           </DialogDescription>
         </DialogHeader>
         {/* ... form ... */}
@@ -215,40 +381,56 @@ export function ReviewSuggestionDialog({
                 <FormItem>
                   <FormLabel>AI Rationale</FormLabel>
                   <FormControl>
-                    <Textarea {...field} className="min-h-[80px]" />
+                    <Textarea {...field} className="min-h-[80px]" disabled={isPendingReview} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="bpoId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Assign BPO (Required for Acceptance)</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                    disabled={isSubmitting}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a BPO to assign" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {bpos.map((bpo) => (
-                        <SelectItem key={bpo.id} value={bpo.id as string}>
-                          {bpo.full_name || bpo.email}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isPendingReview && (
+              <FormField
+                control={form.control}
+                name={"bpoId" as any}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Assign BPO (Required for Acceptance)</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={isSubmitting}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a BPO to assign" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {bpos.length === 0 ? (
+                          <div className="px-2 py-6 text-center text-sm text-muted-foreground">
+                            No BPO users found. Create a user with BPO role first.
+                          </div>
+                        ) : (
+                          bpos.map((bpo) => (
+                            <SelectItem key={bpo.id} value={bpo.id as string}>
+                              {bpo.full_name || bpo.email}
+                            </SelectItem>
+                          ))
+                        )}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+            {isPendingReview && suggestion.assigned_bpo && (
+              <div className="rounded-lg border p-3 bg-muted/50">
+                <p className="text-sm font-medium">Assigned BPO</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {suggestion.assigned_bpo.full_name || suggestion.assigned_bpo.email}
+                </p>
+              </div>
+            )}
           </form>
         </Form>
         <DialogFooter>
@@ -261,19 +443,29 @@ export function ReviewSuggestionDialog({
           </Button>
           <Button
             type="submit"
-            onClick={form.handleSubmit(onSubmitReject)}
+            onClick={isPendingReview ? onSubmitReject : form.handleSubmit(onSubmitReject)}
             disabled={isSubmitting}
             variant="destructive"
           >
             {isSubmitting ? "Rejecting..." : "Reject"}
           </Button>
-          <Button
-            type="submit"
-            onClick={form.handleSubmit(onSubmitAccept)}
-            disabled={isSubmitting}
-          >
-            {isSubmitting ? "Accepting..." : "Accept & Route to BPO"}
-          </Button>
+          {isPendingReview ? (
+            <Button
+              type="submit"
+              onClick={form.handleSubmit(onSubmitApprove)}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Approving..." : "Approve & Create Entity"}
+            </Button>
+          ) : (
+            <Button
+              type="submit"
+              onClick={form.handleSubmit(onSubmitAccept)}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Accepting..." : "Accept & Route to BPO"}
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

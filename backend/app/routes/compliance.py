@@ -39,15 +39,7 @@ async def create_control(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    # In a real multi-tenant app, user.tenant_id would be used.
-    # Since the User model in this template doesn't explicitly have a tenant_id yet,
-    # we'll assume for this MVP that tenant isolation is via user.id acting as tenant owner
-    # OR we need to add tenant_id to User.
-    # Looking at the models, they have a tenant_id field.
-    # For now, we will use the user's ID as the tenant_id to ensure isolation per user (simplest multi-tenancy).
-    # TODO: In a full implementation, fetch the actual tenant_id from the user's profile/organization.
-
-    tenant_id = user.id
+    tenant_id = user.tenant_id
 
     db_control = Control(**control.model_dump(), tenant_id=tenant_id, owner_id=user.id)
     db.add(db_control)
@@ -63,7 +55,7 @@ async def read_controls(
     page: int = Query(1, ge=1, description="Page number"),
     size: int = Query(10, ge=1, le=100, description="Page size"),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     params = Params(page=page, size=size)
     query = select(Control).filter(Control.tenant_id == tenant_id)
     return await apaginate(db, query, params)
@@ -75,7 +67,7 @@ async def read_control(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(Control).filter(Control.id == control_id, Control.tenant_id == tenant_id)
     )
@@ -94,7 +86,7 @@ async def update_control(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(Control).filter(Control.id == control_id, Control.tenant_id == tenant_id)
     )
@@ -118,7 +110,7 @@ async def delete_control(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(Control).filter(Control.id == control_id, Control.tenant_id == tenant_id)
     )
@@ -142,7 +134,7 @@ async def create_risk(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     db_risk = Risk(**risk.model_dump(), tenant_id=tenant_id, owner_id=user.id)
     db.add(db_risk)
     await db.commit()
@@ -157,7 +149,7 @@ async def read_risks(
     page: int = Query(1, ge=1, description="Page number"),
     size: int = Query(10, ge=1, le=100, description="Page size"),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     params = Params(page=page, size=size)
     query = select(Risk).filter(Risk.tenant_id == tenant_id)
     return await apaginate(db, query, params)
@@ -169,7 +161,7 @@ async def read_risk(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(Risk).filter(Risk.id == risk_id, Risk.tenant_id == tenant_id)
     )
@@ -186,7 +178,7 @@ async def update_risk(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(Risk).filter(Risk.id == risk_id, Risk.tenant_id == tenant_id)
     )
@@ -208,7 +200,7 @@ async def delete_risk(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(Risk).filter(Risk.id == risk_id, Risk.tenant_id == tenant_id)
     )
@@ -235,7 +227,7 @@ async def create_business_process(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     db_process = BusinessProcess(
         **process.model_dump(), tenant_id=tenant_id, owner_id=user.id
     )
@@ -256,7 +248,7 @@ async def read_business_processes(
     page: int = Query(1, ge=1, description="Page number"),
     size: int = Query(10, ge=1, le=100, description="Page size"),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     params = Params(page=page, size=size)
     query = select(BusinessProcess).filter(BusinessProcess.tenant_id == tenant_id)
     return await apaginate(db, query, params)
@@ -272,7 +264,7 @@ async def read_business_process(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(BusinessProcess).filter(
             BusinessProcess.id == process_id, BusinessProcess.tenant_id == tenant_id
@@ -297,7 +289,7 @@ async def update_business_process(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(BusinessProcess).filter(
             BusinessProcess.id == process_id, BusinessProcess.tenant_id == tenant_id
@@ -325,7 +317,7 @@ async def delete_business_process(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(BusinessProcess).filter(
             BusinessProcess.id == process_id, BusinessProcess.tenant_id == tenant_id
@@ -356,7 +348,7 @@ async def create_regulatory_framework(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     db_framework = RegulatoryFramework(**framework.model_dump(), tenant_id=tenant_id)
     db.add(db_framework)
     await db.commit()
@@ -375,7 +367,7 @@ async def read_regulatory_frameworks(
     page: int = Query(1, ge=1, description="Page number"),
     size: int = Query(10, ge=1, le=100, description="Page size"),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     params = Params(page=page, size=size)
     query = select(RegulatoryFramework).filter(
         RegulatoryFramework.tenant_id == tenant_id
@@ -393,7 +385,7 @@ async def read_regulatory_framework(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(RegulatoryFramework).filter(
             RegulatoryFramework.id == framework_id,
@@ -419,7 +411,7 @@ async def update_regulatory_framework(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(RegulatoryFramework).filter(
             RegulatoryFramework.id == framework_id,
@@ -450,7 +442,7 @@ async def delete_regulatory_framework(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(RegulatoryFramework).filter(
             RegulatoryFramework.id == framework_id,
@@ -482,7 +474,7 @@ async def create_regulatory_requirement(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     # Verify framework exists and belongs to tenant
     framework_result = await db.execute(
         select(RegulatoryFramework).filter(
@@ -514,7 +506,7 @@ async def read_regulatory_requirements(
     page: int = Query(1, ge=1, description="Page number"),
     size: int = Query(10, ge=1, le=100, description="Page size"),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     params = Params(page=page, size=size)
     query = select(RegulatoryRequirement).filter(
         RegulatoryRequirement.tenant_id == tenant_id
@@ -534,7 +526,7 @@ async def read_regulatory_requirement(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(RegulatoryRequirement).filter(
             RegulatoryRequirement.id == requirement_id,
@@ -560,7 +552,7 @@ async def update_regulatory_requirement(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(RegulatoryRequirement).filter(
             RegulatoryRequirement.id == requirement_id,
@@ -604,7 +596,7 @@ async def delete_regulatory_requirement(
     db: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_active_user),
 ):
-    tenant_id = user.id
+    tenant_id = user.tenant_id
     result = await db.execute(
         select(RegulatoryRequirement).filter(
             RegulatoryRequirement.id == requirement_id,

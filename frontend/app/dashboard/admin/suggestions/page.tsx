@@ -21,12 +21,13 @@ export default function AdminSuggestionsPage() {
   const [selectedSuggestion, setSelectedSuggestion] = useState<AISuggestionRead | null>(null);
   
   // Sorting and Filtering State
+  const [filterStatus, setFilterStatus] = useState<string>("pending");
   const [filterType, setFilterType] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [sortConfig, setSortConfig] = useState<{ key: keyof AISuggestionRead | "name" | "assigned_to"; direction: "asc" | "desc" } | null>(null);
 
   const { data: suggestions, isLoading, error, refetch } = useQuery<AISuggestionRead[]>({
-    queryKey: ["/api/v1/suggestions", "pending"],
+    queryKey: ["/api/v1/suggestions", filterStatus],
     queryFn: async () => {
       try {
         const supabase = createClient();
@@ -34,8 +35,8 @@ export default function AdminSuggestionsPage() {
         const token = session?.access_token;
 
         const response = await listSuggestions({
-          query: {
-            status: "pending",
+          query: filterStatus === "all" ? {} : {
+            status: filterStatus as any,
           },
           headers: token ? {
             Authorization: `Bearer ${token}`,
@@ -185,7 +186,7 @@ export default function AdminSuggestionsPage() {
       <div className="mb-6">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-2xl font-bold">Pending AI Suggestions</h1>
+            <h1 className="text-2xl font-bold">AI Suggestions</h1>
             <p className="text-sm text-muted-foreground mt-1">
               Review and manage AI-generated suggestions from document analysis
             </p>
@@ -195,6 +196,55 @@ export default function AdminSuggestionsPage() {
             <span>{suggestions?.length || 0} total</span>
             <span className="text-muted-foreground">•</span>
             <span>{processedSuggestions.length} shown</span>
+          </div>
+        </div>
+
+        {/* Status Filter Tabs */}
+        <div className="flex items-center gap-2 mb-4 border-b pb-3">
+          <span className="text-sm font-medium text-muted-foreground">Status:</span>
+          <div className="flex gap-2">
+            <Button
+              variant={filterStatus === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterStatus("all")}
+            >
+              All
+            </Button>
+            <Button
+              variant={filterStatus === "pending" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterStatus("pending")}
+            >
+              Pending
+            </Button>
+            <Button
+              variant={filterStatus === "pending_review" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterStatus("pending_review")}
+            >
+              Pending Review
+            </Button>
+            <Button
+              variant={filterStatus === "active" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterStatus("active")}
+            >
+              Active
+            </Button>
+            <Button
+              variant={filterStatus === "rejected" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterStatus("rejected")}
+            >
+              Rejected
+            </Button>
+            <Button
+              variant={filterStatus === "archived" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setFilterStatus("archived")}
+            >
+              Archived
+            </Button>
           </div>
         </div>
 
@@ -260,7 +310,7 @@ export default function AdminSuggestionsPage() {
         {searchTerm && (
           <div className="flex items-center gap-2 mb-2">
             <Badge variant="secondary" className="flex items-center gap-1">
-              Searching for: "{searchTerm}"
+              Searching for: &quot;{searchTerm}&quot;
               <button onClick={() => setSearchTerm("")} className="ml-1 hover:text-foreground">
                 <X className="h-3 w-3" />
               </button>
@@ -281,6 +331,9 @@ export default function AdminSuggestionsPage() {
               </TableHead>
               <TableHead>Rationale</TableHead>
               <TableHead>Source Reference</TableHead>
+              <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort("status")}>
+                  Status <ArrowUpDown className="ml-2 h-4 w-4 inline" />
+              </TableHead>
               <TableHead className="cursor-pointer hover:bg-muted/50" onClick={() => handleSort("assigned_to")}>
                   Assigned To <ArrowUpDown className="ml-2 h-4 w-4 inline" />
               </TableHead>
@@ -315,6 +368,18 @@ export default function AdminSuggestionsPage() {
                   </div>
                 </TableCell>
                 <TableCell>
+                  <Badge variant={
+                    suggestion.status === "pending" ? "secondary" :
+                    suggestion.status === "pending_review" ? "default" :
+                    suggestion.status === "active" ? "outline" :
+                    suggestion.status === "archived" ? "secondary" :
+                    "destructive"
+                  }>
+                    {suggestion.status === "pending_review" ? "Pending Review" :
+                     suggestion.status.charAt(0).toUpperCase() + suggestion.status.slice(1)}
+                  </Badge>
+                </TableCell>
+                <TableCell>
                   {suggestion.assigned_bpo ? (
                     <div className="flex items-center gap-1">
                       <span className="text-sm font-medium">
@@ -326,13 +391,15 @@ export default function AdminSuggestionsPage() {
                   )}
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleReviewClick(suggestion)}
-                  >
-                    Review
-                  </Button>
+                  {(suggestion.status === "pending" || suggestion.status === "pending_review") && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleReviewClick(suggestion)}
+                    >
+                      {suggestion.status === "pending_review" ? "Approve/Reject" : "Review"}
+                    </Button>
+                  )}
                 </TableCell>
               </TableRow>
             ))}

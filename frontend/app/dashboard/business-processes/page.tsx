@@ -18,6 +18,7 @@ import {
 import Link from "next/link";
 import { removeBusinessProcess } from "@/components/actions/delete-actions";
 import { DeleteEntityButton } from "@/components/delete-entity-button";
+import { createClient } from "@/lib/supabase";
 
 export default function BusinessProcessesPage() {
   const [processes, setProcesses] = useState<BusinessProcessRead[]>([]);
@@ -27,7 +28,15 @@ export default function BusinessProcessesPage() {
   const fetchProcesses = async () => {
     try {
       setLoading(true);
-      const response = await readBusinessProcesses();
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const response = await readBusinessProcesses({
+        headers: token ? {
+          Authorization: `Bearer ${token}`,
+        } : undefined,
+      });
       if (response.data && response.data.items) {
         setProcesses(response.data.items);
       }

@@ -15,6 +15,7 @@ import { readRisks, RiskRead } from "@/app/clientService";
 import Link from "next/link";
 import { removeRisk } from "@/components/actions/delete-actions";
 import { DeleteEntityButton } from "@/components/delete-entity-button";
+import { createClient } from "@/lib/supabase";
 
 export default function RisksPage() {
   const [risks, setRisks] = useState<RiskRead[]>([]);
@@ -24,7 +25,15 @@ export default function RisksPage() {
   const fetchRisks = async () => {
     try {
       setLoading(true);
-      const response = await readRisks();
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const response = await readRisks({
+        headers: token ? {
+          Authorization: `Bearer ${token}`,
+        } : undefined,
+      });
       if (response.data && response.data.items) {
         setRisks(response.data.items);
       }

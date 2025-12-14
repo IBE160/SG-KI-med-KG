@@ -9,7 +9,8 @@ from pydantic import BaseModel
 from app.database import get_async_session
 from app.models.user import User as UserModel
 from app.models.document import Document
-from app.models.suggestion import AISuggestion, SuggestionStatus
+from app.models.suggestion import AISuggestion, SuggestionStatus, SuggestionType
+from app.models.compliance import Risk, Control, BusinessProcess
 from app.schemas.suggestion import AISuggestionRead
 from app.core.deps import has_role
 
@@ -24,7 +25,7 @@ class UpdateSuggestionStatusRequest(BaseModel):
 async def list_suggestions(
     status: Optional[SuggestionStatus] = Query(None, description="Filter by status"),
     db: AsyncSession = Depends(get_async_session),
-    current_user: UserModel = Depends(has_role(["admin", "compliance_officer"])),
+    current_user: UserModel = Depends(has_role(["admin", "compliance_officer", "bpo"])),
 ):
     """
     List AI suggestions with optional status filtering.
@@ -55,7 +56,7 @@ async def update_suggestion_status(
     suggestion_id: UUID,
     request: UpdateSuggestionStatusRequest,
     db: AsyncSession = Depends(get_async_session),
-    current_user: UserModel = Depends(has_role(["admin", "compliance_officer"])),
+    current_user: UserModel = Depends(has_role(["admin", "compliance_officer", "bpo"])),
 ):
     """
     Update the status of an AI suggestion.
@@ -63,7 +64,12 @@ async def update_suggestion_status(
     - pending -> awaiting_bpo_approval (Accept)
     - pending -> rejected (Reject)
     """
-    suggestion = await db.get(AISuggestion, suggestion_id)
+    result = await db.execute(
+        select(AISuggestion)
+        .options(joinedload(AISuggestion.assigned_bpo))
+        .where(AISuggestion.id == suggestion_id)
+    )
+    suggestion = result.scalar_one_or_none()
     if not suggestion:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Suggestion not found")
 
@@ -110,3 +116,102 @@ async def update_suggestion_status(
     await db.commit()
     await db.refresh(suggestion)
     return suggestion
+
+
+class ApproveSuggestionRequest(BaseModel):
+    name: str
+    description: Optional[str] = None
+
+
+@router.post("/{suggestion_id}/approve", response_model=AISuggestionRead, tags=["suggestions"])
+async def approve_suggestion(
+    suggestion_id: UUID,
+    request: ApproveSuggestionRequest,
+    db: AsyncSession = Depends(get_async_session),
+    current_user: UserModel = Depends(has_role(["admin", "bpo"])),
+):
+    """
+    Approve a suggestion and create the corresponding entity (Risk, Control, or BusinessProcess).
+    Only suggestions in pending_review status can be approved.
+    """
+    # Fetch suggestion with eager loading
+    result = await db.execute(
+        select(AISuggestion)
+        .options(joinedload(AISuggestion.assigned_bpo))
+        .where(AISuggestion.id == suggestion_id)
+    )
+    suggestion = result.scalar_one_or_none()
+    if not suggestion:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Suggestion not found")
+
+    # Validate status
+    if suggestion.status != SuggestionStatus.pending_review:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Can only approve suggestions with pending_review status. Current status: {suggestion.status}"
+        )
+
+    # Create the appropriate entity based on suggestion type
+    entity_id = None
+    try:
+        if suggestion.type == SuggestionType.risk:
+            new_entity = Risk(
+                name=request.name,
+                description=request.description or "",
+                tenant_id=current_user.tenant_id,
+            )
+            db.add(new_entity)
+            await db.flush()
+            entity_id = new_entity.id
+
+        elif suggestion.type == SuggestionType.control:
+            new_entity = Control(
+                name=request.name,
+                description=request.description or "",
+                tenant_id=current_user.tenant_id,
+            )
+            db.add(new_entity)
+            await db.flush()
+            entity_id = new_entity.id
+
+        elif suggestion.type == SuggestionType.business_process:
+            new_entity = BusinessProcess(
+                name=request.name,
+                description=request.description or "",
+                tenant_id=current_user.tenant_id,
+            )
+            db.add(new_entity)
+            await db.flush()
+            entity_id = new_entity.id
+
+        # Update suggestion status to active
+        old_status = suggestion.status
+        suggestion.status = SuggestionStatus.active
+
+        # Audit log
+        await AuditService.log_action(
+            db,
+            actor_id=current_user.id,
+            action=f"SUGGESTION_APPROVED",
+            entity_type=f"{suggestion.type.value.capitalize()}",
+            entity_id=entity_id,
+            changes={
+                "suggestion_id": str(suggestion.id),
+                "status": {"old": old_status, "new": "active"},
+                "created_entity": {"type": suggestion.type.value, "id": str(entity_id)}
+            }
+        )
+
+        await db.commit()
+        await db.refresh(suggestion)
+
+        print(f"✅ Suggestion {suggestion.id} approved. Created {suggestion.type.value} entity {entity_id}")
+        return suggestion
+
+    except Exception as e:
+        await db.rollback()
+        print(f"❌ Failed to approve suggestion: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to create entity: {str(e)}"
+        )

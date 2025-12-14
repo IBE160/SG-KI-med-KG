@@ -18,11 +18,11 @@ async def list_audit_logs(
     entity_id: Optional[UUID] = Query(None, description="Filter by entity ID"),
     actor_id: Optional[UUID] = Query(None, description="Filter by actor ID"),
     db: AsyncSession = Depends(get_async_session),
-    current_user: UserModel = Depends(has_role(["admin", "compliance_officer"])),
+    current_user: UserModel = Depends(has_role(["admin"])),
 ):
     """
     Retrieve audit logs.
-    Requires admin or compliance_officer role.
+    Requires admin role.
     """
     query = select(AuditLog)
 

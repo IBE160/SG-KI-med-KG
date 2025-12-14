@@ -52,7 +52,7 @@ export default function DocumentsPage() {
         return;
       }
 
-      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(`${backendUrl}/api/v1/documents`, {
         headers: {
           Authorization: `Bearer ${session.access_token}`,
@@ -123,7 +123,7 @@ export default function DocumentsPage() {
       const formData = new FormData();
       formData.append("file", selectedFile);
 
-      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(`${backendUrl}/api/v1/documents/upload`, {
         method: "POST",
         body: formData,
@@ -186,7 +186,7 @@ export default function DocumentsPage() {
         return;
       }
 
-      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(`${backendUrl}/api/v1/documents/${doc.id}`, {
         method: "DELETE",
         headers: {
@@ -246,7 +246,7 @@ export default function DocumentsPage() {
         return;
       }
 
-      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(
         `${backendUrl}/api/v1/documents/${doc.id}/rename`,
         {
@@ -297,7 +297,7 @@ export default function DocumentsPage() {
         return;
       }
 
-      const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+      const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
       const response = await fetch(`${backendUrl}/api/v1/documents/${doc.id}/reprocess`, {
         method: "POST",
         headers: {

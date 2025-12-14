@@ -15,6 +15,7 @@ import { readControls, ControlRead } from "@/app/clientService";
 import Link from "next/link";
 import { removeControl } from "@/components/actions/delete-actions";
 import { DeleteEntityButton } from "@/components/delete-entity-button";
+import { createClient } from "@/lib/supabase";
 
 export default function ControlsPage() {
   const [controls, setControls] = useState<ControlRead[]>([]);
@@ -24,7 +25,15 @@ export default function ControlsPage() {
   const fetchControls = async () => {
     try {
       setLoading(true);
-      const response = await readControls();
+      const supabase = createClient();
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+
+      const response = await readControls({
+        headers: token ? {
+          Authorization: `Bearer ${token}`,
+        } : undefined,
+      });
       if (response.data && response.data.items) {
         setControls(response.data.items);
       }

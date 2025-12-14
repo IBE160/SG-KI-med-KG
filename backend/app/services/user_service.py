@@ -9,12 +9,24 @@ from app.schemas import UserCreate
 
 class UserService:
     async def create_user(self, user_in: UserCreate, admin_user: User, db: AsyncSession) -> User:
+        from sqlalchemy import select
         supabase = get_supabase_client()
-        
+
         # Enforce tenant_id from admin
         # We ignore what comes in user_in.tenant_id if we want to strictly enforce it
         target_tenant_id = admin_user.tenant_id
-        
+
+        # Check if user with this email already exists in public.users
+        existing_user_query = select(User).filter(User.email == user_in.email)
+        result = await db.execute(existing_user_query)
+        existing_user = result.scalars().first()
+
+        if existing_user:
+            raise HTTPException(
+                status_code=status.HTTP_409_CONFLICT,
+                detail="User with this email already exists in the system"
+            )
+
         # 1. Create in Supabase Auth
         try:
             # supabase.auth.admin.create_user is the correct method for server-side creation

@@ -80,7 +80,7 @@ async def get_current_user(
 async def list_users(
     role: str | None = None,
     db: AsyncSession = Depends(get_async_session),
-    current_user: UserModel = Depends(has_role(["admin", "compliance_officer"])),
+    current_user: UserModel = Depends(has_role(["admin"])),
 ):
     """
     List users in the current tenant, optionally filtered by role.
@@ -88,18 +88,26 @@ async def list_users(
     If role parameter is provided, returns users that have that role
     in their roles array.
 
-    Requires admin or compliance_officer role.
+    Requires admin role.
     """
     query = select(UserModel).filter(UserModel.tenant_id == current_user.tenant_id)
 
     if role:
         # Filter users whose roles array contains the specified role
         # For PostgreSQL: WHERE role = ANY(roles)
-        from sqlalchemy import any_
         query = query.filter(UserModel.roles.contains([role]))
 
     result = await db.execute(query)
-    return result.scalars().all()
+    users = result.scalars().all()
+
+    # Debug logging
+    import logging
+    logger = logging.getLogger(__name__)
+    logger.info(f"list_users called with role={role}, found {len(users)} users")
+    for user in users:
+        logger.info(f"  - {user.email}: roles={user.roles}")
+
+    return users
 
 
 @router.put("/{user_id}/roles", response_model=UserRead, tags=["users"])

@@ -21,10 +21,10 @@ export function useRole() {
         try {
           // Fetch roles from backend API for authoritative source
           // IMPORTANT: Must use absolute URL to avoid Next.js routing to /app/api
-          const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+          const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
           const apiUrl = `${backendUrl}/api/v1/users/me`;
           console.log("Fetching user roles from:", apiUrl);
-          console.log("Backend URL env var:", process.env.NEXT_PUBLIC_API_BASE_URL);
+          console.log("Backend URL env var:", process.env.NEXT_PUBLIC_API_URL);
 
           const response = await fetch(apiUrl, {
             headers: {
@@ -70,7 +70,7 @@ export function useRole() {
       if (session?.access_token) {
         try {
           // Fetch updated roles from backend
-          const backendUrl = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:8000';
+          const backendUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
           const apiUrl = `${backendUrl}/api/v1/users/me`;
           const response = await fetch(apiUrl, {
             headers: {

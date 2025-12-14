@@ -1,0 +1,81 @@
+<context id="4.5.defect-controls-visibility" story-key="4-5-defect-controls-visibility">
+  <story-metadata>
+    <as-a>Business Process Owner (BPO) or Admin</as-a>
+    <i-want>to see approved controls (specifically those originating from suggestions like "Whistleblower") on the Controls page</i-want>
+    <so-that>I can manage them effectively</so-that>
+  </story-metadata>
+
+  <acceptance-criteria>
+    <criterion id="AC-1">
+      <text>Database Integrity: Approving a suggestion creates a `controls` record with status `active` (or equivalent).</text>
+      <validation>Database Query</validation>
+    </criterion>
+    <criterion id="AC-2">
+      <text>API Visibility: The `GET /api/v1/controls` endpoint includes the new control in its response for authorized users.</text>
+      <validation>API Test (Curl/Postman)</validation>
+    </criterion>
+    <criterion id="AC-3">
+      <text>Dashboard Visibility: The `/dashboard/controls` page displays the new control in the list.</text>
+      <validation>UI Inspection</validation>
+    </criterion>
+    <criterion id="AC-4">
+      <text>Permissions: BPO and Admin users can see these controls (RLS check).</text>
+      <validation>Multi-role Login Test</validation>
+    </criterion>
+  </acceptance-criteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/PRD.md" title="Product Requirements Document" section="Functional Requirements">
+        <snippet>FR-2: Core Data CRUD: Authorized users ... must be able to Create, Read, Update, and Delete the core data entities ... When creating a control, an 'owner' (a user with the BPO role) must be assigned.</snippet>
+      </doc>
+      <doc path="docs/architecture.md" title="Architecture Document" section="4.4 Real-time Updates">
+        <snippet>Supabase Realtime... leveraging our existing Supabase infrastructure and directly fulfills the requirement for live dashboard updates.</snippet>
+      </doc>
+      <doc path="docs/epics.md" title="Epic Breakdown" section="Story 4.3">
+        <snippet>Story 4.3: Develop Streamlined Control Assessment Workflow for BPOs... selecting an item takes me to a detailed review screen... I can "Approve" (making it Active).</snippet>
+      </doc>
+    </docs>
+
+    <code-references>
+      <artifact path="backend/app/api/v1/endpoints/suggestions.py" kind="controller" symbol="approve_suggestion" lines="88-146">
+        <reason>Likely root cause: Creates Control entity but appears to miss `owner_id` assignment compared to standard CRUD.</reason>
+      </artifact>
+      <artifact path="backend/app/routes/compliance.py" kind="controller" symbol="create_control" lines="30-41">
+        <reason>Reference implementation showing correct Control creation with `owner_id`.</reason>
+      </artifact>
+      <artifact path="backend/app/routes/compliance.py" kind="controller" symbol="read_controls" lines="44-55">
+        <reason>API endpoint used by frontend to fetch controls. Filters by `tenant_id`.</reason>
+      </artifact>
+    </code-references>
+
+    <interfaces>
+      <interface name="POST /api/v1/suggestions/{id}/approve" kind="REST" path="backend/app/api/v1/endpoints/suggestions.py">
+        <signature>async def approve_suggestion(suggestion_id: UUID, request: ApproveSuggestionRequest, ...)</signature>
+      </interface>
+      <interface name="Control Model Constructor" kind="Class" path="backend/app/models/compliance.py">
+        <signature>Control(name, description, tenant_id, owner_id, ...)</signature>
+      </interface>
+    </interfaces>
+
+    <dependencies>
+      <dep ecosystem="python" package="fastapi" />
+      <dep ecosystem="python" package="sqlalchemy" />
+      <dep ecosystem="python" package="pydantic" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    <constraint>Controls MUST have an `owner_id` assigned upon creation (FR-2).</constraint>
+    <constraint>RLS policies likely enforce `owner_id` for BPO visibility.</constraint>
+    <constraint>Approval action must log to Audit Trail (FR-8).</constraint>
+  </constraints>
+
+  <testing-guidance>
+    <standards>Use `pytest` for backend integration tests. Create a test case that flows from Suggestion -> Approve -> Verify Control exists and has `owner_id`.</standards>
+    <ideas>
+      <idea id="AC-1">Test `approve_suggestion` endpoint with a BPO user. Assert `Control` created has `owner_id` == BPO's ID.</idea>
+      <idea id="AC-2">Call `read_controls` as the same BPO user and assert the new control is in the returned list.</idea>
+    </ideas>
+  </testing-guidance>
+</context>
