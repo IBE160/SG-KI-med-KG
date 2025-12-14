@@ -134,6 +134,9 @@ import type {
   UsersListUsersResponse,
   UsersGetCurrentUserError,
   UsersGetCurrentUserResponse,
+  UsersUpdateUserRolesData,
+  UsersUpdateUserRolesError,
+  UsersUpdateUserRolesResponse,
   UsersUpdateUserRoleData,
   UsersUpdateUserRoleError,
   UsersUpdateUserRoleResponse,
@@ -918,6 +921,8 @@ export const regulatoryRequirementsDeleteRegulatoryRequirement = <
 /**
  * Create User
  * Create a new user.
+ *
+ * Validates role combination before creation.
  * Requires admin role.
  * The new user is assigned to the admin's tenant.
  */
@@ -937,6 +942,10 @@ export const usersCreateUser = <ThrowOnError extends boolean = false>(
 /**
  * List Users
  * List users in the current tenant, optionally filtered by role.
+ *
+ * If role parameter is provided, returns users that have that role
+ * in their roles array.
+ *
  * Requires admin or compliance_officer role.
  */
 export const usersListUsers = <ThrowOnError extends boolean = false>(
@@ -970,7 +979,35 @@ export const usersGetCurrentUser = <ThrowOnError extends boolean = false>(
 };
 
 /**
+ * Update User Roles
+ * Update user roles with validation.
+ *
+ * Validates that:
+ * - Roles are from allowed set (admin, bpo, executive, general_user)
+ * - general_user cannot be combined with other roles
+ *
+ * Requires admin role. Can only update users in the same tenant.
+ */
+export const usersUpdateUserRoles = <ThrowOnError extends boolean = false>(
+  options: OptionsLegacyParser<UsersUpdateUserRolesData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).put<
+    UsersUpdateUserRolesResponse,
+    UsersUpdateUserRolesError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/users/{user_id}/roles",
+  });
+};
+
+/**
+ * @deprecated
  * Update User Role
+ * DEPRECATED: Use PUT /{user_id}/roles instead.
+ *
+ * Legacy endpoint for backward compatibility.
+ * Updates user with single role as array.
  */
 export const usersUpdateUserRole = <ThrowOnError extends boolean = false>(
   options: OptionsLegacyParser<UsersUpdateUserRoleData, ThrowOnError>,

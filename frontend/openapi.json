@@ -2116,7 +2116,7 @@
           "users"
         ],
         "summary": "Create User",
-        "description": "Create a new user.\nRequires admin role.\nThe new user is assigned to the admin's tenant.",
+        "description": "Create a new user.\n\nValidates role combination before creation.\nRequires admin role.\nThe new user is assigned to the admin's tenant.",
         "operationId": "users-create_user",
         "security": [
           {
@@ -2162,7 +2162,7 @@
           "users"
         ],
         "summary": "List Users",
-        "description": "List users in the current tenant, optionally filtered by role.\nRequires admin or compliance_officer role.",
+        "description": "List users in the current tenant, optionally filtered by role.\n\nIf role parameter is provided, returns users that have that role\nin their roles array.\n\nRequires admin or compliance_officer role.",
         "operationId": "users-list_users",
         "security": [
           {
@@ -2243,6 +2243,66 @@
         ]
       }
     },
+    "/api/v1/users/{user_id}/roles": {
+      "put": {
+        "tags": [
+          "users",
+          "users"
+        ],
+        "summary": "Update User Roles",
+        "description": "Update user roles with validation.\n\nValidates that:\n- Roles are from allowed set (admin, bpo, executive, general_user)\n- general_user cannot be combined with other roles\n\nRequires admin role. Can only update users in the same tenant.",
+        "operationId": "users-update_user_roles",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "User Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RolesUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/users/{user_id}/role": {
       "put": {
         "tags": [
@@ -2250,7 +2310,9 @@
           "users"
         ],
         "summary": "Update User Role",
+        "description": "DEPRECATED: Use PUT /{user_id}/roles instead.\n\nLegacy endpoint for backward compatibility.\nUpdates user with single role as array.",
         "operationId": "users-update_user_role",
+        "deprecated": true,
         "security": [
           {
             "HTTPBearer": []
@@ -3293,6 +3355,16 @@
             "type": "string",
             "format": "uuid",
             "title": "Document Id"
+          },
+          "assigned_bpo": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/UserReadMinimal"
+              },
+              {
+                "type": "null"
+              }
+            ]
           }
         },
         "type": "object",
@@ -5226,6 +5298,23 @@
         ],
         "title": "RiskUpdate"
       },
+      "RolesUpdate": {
+        "properties": {
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Roles"
+          }
+        },
+        "type": "object",
+        "required": [
+          "roles"
+        ],
+        "title": "RolesUpdate",
+        "description": "Schema for updating user roles."
+      },
       "SuggestionDetailResponse": {
         "properties": {
           "suggestion_id": {
@@ -5440,10 +5529,15 @@
             "title": "Is Verified",
             "default": false
           },
-          "role": {
-            "type": "string",
-            "title": "Role",
-            "default": "general_user"
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Roles",
+            "default": [
+              "general_user"
+            ]
           },
           "tenant_id": {
             "anyOf": [
@@ -5503,9 +5597,12 @@
             "title": "Is Verified",
             "default": false
           },
-          "role": {
-            "type": "string",
-            "title": "Role"
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Roles"
           },
           "tenant_id": {
             "type": "string",
@@ -5528,10 +5625,40 @@
         "required": [
           "id",
           "email",
-          "role",
+          "roles",
           "tenant_id"
         ],
         "title": "UserRead"
+      },
+      "UserReadMinimal": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "email": {
+            "type": "string",
+            "title": "Email"
+          },
+          "full_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Full Name"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "email"
+        ],
+        "title": "UserReadMinimal"
       },
       "UserUpdate": {
         "properties": {
@@ -5591,16 +5718,19 @@
             ],
             "title": "Is Verified"
           },
-          "role": {
+          "roles": {
             "anyOf": [
               {
-                "type": "string"
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
               },
               {
                 "type": "null"
               }
             ],
-            "title": "Role"
+            "title": "Roles"
           },
           "tenant_id": {
             "anyOf": [

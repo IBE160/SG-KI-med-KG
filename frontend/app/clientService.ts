@@ -4,96 +4,24 @@ export * from "./openapi-client";
 // Import the client configuration (interceptors, etc.)
 import "@/lib/clientConfig";
 
-// Re-export the client and SDK functions directly
-// The new SDK uses simplified function names without prefixes
+// Re-export the SDK with all generated function names
+export * from "./openapi-client/sdk.gen";
+
+// Backward compatibility aliases for commonly used auth functions
 export {
-  client,
-  authJwtLogin,
-  authJwtLogout,
-  registerRegister,
-  resetForgotPassword,
-  resetResetPassword,
-  verifyRequestToken,
-  verifyVerify,
-  usersCurrentUser,
-  usersPatchCurrentUser,
-  usersUser,
-  usersPatchUser,
-  usersDeleteUser,
-  readItem,
-  createItem,
-  deleteItem,
-  createControl,
-  readControls,
-  readControl,
-  updateControl,
-  deleteControl,
-  createRisk,
-  readRisks,
-  readRisk,
-  updateRisk,
-  deleteRisk,
-  createBusinessProcess,
-  readBusinessProcesses,
-  readBusinessProcess,
-  updateBusinessProcess,
-  deleteBusinessProcess,
-  createRegulatoryFramework,
-  readRegulatoryFrameworks,
-  readRegulatoryFramework,
-  updateRegulatoryFramework,
-  deleteRegulatoryFramework,
-  createUser,
-  listUsers,
-  getCurrentUser,
-  updateUserRole,
-  uploadDocument,
-  listDocuments,
-  getDocument,
-  deleteDocument,
-  renameDocument,
-  manuallyProcessDocument,
-  listSuggestions,
-  updateSuggestionStatus,
-  listAuditLogs,
-  getDashboardMetrics,
-  getPendingReviews,
-  getSuggestionDetail,
-  submitAssessment,
-  createMapping,
-  deleteMapping,
-  getMappingsForControl,
-  getMappingsForRequirement,
+  authAuthJwtLogin as authJwtLogin,
+  authAuthJwtLogout as authJwtLogout,
+  authRegisterRegister as registerRegister,
+  authResetForgotPassword as resetForgotPassword,
+  authResetResetPassword as resetResetPassword,
+  authVerifyRequestToken as verifyRequestToken,
+  authVerifyVerify as verifyVerify,
+  usersUsersCurrentUser as usersCurrentUser,
+  usersUsersPatchCurrentUser as usersPatchCurrentUser,
+  usersUsersUser as usersUser,
+  usersUsersPatchUser as usersPatchUser,
+  usersUsersDeleteUser as usersDeleteUser,
 } from "./openapi-client/sdk.gen";
 
-// Re-export commonly used types
-export type {
-  AuthJwtLoginError,
-  AuthJwtLoginResponse,
-  RegisterRegisterError,
-  RegisterRegisterResponse,
-  GetPendingReviewsResponse,
-  GetSuggestionDetailResponse,
-  SubmitAssessmentResponse,
-  AssessmentAction,
-  ResidualRisk,
-  SuggestionDetailResponse,
-  PendingReviewsResponse,
-  AssessmentResponse,
-  CreateMappingResponse,
-  DeleteMappingResponse,
-  GetMappingsForControlResponse,
-  GetMappingsForRequirementResponse,
-} from "./openapi-client/types.gen";
-
-// Import assessment functions for backward compatibility aliases
-import {
-  getPendingReviews,
-  getSuggestionDetail,
-  submitAssessment,
-} from "./openapi-client/sdk.gen";
-
-// Create backward compatibility aliases for BPO assessment functions
-export const assessmentsGetPendingReviews = getPendingReviews;
-export const assessmentsGetSuggestionDetail = getSuggestionDetail;
-export const assessmentsSubmitAssessment = submitAssessment;
+// Note: All types are already exported via export * from "./openapi-client"
+// Note: All functions are already exported via export * from "./openapi-client/sdk.gen"

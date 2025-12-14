@@ -10,6 +10,7 @@ export type AISuggestionRead = {
   id: string;
   status: SuggestionStatus;
   document_id: string;
+  assigned_bpo?: UserReadMinimal | null;
 };
 
 /**
@@ -503,6 +504,13 @@ export type RiskUpdate = {
 };
 
 /**
+ * Schema for updating user roles.
+ */
+export type RolesUpdate = {
+  roles: Array<string>;
+};
+
+/**
  * Detailed view of an AI suggestion for BPO assessment.
  *
  * Includes full descriptions and rationale needed for decision making.
@@ -579,7 +587,7 @@ export type UserCreate = {
   is_active?: boolean | null;
   is_superuser?: boolean | null;
   is_verified?: boolean | null;
-  roles?: string[];
+  roles?: Array<string>;
   tenant_id?: string | null;
   full_name?: string | null;
 };
@@ -590,8 +598,14 @@ export type UserRead = {
   is_active?: boolean;
   is_superuser?: boolean;
   is_verified?: boolean;
-  roles: string[];
+  roles: Array<string>;
   tenant_id: string;
+  full_name?: string | null;
+};
+
+export type UserReadMinimal = {
+  id: string;
+  email: string;
   full_name?: string | null;
 };
 
@@ -601,7 +615,7 @@ export type UserUpdate = {
   is_active?: boolean | null;
   is_superuser?: boolean | null;
   is_verified?: boolean | null;
-  roles?: string[] | null;
+  roles?: Array<string> | null;
   tenant_id?: string | null;
   full_name?: string | null;
 };
@@ -1074,6 +1088,17 @@ export type UsersListUsersError = HTTPValidationError;
 export type UsersGetCurrentUserResponse = UserRead;
 
 export type UsersGetCurrentUserError = unknown;
+
+export type UsersUpdateUserRolesData = {
+  body: RolesUpdate;
+  path: {
+    user_id: string;
+  };
+};
+
+export type UsersUpdateUserRolesResponse = UserRead;
+
+export type UsersUpdateUserRolesError = HTTPValidationError;
 
 export type UsersUpdateUserRoleData = {
   body: UserUpdate;
