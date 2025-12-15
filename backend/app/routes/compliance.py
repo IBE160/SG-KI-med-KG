@@ -1,9 +1,11 @@
+from typing import List
 from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from fastapi_pagination import Page, Params
 from fastapi_pagination.ext.sqlalchemy import apaginate
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 
 from app.database import User, get_async_session
 from app.models.compliance import Control, Risk, BusinessProcess, RegulatoryFramework, RegulatoryRequirement
@@ -24,6 +26,7 @@ from app.schemas import (
     RegulatoryRequirementUpdate,
     RegulatoryRequirementRead,
 )
+from app.schemas.compliance import RegulatoryFrameworkTreeItem
 from app.core.deps import get_current_active_user as current_active_user
 
 router = APIRouter()
@@ -373,6 +376,29 @@ async def read_regulatory_frameworks(
         RegulatoryFramework.tenant_id == tenant_id
     )
     return await apaginate(db, query, params)
+
+
+@router.get(
+    "/regulatory-frameworks/tree",
+    response_model=List[RegulatoryFrameworkTreeItem],
+    tags=["regulatory-frameworks"],
+)
+async def get_regulatory_frameworks_tree(
+    db: AsyncSession = Depends(get_async_session),
+    user: User = Depends(current_active_user),
+):
+    """
+    Get all regulatory frameworks with their requirements in a hierarchical tree structure.
+    """
+    stmt = (
+        select(RegulatoryFramework)
+        .filter(RegulatoryFramework.tenant_id == user.tenant_id)
+        .options(selectinload(RegulatoryFramework.requirements))
+        .order_by(RegulatoryFramework.name)
+    )
+    result = await db.execute(stmt)
+    frameworks = result.scalars().all()
+    return frameworks
 
 
 @router.get(

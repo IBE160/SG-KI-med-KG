@@ -5,7 +5,10 @@ from io import BytesIO
 from uuid import uuid4
 
 from app.main import app
-from app.models.document import DocumentStatus
+from app.models.document import DocumentStatus, Document
+from app.models.compliance import RegulatoryFramework, RegulatoryRequirement
+from app.schemas import DocumentRead
+from app.services.ai_service import DocumentClassification
 from app.core.deps import has_role, get_current_active_user # Added get_current_active_user import
 from app.models.user import User as UserModel # Added import
 
@@ -209,3 +212,226 @@ async def test_upload_document_success(test_client):
     finally:
         # Clear the dependency override after the test
         del app.dependency_overrides[get_current_active_user] # Remove specific override
+
+
+@pytest.mark.asyncio
+@patch("app.services.document_service.DocumentService.get_document_by_id")
+async def test_get_document_with_law_classification(
+    mock_get_document_by_id: MagicMock, test_client: AsyncClient
+):
+    """Test getting a document with 'Law' classification."""
+    from datetime import datetime, timezone
+
+    user_id = uuid4()
+    tenant_id = uuid4()
+    document_id = uuid4()
+    framework_id = uuid4()
+    now = datetime.now(timezone.utc)
+
+    mock_document = Document(
+        id=document_id,
+        filename="Law_Doc.pdf",
+        storage_path="path/to/law_doc.pdf",
+        status=DocumentStatus.completed,
+        uploaded_by=user_id,
+        created_at=now,
+        regulatory_framework=RegulatoryFramework(
+            id=framework_id,
+            tenant_id=tenant_id,
+            name="GDPR",
+            description="General Data Protection Regulation",
+            version="2016/679",
+            document_id=document_id,
+            created_at=now,
+            updated_at=now,
+        ),
+        regulatory_requirement=None,
+    )
+
+    mock_get_document_by_id.return_value = mock_document
+
+    mock_admin_user = UserModel(
+        id=user_id,
+        email="admin@example.com",
+        hashed_password="hashed_password",
+        is_active=True,
+        is_superuser=True,
+        is_verified=True,
+        roles=["admin"],
+        tenant_id=tenant_id,
+    )
+    app.dependency_overrides[get_current_active_user] = lambda: mock_admin_user
+
+    try:
+        response = await test_client.get(f"/api/v1/documents/{document_id}")
+        assert response.status_code == 200
+        data = response.json()
+
+        assert data["id"] == str(document_id)
+        assert data["filename"] == "Law_Doc.pdf"
+        assert data["status"] == DocumentStatus.completed.value
+        assert data["classification"]["document_type"] == "Law"
+        assert data["classification"]["framework_name"] == "GDPR"
+        assert (
+            data["classification"]["framework_description"]
+            == "General Data Protection Regulation"
+        )
+        assert data["classification"]["parent_law_name"] is None
+        assert data["classification"]["version"] == "2016/679"
+    finally:
+        del app.dependency_overrides[get_current_active_user]
+
+
+@pytest.mark.asyncio
+@patch("app.services.document_service.DocumentService.get_document_by_id")
+async def test_get_document_with_regulation_classification(
+    mock_get_document_by_id: MagicMock, test_client: AsyncClient
+):
+    """Test getting a document with 'Regulation' classification."""
+    from datetime import datetime, timezone
+
+    user_id = uuid4()
+    tenant_id = uuid4()
+    document_id = uuid4()
+    framework_id = uuid4()
+    requirement_id = uuid4()
+    now = datetime.now(timezone.utc)
+
+    mock_framework = RegulatoryFramework(
+        id=framework_id,
+        tenant_id=tenant_id,
+        name="GDPR",
+        description="General Data Protection Regulation",
+        version="2016/679",
+        created_at=now,
+        updated_at=now,
+    )
+    mock_document = Document(
+        id=document_id,
+        filename="Regulation_Doc.pdf",
+        storage_path="path/to/regulation_doc.pdf",
+        status=DocumentStatus.completed,
+        uploaded_by=user_id,
+        created_at=now,
+        regulatory_framework=None,
+        regulatory_requirement=RegulatoryRequirement(
+            id=requirement_id,
+            tenant_id=tenant_id,
+            framework_id=framework_id,
+            framework=mock_framework,  # Ensure parent framework is linked
+            name="Article 32",
+            description="Security of processing",
+            document_id=document_id,
+            created_at=now,
+            updated_at=now,
+        ),
+    )
+
+    mock_get_document_by_id.return_value = mock_document
+
+    mock_admin_user = UserModel(
+        id=user_id,
+        email="admin@example.com",
+        hashed_password="hashed_password",
+        is_active=True,
+        is_superuser=True,
+        is_verified=True,
+        roles=["admin"],
+        tenant_id=tenant_id,
+    )
+    app.dependency_overrides[get_current_active_user] = lambda: mock_admin_user
+
+    try:
+        response = await test_client.get(f"/api/v1/documents/{document_id}")
+        assert response.status_code == 200
+        data = response.json()
+
+        assert data["id"] == str(document_id)
+        assert data["filename"] == "Regulation_Doc.pdf"
+        assert data["status"] == DocumentStatus.completed.value
+        assert data["classification"]["document_type"] == "Regulation"
+        assert data["classification"]["framework_name"] == "Article 32"
+        assert (
+            data["classification"]["framework_description"] == "Security of processing"
+        )
+        assert data["classification"]["parent_law_name"] == "GDPR"
+        assert data["classification"]["version"] is None
+    finally:
+        del app.dependency_overrides[get_current_active_user]
+
+
+@pytest.mark.asyncio
+@patch("app.services.document_service.DocumentService.get_document_by_id")
+@patch("tasks.analysis._process_document_async")
+async def test_manually_process_document_returns_classification(
+    mock_process_document_async: MagicMock,
+    mock_get_document_by_id: MagicMock,
+    test_client: AsyncClient,
+):
+    """Test that manually processing a document returns classification data."""
+    from datetime import datetime, timezone
+
+    user_id = uuid4()
+    tenant_id = uuid4()
+    document_id = uuid4()
+    framework_id = uuid4()
+    now = datetime.now(timezone.utc)
+
+    mock_document = Document(
+        id=document_id,
+        filename="Manual_Law.pdf",
+        storage_path="path/to/manual_law.pdf",
+        status=DocumentStatus.pending,
+        uploaded_by=user_id,
+        created_at=now,
+    )
+    # Mock get_document_by_id to return document *after* processing with classification
+    processed_document_with_classification = Document(
+        id=document_id,
+        filename="Manual_Law.pdf",
+        storage_path="path/to/manual_law.pdf",
+        status=DocumentStatus.completed,
+        uploaded_by=user_id,
+        created_at=now,
+        regulatory_framework=RegulatoryFramework(
+            id=framework_id,
+            tenant_id=tenant_id,
+            name="PCI DSS",
+            description="Payment Card Industry Data Security Standard",
+            version="4.0",
+            document_id=document_id,
+            created_at=now,
+            updated_at=now,
+        ),
+        regulatory_requirement=None,
+    )
+    # Use side_effect to return initial doc for pre-check, then processed doc for refresh
+    mock_get_document_by_id.side_effect = [mock_document, processed_document_with_classification]
+    
+    # Mock the async processing task to do nothing (we only care about the return value)
+    mock_process_document_async.return_value = None
+
+    mock_admin_user = UserModel(
+        id=user_id,
+        email="admin@example.com",
+        hashed_password="hashed_password",
+        is_active=True,
+        is_superuser=True,
+        is_verified=True,
+        roles=["admin"],
+        tenant_id=tenant_id,
+    )
+    app.dependency_overrides[get_current_active_user] = lambda: mock_admin_user
+
+    try:
+        response = await test_client.post(f"/api/v1/documents/{document_id}/process")
+        assert response.status_code == 200
+        data = response.json()
+
+        assert data["id"] == str(document_id)
+        assert data["filename"] == "Manual_Law.pdf"
+        assert data["status"] == DocumentStatus.completed.value
+        assert data["classification"]["document_type"] == "Law"
+        assert data["classification"]["framework_name"] == "PCI DSS"
+    finally:
+        del app.dependency_overrides[get_current_active_user]

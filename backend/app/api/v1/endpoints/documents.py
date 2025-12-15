@@ -1,13 +1,17 @@
 from fastapi import APIRouter, Depends, File, UploadFile, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.future import select
+from sqlalchemy.orm import selectinload
 from typing import List
 from uuid import UUID
-
 from pydantic import BaseModel
 
 from app.database import get_async_session
 from app.models.user import User as UserModel
+from app.models.document import Document
+from app.models.compliance import RegulatoryFramework, RegulatoryRequirement
 from app.schemas import DocumentRead, DocumentUploadResponse
+from app.services.ai_service import DocumentClassification
 from app.core.deps import has_role
 from app.services.document_service import DocumentService
 from tasks.analysis import process_document
@@ -89,8 +93,33 @@ async def list_documents(
     documents = await DocumentService.get_documents_by_user(
         db=db, user_id=current_user.id, tenant_id=current_user.tenant_id
     )
-    print(f"DEBUG: Found {len(documents)} documents")
-    return documents
+    
+    documents_with_classification = []
+    for document in documents:
+        classification = None
+        if document.regulatory_framework:
+            classification = DocumentClassification(
+                document_type="Law",
+                framework_name=document.regulatory_framework.name,
+                framework_description=document.regulatory_framework.description,
+                parent_law_name=None,
+                version=document.regulatory_framework.version,
+            )
+        elif document.regulatory_requirement:
+            await db.refresh(document.regulatory_requirement, attribute_names=["framework"])
+            classification = DocumentClassification(
+                document_type="Regulation",
+                framework_name=document.regulatory_requirement.name,
+                framework_description=document.regulatory_requirement.description,
+                parent_law_name=document.regulatory_requirement.framework.name if document.regulatory_requirement.framework else None,
+                version=None,
+            )
+        doc_read = DocumentRead.model_validate(document)
+        doc_read.classification = classification
+        documents_with_classification.append(doc_read)
+
+    print(f"DEBUG: Found {len(documents_with_classification)} documents")
+    return documents_with_classification
 
 
 @router.get("/{document_id}", response_model=DocumentRead, tags=["documents"])
@@ -108,7 +137,28 @@ async def get_document(
     document = await DocumentService.get_document_by_id(
         db=db, document_id=document_id, user_id=current_user.id
     )
-    return document
+    # Construct classification if available
+    classification = None
+    if document.regulatory_framework:
+        classification = DocumentClassification(
+            document_type="Law",
+            framework_name=document.regulatory_framework.name,
+            framework_description=document.regulatory_framework.description,
+            parent_law_name=None,
+            version=document.regulatory_framework.version,
+        )
+    elif document.regulatory_requirement:
+        classification = DocumentClassification(
+            document_type="Regulation",
+            framework_name=document.regulatory_requirement.name,
+            framework_description=document.regulatory_requirement.description,
+            parent_law_name=document.regulatory_requirement.framework.name if document.regulatory_requirement.framework else None,
+            version=None,
+        )
+
+    doc_read = DocumentRead.model_validate(document)
+    doc_read.classification = classification
+    return doc_read
 
 
 @router.patch("/{document_id}/rename", response_model=DocumentRead, tags=["documents"])
@@ -158,7 +208,7 @@ async def delete_document(
     return {"message": "Document archived successfully"}
 
 
-@router.post("/{document_id}/process", tags=["documents"])
+@router.post("/{document_id}/process", response_model=DocumentRead, tags=["documents"]) # Updated response_model
 async def manually_process_document(
     document_id: UUID,
     db: AsyncSession = Depends(get_async_session),
@@ -188,15 +238,33 @@ async def manually_process_document(
         # Process document synchronously
         await _process_document_async(document_id)
 
-        # Refresh document to get updated status
-        await db.refresh(document)
+        # Re-fetch document to get updated status and relationships
+        document = await DocumentService.get_document_by_id(
+            db=db, document_id=document_id, user_id=current_user.id, tenant_id=current_user.tenant_id
+        )
 
-        return {
-            "message": "Document processed successfully",
-            "document_id": str(document_id),
-            "status": document.status,
-            "filename": document.filename
-        }
+        # Construct classification if available
+        classification = None
+        if document.regulatory_framework:
+            classification = DocumentClassification(
+                document_type="Law",
+                framework_name=document.regulatory_framework.name,
+                framework_description=document.regulatory_framework.description,
+                parent_law_name=None,
+                version=document.regulatory_framework.version,
+            )
+        elif document.regulatory_requirement:
+            classification = DocumentClassification(
+                document_type="Regulation",
+                framework_name=document.regulatory_requirement.name,
+                framework_description=document.regulatory_requirement.description,
+                parent_law_name=document.regulatory_requirement.framework.name if document.regulatory_requirement.framework else None,
+                version=None,
+            )
+
+        doc_read = DocumentRead.model_validate(document)
+        doc_read.classification = classification
+        return doc_read
     except Exception as e:
         logger.exception(f"Manual processing failed for document {document_id}: {str(e)}")
         raise HTTPException(

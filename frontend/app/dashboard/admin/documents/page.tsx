@@ -27,6 +27,11 @@ interface Document {
   filename: string;
   status: "pending" | "processing" | "completed" | "failed";
   created_at: string;
+  classification?: {
+    document_type: string;
+    framework_name: string;
+    parent_law_name?: string;
+  };
 }
 
 export default function DocumentsPage() {
@@ -452,6 +457,7 @@ export default function DocumentsPage() {
             <TableRow>
               <TableHead>Filename</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Classification</TableHead> {/* New column */}
               <TableHead>Uploaded</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
@@ -459,14 +465,14 @@ export default function DocumentsPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={4} className="text-center py-10">
+                <TableCell colSpan={5} className="text-center py-10"> {/* Adjusted colSpan */}
                   Loading...
                 </TableCell>
               </TableRow>
             ) : documents.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={4}
+                  colSpan={5} {/* Adjusted colSpan */}
                   className="text-center py-10 text-muted-foreground"
                 >
                   <div className="flex flex-col items-center gap-2">
@@ -483,6 +489,19 @@ export default function DocumentsPage() {
                 <TableRow key={doc.id}>
                   <TableCell className="font-medium">{doc.filename}</TableCell>
                   <TableCell>{getStatusBadge(doc.status)}</TableCell>
+                  <TableCell> {/* New Cell for Classification */}
+                    {doc.classification ? (
+                      <div className="flex flex-col text-xs">
+                        <span>Type: {doc.classification.document_type}</span>
+                        <span>Name: {doc.classification.framework_name}</span>
+                        {doc.classification.parent_law_name && (
+                          <span>Parent: {doc.classification.parent_law_name}</span>
+                        )}
+                      </div>
+                    ) : (
+                      "N/A"
+                    )}
+                  </TableCell>
                   <TableCell>
                     {formatDateTime(doc.created_at)}
                   </TableCell>

@@ -161,11 +161,18 @@ class DocumentService:
     async def get_document_by_id(
         db: AsyncSession, document_id: UUID, user_id: UUID, tenant_id: UUID = None
     ) -> Document:
-        """Get a specific document by ID."""
+        """Get a specific document by ID, eagerly loading classification relationships."""
         from app.models.user import User
+        from app.models.compliance import RegulatoryFramework, RegulatoryRequirement
+        from sqlalchemy.orm import selectinload
 
         result = await db.execute(
-            select(Document).filter(Document.id == document_id)
+            select(Document)
+            .filter(Document.id == document_id)
+            .options(
+                selectinload(Document.regulatory_framework),
+                selectinload(Document.regulatory_requirement)
+            )
         )
         document = result.scalars().first()
 

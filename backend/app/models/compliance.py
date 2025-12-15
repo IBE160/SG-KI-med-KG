@@ -102,6 +102,8 @@ class RegulatoryFramework(Base):
     requirements = relationship(
         "RegulatoryRequirement", back_populates="framework", cascade="all, delete-orphan"
     )
+    document_id = Column(GUID, ForeignKey("documents.id"), nullable=True)
+    document = relationship("Document", back_populates="regulatory_framework")
 
 
 class RegulatoryRequirement(Base):
@@ -114,6 +116,7 @@ class RegulatoryRequirement(Base):
     )
     name = Column(String(255), nullable=False)  # e.g., "Article 5.1"
     description = Column(Text, nullable=True)  # e.g., "Requirement text..."
+    document_id = Column(GUID, ForeignKey("documents.id"), nullable=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -126,6 +129,7 @@ class RegulatoryRequirement(Base):
 
     # Relationships
     framework = relationship("RegulatoryFramework", back_populates="requirements")
+    document = relationship("Document", back_populates="regulatory_requirement")
     control_mappings = relationship(
         "ControlRegulatoryRequirement", back_populates="regulatory_requirement", cascade="all, delete-orphan"
     )

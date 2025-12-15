@@ -1,14 +1,22 @@
 import os
 import uuid
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional, Literal
 from pydantic import BaseModel, Field
 import openai
 from app.config import settings
-from app.schemas.suggestion import AISuggestionCreate, SuggestionType, SuggestionStatus
+from app.models.suggestion import SuggestionType, SuggestionStatus
+from app.schemas.suggestion import AISuggestionCreate
 
 # --- Schema Definitions ---
 # Define Pydantic models that structure the expected LLM output.
 # This will be used for JSON mode or Function Calling validation.
+
+class DocumentClassification(BaseModel):
+    document_type: Literal["Law", "Regulation"] = Field(..., description="Classification of the document")
+    framework_name: str = Field(..., description="Name of the Main Law or Regulation")
+    framework_description: str = Field(..., description="Brief description of the framework")
+    parent_law_name: Optional[str] = Field(None, description="Name of the parent Law (required if Regulation)")
+    version: Optional[str] = Field(None, description="Version or year of the document")
 
 class Suggestion(BaseModel):
     type: SuggestionType = Field(..., description="Type of the suggestion: 'risk', 'control', or 'business_process'.")
@@ -17,6 +25,7 @@ class Suggestion(BaseModel):
     source_reference: str = Field(..., description="Verbatim reference or clear pointer to the source text (e.g., 'Section 4.2').")
 
 class AnalysisResult(BaseModel):
+    classification: Optional[DocumentClassification] = Field(None, description="Document classification details.")
     suggestions: List[Suggestion] = Field(..., description="List of identified risks and controls.")
 
 class AIService:
@@ -24,7 +33,9 @@ class AIService:
 
     SYSTEM_PROMPT = """
 You are an expert AI Legal Specialist in Risk and Compliance.
-Your task is to analyze the provided regulatory document text and identify potential Business Processes, Risks, and Controls.
+Your task is to analyze the provided regulatory document text to:
+1. CLASSIFY the document as a "Main Law" or a "Regulation".
+2. IDENTIFY potential Business Processes, Risks, and Controls.
 
 ANALYSIS GUIDELINES:
 - Perform a COMPREHENSIVE analysis of the entire document
@@ -33,8 +44,16 @@ ANALYSIS GUIDELINES:
 - Aim to identify at least 8-12 suggestions for typical regulatory documents
 - Each section/chapter should yield multiple insights
 
-For each identified item, return a JSON object with the following structure:
+OUTPUT FORMAT:
+Return a JSON object with the following structure:
 {
+  "classification": {
+    "document_type": "Law" | "Regulation",
+    "framework_name": "Name of the law or regulation",
+    "framework_description": "Brief description",
+    "parent_law_name": "Name of parent Law (if Regulation, else null)",
+    "version": "Version/Year string"
+  },
   "suggestions": [
     {
       "type": "risk" | "control" | "business_process",
@@ -52,12 +71,9 @@ For each identified item, return a JSON object with the following structure:
 }
 
 IMPORTANT:
-- "type" must be EXACTLY "risk", "control", or "business_process" (lowercase, no other values)
-- "content" must be a JSON object
-- "content.name" is MANDATORY. It should be a concise title suitable for a list view.
-- "rationale" is a separate field explaining WHY this matters
-- "source_reference" should cite the exact location in the document
-- Be thorough - don't stop at just a few obvious items
+- "document_type" must be "Law" or "Regulation".
+- If "document_type" is "Regulation", "parent_law_name" is REQUIRED (e.g., if analyzing "GDPR Article 32", parent is "GDPR").
+- "suggestions" list must contain "type", "content", "rationale", and "source_reference" exactly as specified.
 
 Output MUST be valid JSON matching this exact structure.
     """

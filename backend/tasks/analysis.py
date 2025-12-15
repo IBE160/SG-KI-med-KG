@@ -1,7 +1,8 @@
-import uuid
 from sqlalchemy.ext.asyncio import AsyncSession
 import asyncio
 import logging
+import uuid
+from sqlalchemy.future import select
 
 from app.core.celery_app import celery_app
 
@@ -9,6 +10,7 @@ from app.core.celery_app import celery_app
 from app.database import async_session_maker
 from app.models.document import Document, DocumentStatus
 from app.models.suggestion import AISuggestion, SuggestionStatus
+from app.models.compliance import RegulatoryFramework, RegulatoryRequirement
 from app.services.document_service import DocumentService
 from app.services.ai_service import AIService
 from app.core.supabase import supabase_client, get_supabase_client # Ensure we have access
@@ -86,6 +88,83 @@ async def _process_document_async(document_id: uuid.UUID):
             ai_service = AIService()
             analysis_result = await ai_service.analyze_document(text_content)
             logger.info(f"[STEP 4/6] ✓ AI returned {len(analysis_result.suggestions)} suggestions")
+
+            # 4.5 Process Classification
+            if analysis_result.classification:
+                logger.info(f"[STEP 4.5/6] Processing classification: {analysis_result.classification.document_type}")
+                cls = analysis_result.classification
+                
+                if cls.document_type == "Law":
+                    # Check if framework exists
+                    stmt = select(RegulatoryFramework).filter(
+                        RegulatoryFramework.tenant_id == tenant_id,
+                        RegulatoryFramework.name == cls.framework_name
+                    )
+                    result = await db.execute(stmt)
+                    framework = result.scalars().first()
+                    
+                    if not framework:
+                        framework = RegulatoryFramework(
+                            tenant_id=tenant_id,
+                            name=cls.framework_name,
+                            description=cls.framework_description,
+                            version=cls.version,
+                            document_id=document.id
+                        )
+                        db.add(framework)
+                        logger.info(f"[STEP 4.5/6] Created new Framework: {cls.framework_name}")
+                    else:
+                        framework.description = cls.framework_description or framework.description
+                        framework.version = cls.version or framework.version
+                        framework.document_id = document.id
+                        logger.info(f"[STEP 4.5/6] Updated Framework: {cls.framework_name}")
+                        
+                elif cls.document_type == "Regulation":
+                    # 1. Ensure parent framework exists
+                    parent_name = cls.parent_law_name or "Unknown Law"
+                    stmt = select(RegulatoryFramework).filter(
+                        RegulatoryFramework.tenant_id == tenant_id,
+                        RegulatoryFramework.name == parent_name
+                    )
+                    result = await db.execute(stmt)
+                    parent_framework = result.scalars().first()
+                    
+                    if not parent_framework:
+                        parent_framework = RegulatoryFramework(
+                            tenant_id=tenant_id,
+                            name=parent_name,
+                            description=f"Auto-created parent for {cls.framework_name}",
+                            version=cls.version
+                        )
+                        db.add(parent_framework)
+                        await db.flush() # Need ID
+                        logger.info(f"[STEP 4.5/6] Auto-created parent Framework: {parent_name}")
+                    
+                    # 2. Check/Create Requirement
+                    stmt = select(RegulatoryRequirement).filter(
+                        RegulatoryRequirement.tenant_id == tenant_id,
+                        RegulatoryRequirement.framework_id == parent_framework.id,
+                        RegulatoryRequirement.name == cls.framework_name
+                    )
+                    result = await db.execute(stmt)
+                    requirement = result.scalars().first()
+                    
+                    if not requirement:
+                        requirement = RegulatoryRequirement(
+                            tenant_id=tenant_id,
+                            framework_id=parent_framework.id,
+                            name=cls.framework_name,
+                            description=cls.framework_description,
+                            document_id=document.id
+                        )
+                        db.add(requirement)
+                        logger.info(f"[STEP 4.5/6] Created new Requirement: {cls.framework_name}")
+                    else:
+                        requirement.description = cls.framework_description or requirement.description
+                        requirement.document_id = document.id
+                        logger.info(f"[STEP 4.5/6] Updated Requirement: {cls.framework_name}")
+            else:
+                 logger.warning("[STEP 4.5/6] No classification returned from AI")
 
             # 5. Save Suggestions
             logger.info(f"[STEP 5/6] Saving {len(analysis_result.suggestions)} suggestions to database")

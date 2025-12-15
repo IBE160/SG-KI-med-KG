@@ -3,6 +3,7 @@ from uuid import UUID
 from datetime import datetime
 from typing import Optional
 from app.models.document import DocumentStatus
+from app.services.ai_service import DocumentClassification
 
 
 class DocumentBase(BaseModel):
@@ -24,6 +25,7 @@ class DocumentRead(DocumentBase):
     status: DocumentStatus
     uploaded_by: UUID
     created_at: datetime
+    classification: Optional[DocumentClassification] = None
 
     class Config:
         from_attributes = True

@@ -92,6 +92,7 @@ export {
   regulatoryFrameworksReadRegulatoryFramework as readRegulatoryFramework,
   regulatoryFrameworksUpdateRegulatoryFramework as updateRegulatoryFramework,
   regulatoryFrameworksDeleteRegulatoryFramework as deleteRegulatoryFramework,
+  regulatoryFrameworksGetRegulatoryFrameworksTree as getRegulatoryFrameworksTree,
 } from "./openapi-client/sdk.gen";
 
 // Note: All types are already exported via export * from "./openapi-client"

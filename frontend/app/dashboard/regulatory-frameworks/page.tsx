@@ -1,38 +1,33 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Plus, Pencil, ScrollText, ClipboardList, FileText, ChevronRight, ChevronDown } from "lucide-react";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Button } from "@/components/ui/button";
-import { Plus, Pencil } from "lucide-react";
-import {
-  readRegulatoryFrameworks,
-  RegulatoryFrameworkRead,
+  getRegulatoryFrameworksTree,
+  RegulatoryFrameworkTreeItem,
+  removeRegulatoryFramework,
 } from "@/app/clientService";
 import Link from "next/link";
-import { removeRegulatoryFramework } from "@/components/actions/delete-actions";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DeleteEntityButton } from "@/components/delete-entity-button";
+import { TreeItem } from "@/components/custom/TreeItem"; // Import the TreeItem component
+import { Badge } from "@/components/ui/badge";
 
 export default function RegulatoryFrameworksPage() {
-  const [frameworks, setFrameworks] = useState<RegulatoryFrameworkRead[]>([]);
+  const [frameworksTree, setFrameworksTree] = useState<RegulatoryFrameworkTreeItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchFrameworks = async () => {
+  const fetchFrameworksTree = async () => {
     try {
       setLoading(true);
-      const response = await readRegulatoryFrameworks();
-      if (response.data && response.data.items) {
-        setFrameworks(response.data.items);
+      const response = await getRegulatoryFrameworksTree();
+      if (response.data) {
+        setFrameworksTree(response.data);
       }
     } catch (err) {
-      console.error("Failed to fetch regulatory frameworks:", err);
+      console.error("Failed to fetch regulatory frameworks tree:", err);
       setError("Failed to load regulatory frameworks. Please try again.");
     } finally {
       setLoading(false);
@@ -40,17 +35,33 @@ export default function RegulatoryFrameworksPage() {
   };
 
   useEffect(() => {
-    fetchFrameworks();
+    fetchFrameworksTree();
   }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string, isRequirement: boolean) => {
     try {
-      await removeRegulatoryFramework(id);
-      fetchFrameworks();
+      // Assuming removeRegulatoryFramework can handle both frameworks and requirements
+      // Or we need a separate function for requirements (not in current API)
+      await removeRegulatoryFramework(id); // This needs to be updated if requirements have separate delete API
+      fetchFrameworksTree();
     } catch (error) {
-      console.error("Failed to delete regulatory framework:", error);
+      console.error("Failed to delete regulatory item:", error);
     }
   };
+
+  const ActionButtons = ({ item, isRequirement = false }: { item: any, isRequirement?: boolean }) => (
+    <div className="flex items-center gap-1">
+      <Button variant="ghost" size="icon" asChild>
+        <Link href={`/dashboard/regulatory-frameworks/${item.id}/edit`}>
+          <Pencil className="h-4 w-4" />
+        </Link>
+      </Button>
+      <DeleteEntityButton
+        id={item.id}
+        onDelete={() => handleDelete(item.id, isRequirement)}
+      />
+    </div>
+  );
 
   return (
     <div className="space-y-4">
@@ -66,69 +77,63 @@ export default function RegulatoryFrameworksPage() {
         </Button>
       </div>
 
-      <div className="border rounded-md">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Description</TableHead>
-              <TableHead>Version</TableHead>
-              <TableHead className="w-[100px]">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={4} className="text-center py-10">
-                  Loading...
-                </TableCell>
-              </TableRow>
-            ) : error ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-center py-10 text-red-500"
-                >
-                  {error}
-                </TableCell>
-              </TableRow>
-            ) : frameworks.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="text-center py-10 text-muted-foreground"
-                >
-                  No regulatory frameworks found. Create one to get started.
-                </TableCell>
-              </TableRow>
-            ) : (
-              frameworks.map((framework) => (
-                <TableRow key={framework.id}>
-                  <TableCell className="font-medium">
-                    {framework.name}
-                  </TableCell>
-                  <TableCell>{framework.description}</TableCell>
-                  <TableCell>{framework.version}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button variant="ghost" size="icon" asChild>
-                        <Link
-                          href={`/dashboard/regulatory-frameworks/${framework.id}/edit`}
-                        >
-                          <Pencil className="h-4 w-4" />
-                        </Link>
-                      </Button>
-                      <DeleteEntityButton
-                        id={framework.id}
-                        onDelete={handleDelete}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+      <div className="border rounded-md p-4">
+        {loading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+            <Skeleton className="h-8 w-full" />
+          </div>
+        ) : error ? (
+          <div className="text-center py-10 text-red-500">{error}</div>
+        ) : frameworksTree.length === 0 ? (
+          <div className="text-center py-10 text-muted-foreground">
+            No regulatory frameworks found. Create one to get started.
+          </div>
+        ) : (
+          <div className="space-y-2">
+            {frameworksTree.map((framework) => (
+              <TreeItem
+                key={framework.id}
+                label={framework.name}
+                icon={ScrollText} // Icon for Main Law
+                badgeCount={framework.requirements.length}
+                actions={<ActionButtons item={framework} />}
+                defaultExpanded={true}
+              >
+                {framework.description && (
+                  <div className="text-sm text-muted-foreground ml-2">
+                    {framework.description} (v{framework.version || 'N/A'})
+                    {framework.document_id && (
+                      <span className="ml-2 text-xs flex items-center gap-1">
+                        <FileText className="h-3 w-3" /> Linked Document
+                      </span>
+                    )}
+                  </div>
+                )}
+                {framework.requirements.map((requirement) => (
+                  <TreeItem
+                    key={requirement.id}
+                    label={requirement.name}
+                    icon={ClipboardList} // Icon for Regulation
+                    actions={<ActionButtons item={requirement} isRequirement={true} />}
+                  >
+                    {requirement.description && (
+                      <div className="text-sm text-muted-foreground ml-2">
+                        {requirement.description}
+                        {requirement.document_id && (
+                          <span className="ml-2 text-xs flex items-center gap-1">
+                            <FileText className="h-3 w-3" /> Linked Document
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </TreeItem>
+                ))}
+              </TreeItem>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

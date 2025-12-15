@@ -7,6 +7,7 @@ from .compliance import (
     Risk as Risk,
     Control as Control,
     RegulatoryFramework as RegulatoryFramework,
+    RegulatoryRequirement as RegulatoryRequirement,
 )
 from .mapping import (
     ControlRegulatoryRequirement as ControlRegulatoryRequirement,

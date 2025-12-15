@@ -163,11 +163,16 @@ import type {
   SuggestionsUpdateSuggestionStatusData,
   SuggestionsUpdateSuggestionStatusError,
   SuggestionsUpdateSuggestionStatusResponse,
+  SuggestionsApproveSuggestionData,
+  SuggestionsApproveSuggestionError,
+  SuggestionsApproveSuggestionResponse,
   AuditLogsListAuditLogsData,
   AuditLogsListAuditLogsError,
   AuditLogsListAuditLogsResponse,
   DashboardGetDashboardMetricsError,
   DashboardGetDashboardMetricsResponse,
+  DashboardGetOverviewDataError,
+  DashboardGetOverviewDataResponse,
   AssessmentsGetPendingReviewsData,
   AssessmentsGetPendingReviewsError,
   AssessmentsGetPendingReviewsResponse,
@@ -192,6 +197,8 @@ import type {
   ReportsGenerateGapAnalysisReportData,
   ReportsGenerateGapAnalysisReportError,
   ReportsGenerateGapAnalysisReportResponse,
+  RegulatoryFrameworksGetRegulatoryFrameworksTreeError,
+  RegulatoryFrameworksGetRegulatoryFrameworksTreeResponse,
 } from "./types.gen";
 
 export const client = createClient(createConfig());
@@ -946,7 +953,7 @@ export const usersCreateUser = <ThrowOnError extends boolean = false>(
  * If role parameter is provided, returns users that have that role
  * in their roles array.
  *
- * Requires admin or compliance_officer role.
+ * Requires admin role.
  */
 export const usersListUsers = <ThrowOnError extends boolean = false>(
   options?: OptionsLegacyParser<UsersListUsersData, ThrowOnError>,
@@ -1200,9 +1207,29 @@ export const suggestionsUpdateSuggestionStatus = <
 };
 
 /**
+ * Approve Suggestion
+ * Approve a suggestion and create the corresponding entity (Risk, Control, or BusinessProcess).
+ * Only suggestions in pending_review status can be approved.
+ */
+export const suggestionsApproveSuggestion = <
+  ThrowOnError extends boolean = false,
+>(
+  options: OptionsLegacyParser<SuggestionsApproveSuggestionData, ThrowOnError>,
+) => {
+  return (options?.client ?? client).post<
+    SuggestionsApproveSuggestionResponse,
+    SuggestionsApproveSuggestionError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/suggestions/{suggestion_id}/approve",
+  });
+};
+
+/**
  * List Audit Logs
  * Retrieve audit logs.
- * Requires admin or compliance_officer role.
+ * Requires admin role.
  */
 export const auditLogsListAuditLogs = <ThrowOnError extends boolean = false>(
   options?: OptionsLegacyParser<AuditLogsListAuditLogsData, ThrowOnError>,
@@ -1241,6 +1268,26 @@ export const dashboardGetDashboardMetrics = <
   >({
     ...options,
     url: "/api/v1/dashboard/metrics",
+  });
+};
+
+/**
+ * Get Overview Data
+ * Retrieve hierarchical overview data (Processes -> Risks/Controls).
+ *
+ * Returns:
+ * OverviewResponse: List of processes with nested risks and controls.
+ */
+export const dashboardGetOverviewData = <ThrowOnError extends boolean = false>(
+  options?: OptionsLegacyParser<unknown, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    DashboardGetOverviewDataResponse,
+    DashboardGetOverviewDataError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/dashboard/overview",
   });
 };
 
@@ -1541,5 +1588,24 @@ export const reportsGenerateGapAnalysisReport = <
   >({
     ...options,
     url: "/api/v1/reports/gap-analysis/{framework_id}",
+  });
+};
+
+/**
+ * Get Regulatory Frameworks Tree
+ * Get all regulatory frameworks with their requirements in a hierarchical tree structure.
+ */
+export const regulatoryFrameworksGetRegulatoryFrameworksTree = <
+  ThrowOnError extends boolean = false,
+>(
+  options?: OptionsLegacyParser<unknown, ThrowOnError>,
+) => {
+  return (options?.client ?? client).get<
+    RegulatoryFrameworksGetRegulatoryFrameworksTreeResponse,
+    RegulatoryFrameworksGetRegulatoryFrameworksTreeError,
+    ThrowOnError
+  >({
+    ...options,
+    url: "/api/v1/regulatory-frameworks/tree",
   });
 };

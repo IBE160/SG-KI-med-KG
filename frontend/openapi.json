@@ -839,7 +839,7 @@
         "operationId": "controls-create_control",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "requestBody": {
@@ -883,7 +883,7 @@
         "operationId": "controls-read_controls",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -948,7 +948,7 @@
         "operationId": "controls-read_control",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -994,7 +994,7 @@
         "operationId": "controls-update_control",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1050,7 +1050,7 @@
         "operationId": "controls-delete_control",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1091,7 +1091,7 @@
         "operationId": "risks-create_risk",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "requestBody": {
@@ -1135,7 +1135,7 @@
         "operationId": "risks-read_risks",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1200,7 +1200,7 @@
         "operationId": "risks-read_risk",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1246,7 +1246,7 @@
         "operationId": "risks-update_risk",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1302,7 +1302,7 @@
         "operationId": "risks-delete_risk",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1343,7 +1343,7 @@
         "operationId": "business-processes-create_business_process",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "requestBody": {
@@ -1387,7 +1387,7 @@
         "operationId": "business-processes-read_business_processes",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1452,7 +1452,7 @@
         "operationId": "business-processes-read_business_process",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1498,7 +1498,7 @@
         "operationId": "business-processes-update_business_process",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1554,7 +1554,7 @@
         "operationId": "business-processes-delete_business_process",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1595,7 +1595,7 @@
         "operationId": "regulatory-frameworks-create_regulatory_framework",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "requestBody": {
@@ -1639,7 +1639,7 @@
         "operationId": "regulatory-frameworks-read_regulatory_frameworks",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1704,7 +1704,7 @@
         "operationId": "regulatory-frameworks-read_regulatory_framework",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1750,7 +1750,7 @@
         "operationId": "regulatory-frameworks-update_regulatory_framework",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1806,7 +1806,7 @@
         "operationId": "regulatory-frameworks-delete_regulatory_framework",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1847,7 +1847,7 @@
         "operationId": "regulatory-requirements-create_regulatory_requirement",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "requestBody": {
@@ -1866,7 +1866,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegulatoryRequirementRead"
+                  "$ref": "#/components/schemas/app__schemas__RegulatoryRequirementRead"
                 }
               }
             }
@@ -1891,7 +1891,7 @@
         "operationId": "regulatory-requirements-read_regulatory_requirements",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1975,7 +1975,7 @@
         "operationId": "regulatory-requirements-read_regulatory_requirement",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -1996,7 +1996,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegulatoryRequirementRead"
+                  "$ref": "#/components/schemas/app__schemas__RegulatoryRequirementRead"
                 }
               }
             }
@@ -2021,7 +2021,7 @@
         "operationId": "regulatory-requirements-update_regulatory_requirement",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -2052,7 +2052,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/RegulatoryRequirementRead"
+                  "$ref": "#/components/schemas/app__schemas__RegulatoryRequirementRead"
                 }
               }
             }
@@ -2077,7 +2077,7 @@
         "operationId": "regulatory-requirements-delete_regulatory_requirement",
         "security": [
           {
-            "OAuth2PasswordBearer": []
+            "HTTPBearer": []
           }
         ],
         "parameters": [
@@ -2162,7 +2162,7 @@
           "users"
         ],
         "summary": "List Users",
-        "description": "List users in the current tenant, optionally filtered by role.\n\nIf role parameter is provided, returns users that have that role\nin their roles array.\n\nRequires admin or compliance_officer role.",
+        "description": "List users in the current tenant, optionally filtered by role.\n\nIf role parameter is provided, returns users that have that role\nin their roles array.\n\nRequires admin role.",
         "operationId": "users-list_users",
         "security": [
           {
@@ -2770,6 +2770,66 @@
         }
       }
     },
+    "/api/v1/suggestions/{suggestion_id}/approve": {
+      "post": {
+        "tags": [
+          "suggestions",
+          "suggestions"
+        ],
+        "summary": "Approve Suggestion",
+        "description": "Approve a suggestion and create the corresponding entity (Risk, Control, or BusinessProcess).\nOnly suggestions in pending_review status can be approved.",
+        "operationId": "suggestions-approve_suggestion",
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "suggestion_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Suggestion Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApproveSuggestionRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AISuggestionRead"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v1/audit-logs": {
       "get": {
         "tags": [
@@ -2777,7 +2837,7 @@
           "audit-logs"
         ],
         "summary": "List Audit Logs",
-        "description": "Retrieve audit logs.\nRequires admin or compliance_officer role.",
+        "description": "Retrieve audit logs.\nRequires admin role.",
         "operationId": "audit-logs-list_audit_logs",
         "security": [
           {
@@ -2886,6 +2946,34 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/DashboardMetrics"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
+    },
+    "/api/v1/dashboard/overview": {
+      "get": {
+        "tags": [
+          "dashboard",
+          "dashboard"
+        ],
+        "summary": "Get Overview Data",
+        "description": "Retrieve hierarchical overview data (Processes -> Risks/Controls).\n\nReturns:\n    OverviewResponse: List of processes with nested risks and controls.",
+        "operationId": "dashboard-get_overview_data",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewResponse"
                 }
               }
             }
@@ -3321,12 +3409,48 @@
           }
         }
       }
+    },
+    "/api/v1/regulatory-frameworks/tree": {
+      "get": {
+        "tags": [
+          "regulatory-frameworks"
+        ],
+        "summary": "Get Regulatory Frameworks Tree",
+        "description": "Get all regulatory frameworks with their requirements in a hierarchical tree structure.",
+        "operationId": "regulatory-frameworks-get_regulatory_frameworks_tree",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/RegulatoryFrameworkTreeItem"
+                  },
+                  "type": "array",
+                  "title": "Response Regulatory-Frameworks-Get Regulatory Frameworks Tree"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ]
+      }
     }
   },
   "components": {
     "schemas": {
       "AISuggestionRead": {
         "properties": {
+          "document_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Document Id"
+          },
           "type": {
             "$ref": "#/components/schemas/SuggestionType"
           },
@@ -3343,23 +3467,35 @@
             "type": "string",
             "title": "Source Reference"
           },
+          "status": {
+            "$ref": "#/components/schemas/SuggestionStatus"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
           "id": {
             "type": "string",
             "format": "uuid",
             "title": "Id"
           },
-          "status": {
-            "$ref": "#/components/schemas/SuggestionStatus"
-          },
-          "document_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Document Id"
+          "assigned_bpo_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Assigned Bpo Id"
           },
           "assigned_bpo": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/UserReadMinimal"
+                "$ref": "#/components/schemas/UserRead"
               },
               {
                 "type": "null"
@@ -3369,15 +3505,40 @@
         },
         "type": "object",
         "required": [
+          "document_id",
           "type",
           "content",
           "rationale",
           "source_reference",
-          "id",
           "status",
-          "document_id"
+          "tenant_id",
+          "id"
         ],
         "title": "AISuggestionRead"
+      },
+      "ApproveSuggestionRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "ApproveSuggestionRequest"
       },
       "AssessmentAction": {
         "type": "string",
@@ -4380,6 +4541,150 @@
         "title": "MappingListResponse",
         "description": "List of mappings for a control or requirement"
       },
+      "OverviewControl": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "OverviewControl"
+      },
+      "OverviewProcess": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "controls": {
+            "items": {
+              "$ref": "#/components/schemas/OverviewControl"
+            },
+            "type": "array",
+            "title": "Controls",
+            "default": []
+          },
+          "risks": {
+            "items": {
+              "$ref": "#/components/schemas/OverviewRisk"
+            },
+            "type": "array",
+            "title": "Risks",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "OverviewProcess"
+      },
+      "OverviewResponse": {
+        "properties": {
+          "processes": {
+            "items": {
+              "$ref": "#/components/schemas/OverviewProcess"
+            },
+            "type": "array",
+            "title": "Processes"
+          }
+        },
+        "type": "object",
+        "required": [
+          "processes"
+        ],
+        "title": "OverviewResponse"
+      },
+      "OverviewRisk": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name"
+        ],
+        "title": "OverviewRisk"
+      },
       "Page_BusinessProcessRead_": {
         "properties": {
           "items": {
@@ -4648,7 +4953,7 @@
         "properties": {
           "items": {
             "items": {
-              "$ref": "#/components/schemas/RegulatoryRequirementRead"
+              "$ref": "#/components/schemas/app__schemas__RegulatoryRequirementRead"
             },
             "type": "array",
             "title": "Items"
@@ -4975,6 +5280,85 @@
         ],
         "title": "RegulatoryFrameworkRead"
       },
+      "RegulatoryFrameworkTreeItem": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Id"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          },
+          "requirements": {
+            "items": {
+              "$ref": "#/components/schemas/app__schemas__compliance__RegulatoryRequirementRead"
+            },
+            "type": "array",
+            "title": "Requirements",
+            "default": []
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "id",
+          "tenant_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "RegulatoryFrameworkTreeItem"
+      },
       "RegulatoryFrameworkUpdate": {
         "properties": {
           "name": {
@@ -5039,60 +5423,6 @@
           "framework_id"
         ],
         "title": "RegulatoryRequirementCreate"
-      },
-      "RegulatoryRequirementRead": {
-        "properties": {
-          "name": {
-            "type": "string",
-            "title": "Name"
-          },
-          "description": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Description"
-          },
-          "framework_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Framework Id"
-          },
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Id"
-          },
-          "tenant_id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Tenant Id"
-          },
-          "created_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Created At"
-          },
-          "updated_at": {
-            "type": "string",
-            "format": "date-time",
-            "title": "Updated At"
-          }
-        },
-        "type": "object",
-        "required": [
-          "name",
-          "framework_id",
-          "id",
-          "tenant_id",
-          "created_at",
-          "updated_at"
-        ],
-        "title": "RegulatoryRequirementRead"
       },
       "RegulatoryRequirementUpdate": {
         "properties": {
@@ -5630,36 +5960,6 @@
         ],
         "title": "UserRead"
       },
-      "UserReadMinimal": {
-        "properties": {
-          "id": {
-            "type": "string",
-            "format": "uuid",
-            "title": "Id"
-          },
-          "email": {
-            "type": "string",
-            "title": "Email"
-          },
-          "full_name": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Full Name"
-          }
-        },
-        "type": "object",
-        "required": [
-          "id",
-          "email"
-        ],
-        "title": "UserReadMinimal"
-      },
       "UserUpdate": {
         "properties": {
           "password": {
@@ -5791,6 +6091,126 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "app__schemas__RegulatoryRequirementRead": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "framework_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Framework Id"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "framework_id",
+          "id",
+          "tenant_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "RegulatoryRequirementRead"
+      },
+      "app__schemas__compliance__RegulatoryRequirementRead": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "document_id": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "uuid"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Document Id"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id"
+          },
+          "framework_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Framework Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Tenant Id"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "id",
+          "framework_id",
+          "tenant_id",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "RegulatoryRequirementRead"
       },
       "login": {
         "properties": {

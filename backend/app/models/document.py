@@ -1,6 +1,7 @@
 from sqlalchemy import Column, String, DateTime, ForeignKey, Enum as SQLEnum
 from app.models.guid import GUID
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship, Mapped
+from typing import Optional
 from datetime import datetime
 import uuid
 import enum
@@ -30,3 +31,5 @@ class Document(Base):
 
     # Relationships
     user = relationship("User", back_populates="documents")
+    regulatory_framework: Mapped[Optional["RegulatoryFramework"]] = relationship(back_populates="document")
+    regulatory_requirement: Mapped[Optional["RegulatoryRequirement"]] = relationship(back_populates="document")
