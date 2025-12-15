@@ -93,10 +93,10 @@ export default function DocumentsPage() {
         return;
       }
 
-      // Validate file size (20MB)
-      const maxSize = 20 * 1024 * 1024;
+      // Validate file size (1MB)
+      const maxSize = 1 * 1024 * 1024;
       if (file.size > maxSize) {
-        toast.error("File size must be less than 20MB");
+        toast.error("File size must be less than 1MB");
         return;
       }
 
@@ -173,6 +173,10 @@ export default function DocumentsPage() {
       setUploading(false);
     }
   };
+// ... (omitting irrelevant parts of file for brevity in matching, but I will target the helper text separately or include it in the replace block if close)
+// Actually, the helper text is further down. I should do two replacements or one large one.
+// Let's do two separate replacements for clarity and safety.
+
 
   const handleDeleteClick = (doc: Document) => {
     setDocumentToDelete(doc);
@@ -455,7 +459,7 @@ export default function DocumentsPage() {
             </Button>
           </div>
           <p className="text-sm text-muted-foreground">
-            Supported formats: PDF, TXT (max 20MB)
+            Supported formats: PDF, TXT (max 1MB)
           </p>
         </div>
       </div>

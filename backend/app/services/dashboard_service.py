@@ -95,7 +95,7 @@ class DashboardService:
                 metric=0,
                 metric_label="",
                 icon="file-text",
-                action_link="/dashboard/documents/upload"
+                action_link="/dashboard/admin/documents"
             )
         ]
 
@@ -147,7 +147,7 @@ class DashboardService:
                 metric=overdue_assessments,
                 metric_label="assessments",
                 icon="alert-triangle",
-                action_link="/dashboard/bpo/overdue",
+                action_link="#coming-soon",
                 status="urgent" if overdue_assessments > 0 else None
             )
         ]
@@ -186,7 +186,7 @@ class DashboardService:
                 metric=compliance_score,
                 metric_label="%",
                 icon="check-circle",
-                action_link="/dashboard/compliance"
+                action_link="#coming-soon"
             ),
             DashboardCard(
                 card_id="recent_activity",
@@ -194,7 +194,7 @@ class DashboardService:
                 metric=recent_activity,
                 metric_label="updates",
                 icon="activity",
-                action_link="/dashboard/activity"
+                action_link="#coming-soon"
             )
         ]
 

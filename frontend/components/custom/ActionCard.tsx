@@ -1,6 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import * as LucideIcons from "lucide-react";
+import { toast } from "sonner";
 
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,6 +35,11 @@ export function ActionCard({
 }: ActionCardProps) {
   // Dynamically load Lucide icon by name
   const IconComponent = (LucideIcons as any)[icon] || LucideIcons.Activity;
+
+  const handleComingSoonClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    toast.info("Feature coming soon");
+  };
 
   if (loading) {
     return (
@@ -70,11 +76,19 @@ export function ActionCard({
         {status === "urgent" && (
           <p className="text-xs text-red-600 mb-3">Requires attention</p>
         )}
-        <Link href={actionLink} className="block mt-4">
-          <Button variant="outline" className="w-full">
-            View
-          </Button>
-        </Link>
+        {actionLink === "#coming-soon" ? (
+          <div className="block mt-4">
+            <Button variant="outline" className="w-full" onClick={handleComingSoonClick}>
+              View
+            </Button>
+          </div>
+        ) : (
+          <Link href={actionLink} className="block mt-4">
+            <Button variant="outline" className="w-full">
+              View
+            </Button>
+          </Link>
+        )}
       </CardContent>
     </Card>
   );

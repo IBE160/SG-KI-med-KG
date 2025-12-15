@@ -344,7 +344,7 @@ export default function AdminSuggestionsPage() {
             {processedSuggestions.map((suggestion) => (
               <TableRow
                 key={suggestion.id}
-                className="cursor-pointer hover:bg-gray-50"
+                className="cursor-pointer hover:bg-muted/50"
               >
                 <TableCell>
                   <div className="flex items-center gap-2">
