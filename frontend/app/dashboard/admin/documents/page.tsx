@@ -457,7 +457,7 @@ export default function DocumentsPage() {
             <TableRow>
               <TableHead>Filename</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Classification</TableHead> {/* New column */}
+              <TableHead>Classification</TableHead>
               <TableHead>Uploaded</TableHead>
               <TableHead className="w-[50px]"></TableHead>
             </TableRow>
@@ -465,7 +465,7 @@ export default function DocumentsPage() {
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-10"> {/* Adjusted colSpan */}
+                <TableCell colSpan={5} className="text-center py-10">
                   Loading...
                 </TableCell>
               </TableRow>

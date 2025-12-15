@@ -147,12 +147,17 @@ class DocumentService:
         # Assuming Document has relationship to User (uploaded_by)
         # And User has tenant_id
         from app.models.user import User
+        from sqlalchemy.orm import selectinload
 
         result = await db.execute(
             select(Document)
             .join(User, Document.uploaded_by == User.id)
             .filter(User.tenant_id == tenant_id)
             .filter(Document.archived_at.is_(None))
+            .options(
+                selectinload(Document.regulatory_framework),
+                selectinload(Document.regulatory_requirement)
+            )
             .order_by(Document.created_at.desc())
         )
         return result.scalars().all()
