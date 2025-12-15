@@ -2,6 +2,7 @@
 
 from pydantic import BaseModel, Field
 from typing import List, Optional
+from uuid import UUID
 
 
 class DashboardCard(BaseModel):
@@ -65,3 +66,26 @@ class DashboardMetrics(BaseModel):
                 ]
             }
         }
+
+
+class OverviewControl(BaseModel):
+    id: UUID
+    name: str
+    description: Optional[str] = None
+    type: Optional[str] = None
+
+class OverviewRisk(BaseModel):
+    id: UUID
+    name: str
+    description: Optional[str] = None
+    category: Optional[str] = None
+
+class OverviewProcess(BaseModel):
+    id: UUID
+    name: str
+    description: Optional[str] = None
+    controls: List[OverviewControl] = []
+    risks: List[OverviewRisk] = []
+
+class OverviewResponse(BaseModel):
+    processes: List[OverviewProcess]

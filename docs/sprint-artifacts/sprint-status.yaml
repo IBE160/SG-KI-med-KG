@@ -66,11 +66,11 @@ development_status:
   4-3-develop-streamlined-control-assessment-workflow-for-bpos: done
   4-4-dashboard-ux-enhancements: done
   4-5-defect-controls-visibility: done
-  4-6-overview-page: ready-for-dev
+  4-6-overview-page: done
   epic-4-retrospective: optional
 
   epic-5: contexted
   5-1-implement-many-to-many-compliance-mapping-ui: done
   5-2-develop-gap-analysis-report-generation: done
-  5-3-regulatory-frameworks-enhancement: drafted
+  5-3-regulatory-frameworks-enhancement: ready-for-dev
   epic-5-retrospective: optional

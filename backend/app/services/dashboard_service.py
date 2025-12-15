@@ -47,9 +47,9 @@ class DashboardService:
     @staticmethod
     async def _get_admin_cards(db: AsyncSession, tenant_id: UUID) -> List[DashboardCard]:
         """Generate admin-specific dashboard cards."""
-        # Admin sees: System Health, User Management, Analyze New Document
+        # Admin sees: Overview, User Management, Analyze New Document
 
-        # Count total active risks (example metric for system health)
+        # Count total active risks
         risk_count_query = select(func.count(Risk.id)).where(Risk.tenant_id == tenant_id)
         risk_count_result = await db.execute(risk_count_query)
         total_risks = risk_count_result.scalar() or 0
@@ -58,6 +58,11 @@ class DashboardService:
         control_count_query = select(func.count(Control.id)).where(Control.tenant_id == tenant_id)
         control_count_result = await db.execute(control_count_query)
         total_controls = control_count_result.scalar() or 0
+
+        # Count total business processes
+        process_count_query = select(func.count(BusinessProcess.id)).where(BusinessProcess.tenant_id == tenant_id)
+        process_count_result = await db.execute(process_count_query)
+        total_processes = process_count_result.scalar() or 0
 
         # Count pending suggestions (for triage)
         pending_suggestions_query = select(func.count(AISuggestion.id)).where(
@@ -68,12 +73,12 @@ class DashboardService:
 
         return [
             DashboardCard(
-                card_id="system_health",
-                title="System Health",
-                metric=total_risks + total_controls,
+                card_id="overview",
+                title="Overview",
+                metric=total_risks + total_controls + total_processes,
                 metric_label="items",
-                icon="activity",
-                action_link="/dashboard/admin/system"
+                icon="layout-dashboard",
+                action_link="/dashboard/overview"
             ),
             DashboardCard(
                 card_id="pending_suggestions",

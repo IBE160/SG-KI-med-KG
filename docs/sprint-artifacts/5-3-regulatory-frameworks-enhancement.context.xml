@@ -1,0 +1,105 @@
+<story-context id="docs/sprint-artifacts/5-3-regulatory-frameworks-enhancement.context.xml" v="1.0">
+  <metadata>
+    <epicId>5</epicId>
+    <storyId>5.3</storyId>
+    <title>Regulatory Frameworks Enhancement</title>
+    <status>drafted</status>
+    <generatedAt>2025-12-15</generatedAt>
+    <generator>BMAD Story Context Workflow</generator>
+    <sourceStoryPath>docs/sprint-artifacts/5-3-regulatory-frameworks-enhancement.md</sourceStoryPath>
+  </metadata>
+
+  <story>
+    <asA>Admin</asA>
+    <iWant>uploaded regulatory documents to be automatically classified as Main Laws or Regulations by AI, with Regulations linked to parent Laws in a hierarchical structure</iWant>
+    <soThat>I can maintain an organized regulatory framework that reflects the actual legal structure (laws → regulations)</soThat>
+    <tasks>
+      - [ ] **Backend: Update Document Processing AI Prompt** (AC: #1, #2, #3)
+      - [ ] **Backend: Extend Document Processing Logic** (AC: #2, #3, #5)
+      - [ ] **Backend: Update Data Models** (AC: #3, #4)
+      - [ ] **Backend: Create API Endpoint for Hierarchical Data** (AC: #4)
+      - [ ] **Frontend: Update Regulatory Frameworks Page** (AC: #4)
+      - [ ] **Frontend: Update Document Processing UI** (AC: #1)
+      - [ ] **Testing** (All ACs)
+    </tasks>
+  </story>
+
+  <acceptanceCriteria>
+    1. **Document Classification During "Process Now"**
+       - AI analyzes document and determines "Main Law" vs "Regulation"
+       - Classification added to workflow
+    2. **Law Creation/Linking**
+       - "Main Law" -> Create/Update `RegulatoryFramework`, link document via `document_id`
+    3. **Regulation Creation with Parent Law Linking**
+       - "Regulation" -> Identify parent Law, Create/Link `RegulatoryRequirement` to parent Framework
+       - Auto-create parent Law if missing
+       - Link document to Requirement via `document_id`
+    4. **Hierarchical Display on Regulatory Frameworks Page**
+       - Tree view: Laws (Parent) -> Regulations (Child)
+       - Show linked document info
+    5. **One Document, One Framework Item**
+       - Enforce 1:1 link (document -> Law OR Regulation)
+       - Prevent duplicates
+    6. **Manual Override Capability (Future Enhancement)**
+       - Note as future feature in Dev Notes
+  </acceptanceCriteria>
+
+  <artifacts>
+    <docs>
+      <doc path="docs/sprint-artifacts/tech-spec-epic-5.md" title="Epic 5 Technical Specification" section="Detailed Design" snippet="Defines data models (RegulatoryFramework, RegulatoryRequirement) and mapping logic. Note: This spec focuses on mapping controls, but the underlying framework models are reused here." />
+      <doc path="docs/sprint-artifacts/5-2-develop-gap-analysis-report-generation.md" title="Story 5.2 Context" section="Dev Notes" snippet="Describes the separation of RegulatoryFramework (parent) and RegulatoryRequirement (child) models introduced in Story 5.2." />
+      <doc path="docs/architecture.md" title="System Architecture" section="4.3 AI & Vector Database" snippet="Describes the AI pipeline using OpenAI GPT-4 and Pydantic-AI for structured output." />
+    </docs>
+    <code>
+      <item path="backend/app/models/compliance.py" kind="model" symbol="RegulatoryFramework" lines="55-70" reason="Parent model for 'Main Law' classification. Needs 'document_id' FK." />
+      <item path="backend/app/models/compliance.py" kind="model" symbol="RegulatoryRequirement" lines="78-95" reason="Child model for 'Regulation' classification. Needs 'document_id' FK." />
+      <item path="backend/app/services/ai_service.py" kind="service" symbol="AIService.analyze_document" lines="35-85" reason="Core AI logic to be extended with classification prompt and structured output schema." />
+      <item path="backend/app/services/document_service.py" kind="service" symbol="DocumentService" lines="1-150" reason="Manages document upload/storage. Will need to integrate with new classification flow." />
+      <item path="backend/app/schemas/suggestion.py" kind="schema" symbol="Suggestion" lines="1-15" reason="Existing AI output schema. Needs extension or new schema for DocumentClassification." />
+    </code>
+    <dependencies>
+      <pkg ecosystem="python" name="openai" purpose="LLM interaction for classification" />
+      <pkg ecosystem="python" name="pydantic" purpose="Structured output validation" />
+      <pkg ecosystem="python" name="sqlalchemy" purpose="ORM for database operations" />
+      <pkg ecosystem="npm" name="lucide-react" purpose="UI icons for tree view" />
+      <pkg ecosystem="npm" name="@radix-ui/react-collapsible" purpose="Potential primitive for tree view (or similar)" />
+    </dependencies>
+  </artifacts>
+
+  <constraints>
+    - **One Document, One Link**: A document can only be linked to ONE RegulatoryFramework OR ONE RegulatoryRequirement. Enforce via unique constraint or application logic.
+    - **Tenant Isolation**: All queries must filter by `tenant_id` (RLS).
+    - **Admin Only**: Document processing and framework creation restricted to Admin role.
+    - **Data Integrity**: Auto-creation of parent Law must handle duplicates/existing checks robustly.
+  </constraints>
+
+  <interfaces>
+    <interface name="AIService.analyze_document" kind="python-method" signature="async def analyze_document(self, text: str) -> AnalysisResult" path="backend/app/services/ai_service.py">
+      Input: Extracted text from document
+      Output: AnalysisResult (Risks, Controls, Business Processes) + NEW: DocumentClassification
+    </interface>
+    <interface name="GET /api/v1/regulatory-frameworks/tree" kind="api-endpoint" signature="GET /api/v1/regulatory-frameworks/tree" path="backend/app/api/v1/endpoints/regulatory_frameworks.py">
+      New endpoint to return hierarchical data: Frameworks (Laws) -> Requirements (Regulations)
+    </interface>
+  </interfaces>
+
+  <tests>
+    <standards>
+      Use `pytest` for backend tests.
+      Mock `AIService` and `OpenAI` client for unit tests to avoid API costs.
+      Use integration tests with seeded database to verify Law/Regulation creation and linking logic.
+      Frontend tests using `jest` and `react-testing-library` for tree component interaction.
+    </standards>
+    <locations>
+      backend/tests/api/v1/test_regulatory_frameworks.py (New/Update)
+      backend/tests/services/test_ai_service.py (Update)
+      frontend/tests/dashboard/regulatory-frameworks/ (New/Update)
+    </locations>
+    <ideas>
+      - Test AI classification returns "Law" -> Verify Framework created.
+      - Test AI classification returns "Regulation" -> Verify Parent Law created + Requirement created + Linked.
+      - Test duplicate document processing -> Should update link, not create duplicate.
+      - Test tree view API returns correct nested JSON structure.
+    </ideas>
+  </tests>
+</story-context>

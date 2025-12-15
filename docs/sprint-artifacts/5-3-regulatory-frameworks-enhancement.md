@@ -1,6 +1,6 @@
 # Story 5.3: Regulatory Frameworks Enhancement
 
-Status: drafted
+Status: ready-for-dev
 
 ## Story
 
@@ -269,7 +269,7 @@ class DocumentClassification(BaseModel):
 
 ### Context Reference
 
-<!-- Path(s) to story context XML will be added here by context workflow -->
+- docs/sprint-artifacts/5-3-regulatory-frameworks-enhancement.context.xml
 
 ### Agent Model Used
 

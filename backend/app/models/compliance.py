@@ -24,6 +24,10 @@ class BusinessProcess(Base):
         nullable=False,
     )
 
+    # Relationships
+    risks = relationship("Risk", back_populates="process", cascade="all, delete-orphan")
+    controls = relationship("Control", back_populates="process", cascade="all, delete-orphan")
+
 
 class Risk(Base):
     __tablename__ = "risks"
@@ -34,26 +38,7 @@ class Risk(Base):
     description = Column(Text, nullable=True)
     category = Column(String(100), nullable=True)
     owner_id = Column(GUID, ForeignKey("user.id"), nullable=False)
-    created_at = Column(
-        DateTime(timezone=True), server_default=func.now(), nullable=False
-    )
-    updated_at = Column(
-        DateTime(timezone=True),
-        server_default=func.now(),
-        onupdate=func.now(),
-        nullable=False,
-    )
-
-
-class Control(Base):
-    __tablename__ = "controls"
-
-    id = Column(GUID, primary_key=True, default=uuid4)
-    tenant_id = Column(GUID, nullable=False)
-    name = Column(String(255), nullable=False)
-    description = Column(Text, nullable=True)
-    type = Column(String(100), nullable=True)  # e.g., Preventive, Detective
-    owner_id = Column(GUID, ForeignKey("user.id"), nullable=False)
+    process_id = Column(GUID, ForeignKey("business_processes.id"), nullable=True)
     created_at = Column(
         DateTime(timezone=True), server_default=func.now(), nullable=False
     )
@@ -65,6 +50,31 @@ class Control(Base):
     )
 
     # Relationships
+    process = relationship("BusinessProcess", back_populates="risks")
+
+
+class Control(Base):
+    __tablename__ = "controls"
+
+    id = Column(GUID, primary_key=True, default=uuid4)
+    tenant_id = Column(GUID, nullable=False)
+    name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    type = Column(String(100), nullable=True)  # e.g., Preventive, Detective
+    owner_id = Column(GUID, ForeignKey("user.id"), nullable=False)
+    process_id = Column(GUID, ForeignKey("business_processes.id"), nullable=True)
+    created_at = Column(
+        DateTime(timezone=True), server_default=func.now(), nullable=False
+    )
+    updated_at = Column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False,
+    )
+
+    # Relationships
+    process = relationship("BusinessProcess", back_populates="controls")
     regulatory_mappings = relationship(
         "ControlRegulatoryRequirement", back_populates="control", cascade="all, delete-orphan"
     )
