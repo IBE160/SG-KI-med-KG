@@ -9,7 +9,7 @@ import re
 import os
 
 from app.models.document import Document, DocumentStatus
-from app.schemas import DocumentCreate, DocumentRead
+from app.schemas import DocumentCreate
 from app.core.supabase import supabase_client
 from app.config import settings
 
@@ -18,7 +18,7 @@ class DocumentService:
     """Service for managing document uploads and storage."""
 
     ALLOWED_MIME_TYPES = {"application/pdf", "text/plain"}
-    MAX_FILE_SIZE = 20 * 1024 * 1024  # 20MB in bytes
+    MAX_FILE_SIZE = 1 * 1024 * 1024  # 1MB in bytes (matching Supabase limit)
     BUCKET_NAME = settings.SUPABASE_STORAGE_BUCKET
 
     @staticmethod
@@ -77,37 +77,47 @@ class DocumentService:
         unique_filename = f"production/{unique_id}_{sanitized_filename}"
 
         try:
-            # Read file content
+            # Read file content ONCE to avoid stream exhaustion on retry
             content = await file.read()
+            await file.seek(0)  # Reset pointer immediately
 
             # Check file size
             if len(content) > DocumentService.MAX_FILE_SIZE:
                 raise HTTPException(
-                    status_code=status.HTTP_400_BAD_REQUEST,
+                    status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
                     detail=f"File size exceeds maximum of {DocumentService.MAX_FILE_SIZE / 1024 / 1024}MB",
                 )
 
             # Upload to Supabase Storage
-            response = supabase_client.storage.from_(DocumentService.BUCKET_NAME).upload(
+            _ = supabase_client.storage.from_(DocumentService.BUCKET_NAME).upload(
                 unique_filename, content, {"content-type": file.content_type}
             )
 
-            # Reset file pointer for potential reuse
-            await file.seek(0)
-
             return unique_filename
 
+        except HTTPException:
+            raise
         except Exception as e:
-            if "already exists" in str(e).lower():
+            error_str = str(e).lower()
+            if "already exists" in error_str:
                 # File already exists, try with a new UUID
                 unique_id = str(uuid.uuid4())
                 unique_filename = f"production/{unique_id}_{sanitized_filename}"
-                content = await file.read()
-                response = supabase_client.storage.from_(DocumentService.BUCKET_NAME).upload(
+                
+                # REUSE the content variable - do not read from file stream again
+                _ = supabase_client.storage.from_(DocumentService.BUCKET_NAME).upload(
                     unique_filename, content, {"content-type": file.content_type}
                 )
-                await file.seek(0)
                 return unique_filename
+            
+            # Check for 413 from Supabase client
+            if "'statuscode': 413" in error_str or "payload too large" in error_str:
+                raise HTTPException(
+                    status_code=status.HTTP_413_REQUEST_ENTITY_TOO_LARGE,
+                    detail=f"File size exceeds maximum allowed size.",
+                )
+                
+            print(f"Storage upload error: {str(e)}")
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail=f"Failed to upload file to storage: {str(e)}",
@@ -164,19 +174,22 @@ class DocumentService:
 
     @staticmethod
     async def get_document_by_id(
-        db: AsyncSession, document_id: UUID, user_id: UUID, tenant_id: UUID = None
+        db: AsyncSession, document_id: UUID, user_id: UUID, tenant_id: UUID = None, force_refresh: bool = False
     ) -> Document:
         """Get a specific document by ID, eagerly loading classification relationships."""
         from app.models.user import User
-        from app.models.compliance import RegulatoryFramework, RegulatoryRequirement
+        from app.models.compliance import RegulatoryRequirement
         from sqlalchemy.orm import selectinload
 
+        stmt = select(Document).filter(Document.id == document_id)
+        
+        if force_refresh:
+            stmt = stmt.execution_options(populate_existing=True)
+
         result = await db.execute(
-            select(Document)
-            .filter(Document.id == document_id)
-            .options(
+            stmt.options(
                 selectinload(Document.regulatory_framework),
-                selectinload(Document.regulatory_requirement)
+                selectinload(Document.regulatory_requirement).selectinload(RegulatoryRequirement.framework)
             )
         )
         document = result.scalars().first()

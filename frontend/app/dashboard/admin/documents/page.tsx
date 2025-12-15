@@ -139,12 +139,16 @@ export default function DocumentsPage() {
       });
 
       if (!response.ok) {
-        const error = await response.json();
+        if (response.status === 413) {
+          const error = await response.json().catch(() => ({}));
+          throw new Error(error.detail || "File is too large. Please upload a smaller file.");
+        }
+        const error = await response.json().catch(() => ({}));
         throw new Error(error.detail || "Upload failed");
       }
 
       const result = await response.json();
-      toast.success(result.message || "File uploaded successfully");
+      toast.success("Document uploaded. Ready for processing.");
 
       // Add new document to state immediately
       const newDocument: Document = {
@@ -162,7 +166,6 @@ export default function DocumentsPage() {
       ) as HTMLInputElement;
       if (fileInput) fileInput.value = "";
     } catch (err) {
-      console.error("Upload failed:", err);
       toast.error(
         err instanceof Error ? err.message : "Failed to upload file"
       );
@@ -344,17 +347,19 @@ export default function DocumentsPage() {
       });
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.detail || "Failed to process document");
+        const error = await response.json();
+        throw new Error(error.detail || "Processing failed");
       }
 
-      const result = await response.json();
-      toast.success(result.message || "Document processed successfully");
+      const updatedDoc = await response.json();
 
-      // Update document status in state
-      setDocuments(prevDocs =>
-        prevDocs.map(d => (d.id === doc.id ? { ...d, status: result.status || "completed" } : d))
+      // Update document in state with the full updated object from API
+      // Use functional update to ensure we have the latest state
+      setDocuments((prevDocs) => 
+        prevDocs.map((d) => (d.id === doc.id ? updatedDoc : d))
       );
+      
+      toast.success("Document processed successfully");
     } catch (err) {
       console.error("Process failed:", err);
       toast.error(err instanceof Error ? err.message : "Failed to process document");
@@ -364,7 +369,12 @@ export default function DocumentsPage() {
   };
 
   const formatDateTime = (dateString: string) => {
-    const date = new Date(dateString);
+    // Ensure date is treated as UTC if it comes as a naive string
+    const normalizedDate = dateString.endsWith('Z') || dateString.includes('+') 
+      ? dateString 
+      : `${dateString}Z`;
+      
+    const date = new Date(normalizedDate);
     const day = String(date.getDate()).padStart(2, '0');
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const year = date.getFullYear();

@@ -234,13 +234,22 @@ async def manually_process_document(
 
     logger.info(f"Manual processing triggered for document {document_id} by user {current_user.id}")
 
+    # Extract IDs before expiring session to avoid MissingGreenlet on lazy load
+    user_id = current_user.id
+    tenant_id = current_user.tenant_id
+
     try:
         # Process document synchronously
         await _process_document_async(document_id)
 
         # Re-fetch document to get updated status and relationships
+        # Use force_refresh=True to bypass identity map and get fresh data from DB
         document = await DocumentService.get_document_by_id(
-            db=db, document_id=document_id, user_id=current_user.id, tenant_id=current_user.tenant_id
+            db=db, 
+            document_id=document_id, 
+            user_id=user_id, 
+            tenant_id=tenant_id,
+            force_refresh=True
         )
 
         # Construct classification if available
