@@ -21,8 +21,7 @@ class Control(ControlBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 
 # --- Regulatory Schemas ---
@@ -42,8 +41,7 @@ class RegulatoryRequirementRead(RegulatoryRequirementBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 class RegulatoryFrameworkBase(BaseModel):
     name: str
@@ -60,11 +58,9 @@ class RegulatoryFrameworkRead(RegulatoryFrameworkBase):
     created_at: datetime
     updated_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}
 
 class RegulatoryFrameworkTreeItem(RegulatoryFrameworkRead):
     requirements: List[RegulatoryRequirementRead] = []
 
-    class Config:
-        orm_mode = True
+    model_config = {"from_attributes": True}

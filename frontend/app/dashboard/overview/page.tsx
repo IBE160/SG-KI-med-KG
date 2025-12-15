@@ -114,7 +114,7 @@ export default function OverviewPage() {
 
   // Mutations
   const updateProcessMutation = useMutation({
-    mutationFn: (data: any) => updateBusinessProcess({ id: data.id, requestBody: data.body }),
+    mutationFn: (data: any) => updateBusinessProcess({ path: { process_id: data.id }, body: data.body }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["overview"] });
       toast.success("Process updated successfully");
@@ -123,7 +123,7 @@ export default function OverviewPage() {
   });
 
   const deleteProcessMutation = useMutation({
-    mutationFn: (id: string) => deleteBusinessProcess({ id }),
+    mutationFn: (id: string) => deleteBusinessProcess({ path: { process_id: id } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["overview"] });
       toast.success("Process deleted successfully");
@@ -132,7 +132,7 @@ export default function OverviewPage() {
   });
 
   const updateControlMutation = useMutation({
-    mutationFn: (data: any) => updateControl({ id: data.id, requestBody: data.body }),
+    mutationFn: (data: any) => updateControl({ path: { control_id: data.id }, body: data.body }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["overview"] });
       toast.success("Control updated successfully");
@@ -141,7 +141,7 @@ export default function OverviewPage() {
   });
 
   const deleteControlMutation = useMutation({
-    mutationFn: (id: string) => deleteControl({ id }),
+    mutationFn: (id: string) => deleteControl({ path: { control_id: id } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["overview"] });
       toast.success("Control deleted successfully");
@@ -150,7 +150,7 @@ export default function OverviewPage() {
   });
 
   const updateRiskMutation = useMutation({
-    mutationFn: (data: any) => updateRisk({ id: data.id, requestBody: data.body }),
+    mutationFn: (data: any) => updateRisk({ path: { risk_id: data.id }, body: data.body }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["overview"] });
       toast.success("Risk updated successfully");
@@ -159,7 +159,7 @@ export default function OverviewPage() {
   });
 
   const deleteRiskMutation = useMutation({
-    mutationFn: (id: string) => deleteRisk({ id }),
+    mutationFn: (id: string) => deleteRisk({ path: { risk_id: id } }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["overview"] });
       toast.success("Risk deleted successfully");

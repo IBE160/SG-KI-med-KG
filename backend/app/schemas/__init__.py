@@ -174,3 +174,11 @@ class RegulatoryRequirementRead(RegulatoryRequirementBase):
 # --- Documents ---
 # Import DocumentRead and DocumentUploadResponse from document.py to include classification
 from app.schemas.document import DocumentBase, DocumentCreate, DocumentRead, DocumentUploadResponse
+
+
+# --- Suggestions ---
+# Import and rebuild to resolve forward reference to UserRead
+from app.schemas.suggestion import AISuggestionRead, AISuggestionCreate, AISuggestionUpdate
+
+# Rebuild model to resolve forward reference ("UserRead" -> UserRead)
+AISuggestionRead.model_rebuild()

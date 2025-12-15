@@ -11,7 +11,7 @@ from app.models.user import User as UserModel
 from app.models.document import Document
 from app.models.suggestion import AISuggestion, SuggestionStatus, SuggestionType
 from app.models.compliance import Risk, Control, BusinessProcess
-from app.schemas.suggestion import AISuggestionRead
+from app.schemas import AISuggestionRead
 from app.core.deps import has_role
 
 router = APIRouter()

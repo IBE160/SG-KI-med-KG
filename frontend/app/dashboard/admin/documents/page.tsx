@@ -472,7 +472,7 @@ export default function DocumentsPage() {
             ) : documents.length === 0 ? (
               <TableRow>
                 <TableCell
-                  colSpan={5} {/* Adjusted colSpan */}
+                  colSpan={5}
                   className="text-center py-10 text-muted-foreground"
                 >
                   <div className="flex flex-col items-center gap-2">

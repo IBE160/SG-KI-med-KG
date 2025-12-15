@@ -5,7 +5,7 @@ import { Plus, Pencil, ScrollText, ClipboardList, FileText, ChevronRight, Chevro
 import {
   getRegulatoryFrameworksTree,
   RegulatoryFrameworkTreeItem,
-  removeRegulatoryFramework,
+  deleteRegulatoryFramework,
 } from "@/app/clientService";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -40,9 +40,9 @@ export default function RegulatoryFrameworksPage() {
 
   const handleDelete = async (id: string, isRequirement: boolean) => {
     try {
-      // Assuming removeRegulatoryFramework can handle both frameworks and requirements
+      // Assuming deleteRegulatoryFramework can handle both frameworks and requirements
       // Or we need a separate function for requirements (not in current API)
-      await removeRegulatoryFramework(id); // This needs to be updated if requirements have separate delete API
+      await deleteRegulatoryFramework({ path: { framework_id: id } }); // This needs to be updated if requirements have separate delete API
       fetchFrameworksTree();
     } catch (error) {
       console.error("Failed to delete regulatory item:", error);
@@ -97,7 +97,7 @@ export default function RegulatoryFrameworksPage() {
                 key={framework.id}
                 label={framework.name}
                 icon={ScrollText} // Icon for Main Law
-                badgeCount={framework.requirements.length}
+                badgeCount={framework.requirements?.length ?? 0}
                 actions={<ActionButtons item={framework} />}
                 defaultExpanded={true}
               >
@@ -111,7 +111,7 @@ export default function RegulatoryFrameworksPage() {
                     )}
                   </div>
                 )}
-                {framework.requirements.map((requirement) => (
+                {framework.requirements?.map((requirement) => (
                   <TreeItem
                     key={requirement.id}
                     label={requirement.name}
